@@ -10,11 +10,12 @@ cd "$( dirname "${BASH_SOURCE[0]}" )"
 
 export DEBIAN_FRONTEND=noninteractive
 if ! command -v puppet &>/dev/null ; then
+  apt-get update
   apt-get install -y puppet
 fi
 
-puppet module uninstall --force dp-rustup
-puppet module install --force ../pkg/dp-rustup-*.tar.gz
+puppet module uninstall --force dp-rustup || true
+puppet module install ../pkg/dp-rustup-*.tar.gz
 
 echo Running Puppet
 puppet apply vagrant.pp

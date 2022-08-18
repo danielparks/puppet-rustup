@@ -11,14 +11,18 @@
 # @param shell
 #   Shell for the rustup user. This can be a nologin shell.
 #   ### FIXME test nologin
-# @param rustup_sh_url
-#   URL of the rustup installation script.
+# @param env_scripts_append
+#   Scripts to append with line that sources the cargo environment script.
+# @param env_scripts_create
+#   Paths that will get links to the cargo environment script.
 class rustup (
-  Enum[present, absent] $ensure      = present,
-  String[1]             $user        = 'rustup',
-  Boolean               $manage_user = true,
-  String[1]             $home        = '/opt/rust',
-  String[1]             $shell       = '/bin/bash',
+  Enum[present, absent] $ensure             = present,
+  String[1]             $user               = 'rustup',
+  Boolean               $manage_user        = true,
+  String[1]             $home               = '/opt/rust',
+  String[1]             $shell              = '/bin/bash',
+  Array[String[1]]      $env_scripts_append = ['/etc/bash.bashrc'],
+  Array[String[1]]      $env_scripts_create = ['/etc/profile.d/99-cargo.sh'],
 ) {
   $rustup_home = "${home}/rustup"
   $cargo_home = "${home}/cargo"
@@ -62,40 +66,43 @@ class rustup (
     force  => true,
   }
 
-  file {
-    default:
-      ensure => $ensure,
-      owner  => $user,
-      group  => $user,
-      mode   => '0555',
-    ;
-    # For rustup user, or any user that shouldn't be able to cargo install
-    "${home}/cargo-global.env.sh":
-      content => epp('rustup/env.sh.epp', {
-        paths       => [shell_escape($bin)],
-        rustup_home => shell_escape($rustup_home),
-        cargo_home  => shell_escape($cargo_home),
-      }),
-    ;
-    # Allow users to cargo install
-    "${home}/cargo-local.env.sh":
-      content => epp('rustup/env.sh.epp', {
-        paths       => [shell_escape($bin), '${HOME}/.cargo/bin'],
-        rustup_home => shell_escape($rustup_home),
-        cargo_home  => '${HOME}/.cargo/bin',
-      }),
-    ;
+  # Shell init scripts source this to set the environment correctly.
+  file { "${home}/env.sh":
+    ensure  => $ensure,
+    owner   => $user,
+    group   => $user,
+    mode    => '0555',
+    content => epp('rustup/env.sh.epp', {
+      bin         => $bin,
+      rustup_home => $rustup_home,
+      cargo_home  => $cargo_home,
+    }),
   }
 
-  $escaped_global_env = shell_escape("${home}/cargo-global.env.sh")
+  $escaped_env_path = shell_escape("${home}/env.sh")
   $comment = 'cargo env: managed by Puppet'
-  ['.bashrc', '.profile'].each |$file| {
-    file_line { "~rustup/${file} source cargo-global.env.sh":
+  $env_scripts_append.each |$path| {
+    file_line { "{path} +source ${home}/env.sh":
       ensure            => $ensure,
-      path              => "${home}/${file}",
-      line              => ". ${escaped_global_env} # ${comment}",
+      path              => $path,
+      line              => ". ${escaped_env_path} # ${comment}",
       match             => '^[.] .* # ${comment}$',
       match_for_absence => true,
+    }
+  }
+
+  $link_ensure = $ensure ? {
+    present => link,
+    default => $ensure,
+  }
+
+  $env_scripts_create.each |$path| {
+    file { $path:
+      ensure => $ensure,
+      owner  => 'root',
+      group  => '0',
+      mode   => '0555',
+      target => "${home}/env.sh"
     }
   }
 }

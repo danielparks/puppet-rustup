@@ -23,7 +23,8 @@ The following parameters are available in the `rustup` class:
 * [`manage_user`](#manage_user)
 * [`home`](#home)
 * [`shell`](#shell)
-* [`rustup_sh_url`](#rustup_sh_url)
+* [`env_scripts_append`](#env_scripts_append)
+* [`env_scripts_create`](#env_scripts_create)
 * [`ensure`](#ensure)
 
 ##### <a name="user"></a>`user`
@@ -61,9 +62,21 @@ Shell for the rustup user. This can be a nologin shell.
 
 Default value: `'/bin/bash'`
 
-##### <a name="rustup_sh_url"></a>`rustup_sh_url`
+##### <a name="env_scripts_append"></a>`env_scripts_append`
 
-URL of the rustup installation script.
+Data type: `Array[String[1]]`
+
+Scripts to append with line that sources the cargo environment script.
+
+Default value: `['/etc/bash.bashrc']`
+
+##### <a name="env_scripts_create"></a>`env_scripts_create`
+
+Data type: `Array[String[1]]`
+
+Paths that will get links to the cargo environment script.
+
+Default value: `['/etc/profile.d/99-cargo.sh']`
 
 ##### <a name="ensure"></a>`ensure`
 
