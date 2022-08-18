@@ -6,73 +6,106 @@
 
 ### Classes
 
-* [`golang`](#golang): Install go in /usr/local/go and /usr/local/bin
+* [`rustup`](#rustup): Manage rust with rustup
+* [`rustup::install`](#rustupinstall): Install rustup
 
 ## Classes
 
-### <a name="golang"></a>`golang`
+### <a name="rustup"></a>`rustup`
 
-`/usr/local/share/` *must* exist.
-
-Most people will not need to change any parameter other than `$version`.
+Manage rust with rustup
 
 #### Parameters
 
-The following parameters are available in the `golang` class:
+The following parameters are available in the `rustup` class:
 
-* [`version`](#version)
-* [`link_binaries`](#link_binaries)
-* [`source`](#source)
-* [`source_prefix`](#source_prefix)
-* [`os`](#os)
-* [`arch`](#arch)
+* [`user`](#user)
+* [`manage_user`](#manage_user)
+* [`home`](#home)
+* [`shell`](#shell)
+* [`rustup_sh_url`](#rustup_sh_url)
+* [`ensure`](#ensure)
 
-##### <a name="version"></a>`version`
+##### <a name="user"></a>`user`
 
 Data type: `String[1]`
 
-The version of Go to install. You can find the latest version number at
-https://go.dev/dl/
+The user to own and manage rustup. We recommend not using root or any other
+existing user.
 
-Default value: `'1.18.3'`
+Default value: `'rustup'`
 
-##### <a name="link_binaries"></a>`link_binaries`
+##### <a name="manage_user"></a>`manage_user`
 
-Data type: `Array[String[1]]`
+Data type: `Boolean`
 
-The binaries to symlink into `/usr/local/bin`.
+Whether or not to manage the $rustup_user.
 
-Default value: `['go', 'gofmt']`
+Default value: ``true``
+
+##### <a name="home"></a>`home`
+
+Data type: `String[1]`
+
+Where to install rustup and the rust toolchains. Will contain rustup and
+cargo directories.
+
+Default value: `'/opt/rust'`
+
+##### <a name="shell"></a>`shell`
+
+Data type: `String[1]`
+
+Shell for the rustup user. This can be a nologin shell.
+### FIXME test nologin
+
+Default value: `'/bin/bash'`
+
+##### <a name="rustup_sh_url"></a>`rustup_sh_url`
+
+URL of the rustup installation script.
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `Enum[present, absent]`
+
+
+
+Default value: `present`
+
+### <a name="rustupinstall"></a>`rustup::install`
+
+Requires curl or wget
+
+#### Parameters
+
+The following parameters are available in the `rustup::install` class:
+
+* [`ensure`](#ensure)
+* [`source`](#source)
+* [`downloader`](#downloader)
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `Enum[present, absent]`
+
+Whether to install or uninstall (`present` or `absent`, respectively).
+
+Default value: `present`
 
 ##### <a name="source"></a>`source`
 
 Data type: `String[1]`
 
-URL to actual archive.
+URL of the rustup installation script. Only used to set `$downloader`.
 
-Default value: `"${source_prefix}/go${version}.${os}-${arch}.tar.gz"`
+Default value: `'https://sh.rustup.rs'`
 
-##### <a name="source_prefix"></a>`source_prefix`
-
-Data type: `String[1]`
-
-URL to directory that contains the archive to download.
-
-Default value: `'https://go.dev/dl'`
-
-##### <a name="os"></a>`os`
+##### <a name="downloader"></a>`downloader`
 
 Data type: `String[1]`
 
-The OS to use to determine what archive to download.
+Command to download the rustup installation script to stdout.
 
-Default value: `$facts['kernel']`
-
-##### <a name="arch"></a>`arch`
-
-Data type: `String[1]`
-
-The architecture to use to determine what archive to download.
-
-Default value: `$facts['os']['hardware']`
+Default value: `"curl -sSf ${source}"`
 

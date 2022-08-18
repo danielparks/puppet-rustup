@@ -1,16 +1,16 @@
 {
-  "name": "dp-golang",
-  "version": "1.0.6",
+  "name": "dp-rustup",
+  "version": "0.1.0",
   "author": "Daniel Parks",
-  "summary": "Install Go simply",
+  "summary": "Manage Rust with rustup",
   "license": "Apache-2.0",
-  "source": "https://github.com/danielparks/puppet-golang",
-  "project_page": "https://github.com/danielparks/puppet-golang",
-  "issues_url": "https://github.com/danielparks/puppet-golang/issues",
+  "source": "https://github.com/danielparks/puppet-rustup",
+  "project_page": "https://github.com/danielparks/puppet-rustup",
+  "issues_url": "https://github.com/danielparks/puppet-rustup/issues",
   "dependencies": [
     {
-      "name": "puppet/archive",
-      "version_requirement": ">= 4.0.0 < 7.0.0"
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 5.0.0"
     }
   ],
   "operatingsystem_support": [
