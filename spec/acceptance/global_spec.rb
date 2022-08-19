@@ -9,11 +9,11 @@ describe 'Global rustup management' do
         include rustup
       END
 
-      describe file("/opt/rust") do
-        it { should be_directory }
-        it { should be_owned_by "rustup" }
-      end
       expect(user("rustup")).to belong_to_group "rustup"
+    end
+    describe file("/opt/rust") do
+      it { should be_directory }
+      it { should be_owned_by "rustup" }
     end
   end
 end
