@@ -8,3 +8,7 @@ rustup::toolchain { 'nightly': }
 rustup::toolchain { 'beta-x86_64-unknown-linux-gnu':
   ensure => absent,
 }
+
+class { 'rustup':
+  ensure => latest,
+}

@@ -7,7 +7,6 @@
 ### Classes
 
 * [`rustup`](#rustup): Manage rust with rustup
-* [`rustup::install`](#rustupinstall): Install rustup
 
 ### Defined types
 
@@ -15,11 +14,16 @@
 * [`rustup::target`](#rustuptarget): Install a target for a toolchain
 * [`rustup::toolchain`](#rustuptoolchain): Install a toolchain
 
+### Data types
+
+* [`Rustup::OptionalStringOrArray`](#rustupoptionalstringorarray): Convenience type to make params easier to read.
+
 ## Classes
 
 ### <a name="rustup"></a>`rustup`
 
-Manage rust with rustup
+By default, this uses `curl` to download the installer. Set the `$downloader`
+parameter if you want to use something else.
 
 #### Parameters
 
@@ -32,12 +36,16 @@ The following parameters are available in the `rustup` class:
 * [`shell`](#shell)
 * [`env_scripts_append`](#env_scripts_append)
 * [`env_scripts_create`](#env_scripts_create)
+* [`installer_source`](#installer_source)
+* [`downloader`](#downloader)
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Enum[present, absent]`
+Data type: `Enum[present, latest, absent]`
 
-Whether the rust installation should be present or absent.
+* `present` - install rustup, but don’t update it.
+* `latest` - install rustup and update it on every puppet run.
+* `absent` - uninstall rustup and the tools it manages.
 
 Default value: `present`
 
@@ -92,23 +100,7 @@ Paths that will get links to the cargo environment script.
 
 Default value: `['/etc/profile.d/99-cargo.sh']`
 
-### <a name="rustupinstall"></a>`rustup::install`
-
-By default, this uses `curl`. Set the `$downloader` parameter if you want to
-use something else.
-
-You generally should not need to use this directly; `rustup` includes it. If
-you need to change the parameters you can either use hiera, or declare this
-class after `include rustup`.
-
-#### Parameters
-
-The following parameters are available in the `rustup::install` class:
-
-* [`source`](#source)
-* [`downloader`](#downloader)
-
-##### <a name="source"></a>`source`
+##### <a name="installer_source"></a>`installer_source`
 
 Data type: `String[1]`
 
@@ -122,7 +114,7 @@ Data type: `String[1]`
 
 Command to download the rustup installation script to stdout.
 
-Default value: `"curl -sSf ${source}"`
+Default value: `"curl -sSf ${installer_source}"`
 
 ## Defined types
 
@@ -169,7 +161,7 @@ Default value: `[]`
 
 ##### <a name="onlyif"></a>`onlyif`
 
-Data type: `Variant[Undef, Array[String[1]], String[1]]`
+Data type: `Rustup::OptionalStringOrArray`
 
 Only run when `$onlyif` returns success. (See [`exec`] documentation.)
 
@@ -185,7 +177,7 @@ Default value: ``false``
 
 ##### <a name="unless"></a>`unless`
 
-Data type: `Variant[Undef, Array[String[1]], String[1]]`
+Data type: `Rustup::OptionalStringOrArray`
 
 Only run when `$unless` returns failure. (See [`exec`] documentation.)
 
@@ -273,4 +265,16 @@ Data type: `String[1]`
 `egrep` compatible regular expression to match the toolchain in the list.
 
 Default value: `"^${name.regsubst('-', '-(.+-)?', 'G')}"`
+
+## Data types
+
+### <a name="rustupoptionalstringorarray"></a>`Rustup::OptionalStringOrArray`
+
+Convenience type to make params easier to read.
+
+Alias of
+
+```puppet
+Variant[Undef, String[1], Array[String[1]]]
+```
 
