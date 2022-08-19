@@ -1,5 +1,7 @@
 # @summary Manage rust with rustup
 #
+# @param ensure
+#   Whether the rust installation should be present or absent.
 # @param user
 #   The user to own and manage rustup. We recommend not using root or any other
 #   existing user.
@@ -49,7 +51,7 @@ class rustup (
 
     if $ensure == absent {
       # Have to delete the user before its primary group.
-      User[$username] -> Group[$primary_group]
+      User[$user] -> Group[$user]
     }
   }
 
@@ -82,11 +84,11 @@ class rustup (
   $escaped_env_path = shell_escape("${home}/env.sh")
   $comment = 'cargo env: managed by Puppet'
   $env_scripts_append.each |$path| {
-    file_line { "{path} +source ${home}/env.sh":
+    file_line { "${path} +source ${home}/env.sh":
       ensure            => $ensure,
       path              => $path,
       line              => ". ${escaped_env_path} # ${comment}",
-      match             => '^[.] .* # ${comment}$',
+      match             => "^[.] .* # ${comment}\$",
       match_for_absence => true,
     }
   }
