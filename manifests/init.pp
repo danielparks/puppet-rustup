@@ -103,7 +103,7 @@ class rustup (
       ensure => $ensure,
       owner  => 'root',
       group  => '0',
-      mode   => '0555',
+      mode   => '0444',
       target => "${home}/env.sh"
     }
   }
