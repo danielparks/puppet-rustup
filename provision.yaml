@@ -1,7 +1,4 @@
 ---
-vagrant:
+default:
   provisioner: vagrant
-  images: ['centos/7', 'ubuntu/jammy64']
-  params:
-    param_a: someone
-    param_b: something
+  images: ['centos/7', 'ubuntu/trusty64']
