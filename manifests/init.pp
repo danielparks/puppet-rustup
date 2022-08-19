@@ -107,4 +107,9 @@ class rustup (
       target => "${home}/env.sh"
     }
   }
+
+  # Targets are installed or removed after toolchains are installed...
+  Rustup::Toolchain <| ensure == present |> -> Rustup::Target <| |>
+  # ...and before toolchains are removed.
+  Rustup::Target <| |> -> Rustup::Toolchain <| ensure == absent |>
 }

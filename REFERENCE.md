@@ -9,6 +9,12 @@
 * [`rustup`](#rustup): Manage rust with rustup
 * [`rustup::install`](#rustupinstall): Install rustup
 
+### Defined types
+
+* [`rustup::exec`](#rustupexec): Run a rustup command
+* [`rustup::target`](#rustuptarget): Install a target for a toolchain
+* [`rustup::toolchain`](#rustuptoolchain): Install a toolchain
+
 ## Classes
 
 ### <a name="rustup"></a>`rustup`
@@ -19,13 +25,21 @@ Manage rust with rustup
 
 The following parameters are available in the `rustup` class:
 
+* [`ensure`](#ensure)
 * [`user`](#user)
 * [`manage_user`](#manage_user)
 * [`home`](#home)
 * [`shell`](#shell)
 * [`env_scripts_append`](#env_scripts_append)
 * [`env_scripts_create`](#env_scripts_create)
-* [`ensure`](#ensure)
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `Enum[present, absent]`
+
+Whether the rust installation should be present or absent.
+
+Default value: `present`
 
 ##### <a name="user"></a>`user`
 
@@ -78,33 +92,21 @@ Paths that will get links to the cargo environment script.
 
 Default value: `['/etc/profile.d/99-cargo.sh']`
 
-##### <a name="ensure"></a>`ensure`
-
-Data type: `Enum[present, absent]`
-
-
-
-Default value: `present`
-
 ### <a name="rustupinstall"></a>`rustup::install`
 
-Requires curl or wget
+By default, this uses `curl`. Set the `$downloader` parameter if you want to
+use something else.
+
+You generally should not need to use this directly; `rustup` includes it. If
+you need to change the parameters you can either use hiera, or declare this
+class after `include rustup`.
 
 #### Parameters
 
 The following parameters are available in the `rustup::install` class:
 
-* [`ensure`](#ensure)
 * [`source`](#source)
 * [`downloader`](#downloader)
-
-##### <a name="ensure"></a>`ensure`
-
-Data type: `Enum[present, absent]`
-
-Whether to install or uninstall (`present` or `absent`, respectively).
-
-Default value: `present`
 
 ##### <a name="source"></a>`source`
 
@@ -121,4 +123,154 @@ Data type: `String[1]`
 Command to download the rustup installation script to stdout.
 
 Default value: `"curl -sSf ${source}"`
+
+## Defined types
+
+### <a name="rustupexec"></a>`rustup::exec`
+
+[`exec`]: https://puppet.com/docs/puppet/latest/types/exec.html
+
+#### Parameters
+
+The following parameters are available in the `rustup::exec` defined type:
+
+* [`command`](#command)
+* [`creates`](#creates)
+* [`environment`](#environment)
+* [`onlyif`](#onlyif)
+* [`refreshonly`](#refreshonly)
+* [`unless`](#unless)
+* [`more`](#more)
+
+##### <a name="command"></a>`command`
+
+Data type: `String[1]`
+
+The command to run, e.g. 'rustup default stable'.
+
+Default value: `$name`
+
+##### <a name="creates"></a>`creates`
+
+Data type: `Optional[String[1]]`
+
+Only run when if this path does not exist. (See [`exec`] documentation.)
+
+Default value: ``undef``
+
+##### <a name="environment"></a>`environment`
+
+Data type: `Array[String[1]]`
+
+Additional environment variables to set beyond `RUSTUP_HOME`, `CARGO_HOME`,
+and `PATH`.
+
+Default value: `[]`
+
+##### <a name="onlyif"></a>`onlyif`
+
+Data type: `Variant[Undef, Array[String[1]], String[1]]`
+
+Only run when `$onlyif` returns success. (See [`exec`] documentation.)
+
+Default value: ``undef``
+
+##### <a name="refreshonly"></a>`refreshonly`
+
+Data type: `Boolean`
+
+Only run this when it receives an event. (See [`exec`] documentation.)
+
+Default value: ``false``
+
+##### <a name="unless"></a>`unless`
+
+Data type: `Variant[Undef, Array[String[1]], String[1]]`
+
+Only run when `$unless` returns failure. (See [`exec`] documentation.)
+
+Default value: ``undef``
+
+##### <a name="more"></a>`more`
+
+Data type: `Hash[String[1], Any]`
+
+Other parameters to pass to exec. They may override any of the other
+parameters.
+
+Default value: `{}`
+
+### <a name="rustuptarget"></a>`rustup::target`
+
+You can name this two ways to automatically set the parameters:
+
+  * `"$target $toolchain"`: install `$target` for `$toolchain`. For example,
+    `'x86_64-unknown-linux-gnu nightly'`.
+  * `$target`: install `$target` for the default toolchain.
+
+#### Parameters
+
+The following parameters are available in the `rustup::target` defined type:
+
+* [`ensure`](#ensure)
+* [`target`](#target)
+* [`toolchain`](#toolchain)
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `Enum[present, absent]`
+
+Whether the target should be present or absent.
+
+Default value: `present`
+
+##### <a name="target"></a>`target`
+
+Data type: `String[1]`
+
+The name of the target to install, e.g. "sparcv9-sun-solaris". Automatically
+set if the `$name` of the resource follows the rules above.
+
+Default value: `(' ')[0]`
+
+##### <a name="toolchain"></a>`toolchain`
+
+Data type: `Optional[String[1]]`
+
+The name of the toolchain in which to install the target, e.g. "stable".
+`undef` means the default toolchain. Automatically set if the `$name` of the
+resource follows the rules above.
+
+Default value: `(' ')[1]`
+
+### <a name="rustuptoolchain"></a>`rustup::toolchain`
+
+The name of the resource is the name of the toolchain to install.
+
+This cannot reliably check for the presence of a toolchain. It will not
+install the toolchain if another toolchain that matches `$egrep` is already
+installed.
+
+#### Parameters
+
+The following parameters are available in the `rustup::toolchain` defined type:
+
+* [`ensure`](#ensure)
+* [`egrep`](#egrep)
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `Enum[present, absent]`
+
+Whether the toolchain should be present or absent.
+
+Default value: `present`
+
+##### <a name="egrep"></a>`egrep`
+
+Data type: `String[1]`
+
+`egrep` compatible regular expression to match the toolchain in the list.
+
+Default value: `"^${name.regsubst('-', '-(.+-)?', 'G')}"`
 
