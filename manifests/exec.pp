@@ -19,13 +19,13 @@
 #
 # [`exec`]: https://puppet.com/docs/puppet/latest/types/exec.html
 define rustup::exec (
-  String[1]                                   $command     = $name,
-  Optional[String[1]]                         $creates     = undef,
-  Array[String[1]]                            $environment = [],
-  Variant[Undef, Array[String[1]], String[1]] $onlyif      = undef,
-  Boolean                                     $refreshonly = false,
-  Variant[Undef, Array[String[1]], String[1]] $unless      = undef,
-  Hash[String[1], Any]                        $more        = {},
+  String[1]                     $command     = $name,
+  Optional[String[1]]           $creates     = undef,
+  Array[String[1]]              $environment = [],
+  Rustup::OptionalStringOrArray $onlyif      = undef,
+  Boolean                       $refreshonly = false,
+  Rustup::OptionalStringOrArray $unless      = undef,
+  Hash[String[1], Any]          $more        = {},
 ) {
   include rustup
 
