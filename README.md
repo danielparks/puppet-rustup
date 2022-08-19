@@ -1,9 +1,13 @@
-# Manage rust with rustup
+# Manage Rust with rustup
 
 ## Usage
 
 ~~~ puppet
-include rustup
+rustup::toolchain { 'stable': }
+rustup::target { 'x86_64-unknown-linux-gnux32': }
+rustup::toolchain { 'nightly': }
+rustup::target { 'x86_64-unknown-linux-gnux32 nightly': }
+rustup::target { 'x86_64-unknown-linux-musl nightly': }
 ~~~
 
 ## Limitations
