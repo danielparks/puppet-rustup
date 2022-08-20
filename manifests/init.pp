@@ -32,7 +32,7 @@ class rustup (
   Boolean                       $manage_user        = true,
   String[1]                     $home               = '/opt/rust',
   String[1]                     $shell              = '/bin/bash',
-  Array[String[1]]              $env_scripts_append = ['/etc/bash.bashrc'],
+  Array[String[1]]              $env_scripts_append = ['/etc/bashrc'],
   Array[String[1]]              $env_scripts_create = ['/etc/profile.d/99-cargo.sh'],
   String[1]                     $installer_source   = 'https://sh.rustup.rs',
   String[1]                     $downloader         = "curl -sSf ${installer_source}",
