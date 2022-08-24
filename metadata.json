@@ -29,7 +29,7 @@
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
-        "7"
+        "8"
       ]
     },
     {
@@ -41,25 +41,19 @@
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "8"
+        "10"
       ]
     },
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "16.04"
+        "18.04"
       ]
     },
     {
       "operatingsystem": "Fedora",
       "operatingsystemrelease": [
-        "25"
-      ]
-    },
-    {
-      "operatingsystem": "SLES",
-      "operatingsystemrelease": [
-        "12"
+        "29"
       ]
     },
     {
@@ -67,12 +61,18 @@
       "operatingsystemrelease": [
         "16"
       ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "15"
+      ]
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.7.0"
+      "version_requirement": ">= 6.21.0 < 8.0.0"
     }
   ],
   "pdk-version": "2.5.0",
