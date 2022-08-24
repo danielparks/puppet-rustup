@@ -17,5 +17,6 @@ Gemfile:
       - gem: 'puppet_litmus'
         git: 'https://github.com/puppetlabs/puppet_litmus'
         ref: 'main'
+      - gem: 'puppet-resource_api'
 spec/spec_helper.rb:
   mock_with: ':rspec'
