@@ -6,7 +6,7 @@ describe 'Global rustup management' do
   context 'basic install' do
     it do
       idempotent_apply(<<~END)
-        include rustup
+        include rustup::global
       END
 
       expect(user("rustup")).to belong_to_group "rustup"

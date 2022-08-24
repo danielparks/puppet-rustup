@@ -3,7 +3,7 @@
 ---
 fixtures:
   forge_modules:
-    # stdlib: "puppetlabs/stdlib"
+    stdlib: "puppetlabs/stdlib"
   # https://puppetlabs.github.io/litmus/Converting-modules-to-use-Litmus.html
   repositories:
     facts: 'https://github.com/puppetlabs/puppetlabs-facts.git'

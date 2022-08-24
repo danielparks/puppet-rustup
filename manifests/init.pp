@@ -1,4 +1,10 @@
-# @summary Manage rust with rustup
+# @summary Manage a user’s Rust installation with `rustup`
+#
+# The name should be the username.
+#
+# ```puppet
+# rustup { 'daniel': }
+# ```
 #
 # By default, this uses `curl` to download the installer. Set the `$downloader`
 # parameter if you want to use something else.
@@ -8,145 +14,74 @@
 #   * `latest` - install rustup and update it on every puppet run.
 #   * `absent` - uninstall rustup and the tools it manages.
 # @param user
-#   The user to own and manage rustup. We recommend not using root or any other
-#   existing user.
-# @param manage_user
-#   Whether or not to manage the $rustup_user.
+#   The user to own and manage rustup.
 # @param home
-#   Where to install rustup and the rust toolchains. Will contain rustup and
-#   cargo directories.
-# @param shell
-#   Shell for the rustup user. This can be a nologin shell.
-#   ### FIXME test nologin
-# @param env_scripts_append
-#   Scripts to append with line that sources the cargo environment script.
-# @param env_scripts_create
-#   Paths that will get links to the cargo environment script.
+#   The user’s home directory. This defaults to `/home/$user` on Linux and
+#   `/Users/$user` on macOS.
+# @param rustup_home
+#   Where toolchains are installed. Generally you shouldn’t change this.
+# @param cargo_home
+#   Where `cargo` installs executables. Generally you shouldn’t change this.
+# @param bin
+#   Where `rustup` installs proxy executables. Generally you shouldn’t change
+#   this.
+# @param modify_path
+#   Whether or not to let `rustup` modify the user’s `PATH` in their shell init.
 # @param installer_source
 #   URL of the rustup installation script. Only used to set `$downloader`.
 # @param downloader
 #   Command to download the rustup installation script to stdout.
-class rustup (
-  Enum[present, latest, absent] $ensure             = present,
-  String[1]                     $user               = 'rustup',
-  Boolean                       $manage_user        = true,
-  String[1]                     $home               = '/opt/rust',
-  String[1]                     $shell              = '/bin/bash',
-  Array[String[1]]              $env_scripts_append = ['/etc/bashrc'],
-  Array[String[1]]              $env_scripts_create = ['/etc/profile.d/99-cargo.sh'],
-  String[1]                     $installer_source   = 'https://sh.rustup.rs',
-  String[1]                     $downloader         = "curl -sSf ${installer_source}",
+define rustup (
+  Enum[present, latest, absent] $ensure           = present,
+  String[1]                     $user             = $name,
+  Stdlib::Absolutepath          $home             = rustup::home($user),
+  Stdlib::Absolutepath          $rustup_home      = "${home}/.rustup",
+  Stdlib::Absolutepath          $cargo_home       = "${home}/.cargo",
+  Stdlib::Absolutepath          $bin              = "${cargo_home}/bin",
+  Boolean                       $modify_path      = true,
+  String[1]                     $installer_source = 'https://sh.rustup.rs',
+  String[1]                     $downloader       = "curl -sSf ${installer_source}",
 ) {
-  $rustup_home = "${home}/rustup"
-  $cargo_home = "${home}/cargo"
-  $bin = "${cargo_home}/bin"
-
-  $ensure_simple = $ensure ? {
-    absent  => absent,
-    default => present,
-  }
-
-  if $manage_user {
-    group { $user:
-      ensure => $ensure_simple,
-      system => true,
+  if $ensure == absent {
+    Rustup::Target <| |> -> Rustup::Toolchain <| |> ->
+    file { [$rustup_home, $cargo_home]:
+      ensure => absent,
+      force  => true,
+    }
+  } else {
+    # Download and run the actual installer
+    $modify_path_option = $modify_path ? {
+      true => '--no-modify-path',
+      false => '',
     }
 
-    user { $user:
-      ensure     => $ensure_simple,
-      comment    => 'rustup',
-      gid        => $user,
-      home       => $home,
-      managehome => true,
-      shell      => $shell,
-      system     => true,
-    }
-
-    if $ensure == absent {
-      # Have to delete the user before its primary group.
-      User[$user] -> Group[$user]
-    }
-  }
-
-  $directory_ensure = $ensure_simple ? {
-    present => directory,
-    absent  => absent,
-  }
-
-  file { [$home, $rustup_home, $cargo_home]:
-    ensure => $directory_ensure,
-    owner  => $user,
-    group  => $user,
-    mode   => '0755',
-    force  => true,
-  }
-
-  # Shell init scripts source this to set the environment correctly.
-  file { "${home}/env.sh":
-    ensure  => $ensure_simple,
-    owner   => $user,
-    group   => $user,
-    mode    => '0555',
-    content => epp('rustup/env.sh.epp', {
+    $install_options = "-y --default-toolchain none ${modify_path_option}"
+    $install_command = "${downloader} | sh -s -- ${install_options}"
+    rustup::exec { "${user}: ${install_command}":
+      command     => $install_command,
+      user        => $user,
       bin         => $bin,
       rustup_home => $rustup_home,
       cargo_home  => $cargo_home,
-    }),
-  }
-
-  # Modify shell init scripts that don’t follow the profile.d pattern.
-  $escaped_env_path = shell_escape("${home}/env.sh")
-  $comment = 'cargo env: managed by Puppet'
-  $env_scripts_append.each |$path| {
-    file_line { "${path} +source ${home}/env.sh":
-      ensure            => $ensure_simple,
-      path              => $path,
-      line              => ". ${escaped_env_path} # ${comment}",
-      match             => "^[.] .* # ${comment}\$",
-      match_for_absence => true,
-    }
-  }
-
-  # Add scripts to /etc/profile.d and similar.
-  $link_ensure = $ensure_simple ? {
-    present => link,
-    absent  => absent,
-  }
-
-  $env_scripts_create.each |$path| {
-    file { $path:
-      ensure => $link_ensure,
-      owner  => 'root',
-      group  => '0',
-      mode   => '0444',
-      target => "${home}/env.sh"
-    }
-  }
-
-  # Download and run the actual installer
-  if $ensure != absent {
-    $install_options = '-y --default-toolchain none --no-modify-path'
-    $install_command = "${downloader} | sh -s -- ${install_options}"
-    rustup::exec { $install_command:
-      creates => "${bin}/rustup",
-      tag     => 'rustup-install',
+      creates     => "${bin}/rustup",
+      tag         => 'rustup-install',
     }
     ->
-    # For some reason this doesn’t work with name != $install_command.
+    # For some reason this doesn’t work with <| name != ... |>
     Rustup::Exec <| tag != 'rustup-install' |>
 
     if $ensure == latest {
-      rustup::exec { 'rustup self update':
+      rustup::exec { '${user}: rustup self update':
         tag     => 'rustup-install',
-        require => Rustup::Exec[$install_command],
+        require => Rustup::Exec["${user}: ${install_command}"],
       }
       ->
       Rustup::Exec <| tag != 'rustup-install' |>
     }
-  }
 
-  # Targets are installed or removed after toolchains are installed...
-  Rustup::Toolchain <| ensure == present |> -> Rustup::Target <| |>
-  # ...and before toolchains are removed.
-  Rustup::Target <| |> -> Rustup::Toolchain <| ensure == absent |>
+    # Targets are installed or removed after toolchains are installed...
+    Rustup::Toolchain <| ensure == present |> -> Rustup::Target <| |>
+    # ...and before toolchains are removed.
+    Rustup::Target <| |> -> Rustup::Toolchain <| ensure == absent |>
+  }
 }

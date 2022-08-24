@@ -1,7 +1,18 @@
-# @summary Run a rustup command
+# @summary Run a `rustup` command
 #
+# The name should start with the username followed by a colon and a space, then
+# the command. For example:
+#
+# ```puppet
+# rustup::exec { 'daniel: rustup default nightly': }
+# ```
+#
+# @param user
+#   The user to run as. Automatically set if the `$name` of the resource follows
+#   the rules above.
 # @param command
-#   The command to run, e.g. 'rustup default stable'.
+#   The command to run, e.g. 'rustup default stable'. Automatically set if the
+#   `$name` of the resource follows the rules above.
 # @param creates
 #   Only run when if this path does not exist. (See [`exec`] documentation.)
 # @param environment
@@ -13,37 +24,50 @@
 #   Only run this when it receives an event. (See [`exec`] documentation.)
 # @param unless
 #   Only run when `$unless` returns failure. (See [`exec`] documentation.)
+# @param home
+#   The user’s home directory. This defaults to `/home/$user` on Linux and
+#   `/Users/$user` on macOS.
+# @param rustup_home
+#   Where toolchains are installed. Generally you shouldn’t change this.
+# @param cargo_home
+#   Where `cargo` installs executables. Generally you shouldn’t change this.
+# @param bin
+#   Where `rustup` installs proxy executables. Generally you shouldn’t change
+#   this.
 # @param more
 #   Other parameters to pass to exec. They may override any of the other
 #   parameters.
 #
 # [`exec`]: https://puppet.com/docs/puppet/latest/types/exec.html
 define rustup::exec (
-  String[1]                     $command     = $name,
+  String[1]                     $user        = $name.split(': ')[0],
+  String[1]                     $command     = $name.split(': ')[1],
   Optional[String[1]]           $creates     = undef,
   Array[String[1]]              $environment = [],
   Rustup::OptionalStringOrArray $onlyif      = undef,
   Boolean                       $refreshonly = false,
   Rustup::OptionalStringOrArray $unless      = undef,
+  Stdlib::Absolutepath          $home        = rustup::home($user),
+  Stdlib::Absolutepath          $rustup_home = "${home}/.rustup",
+  Stdlib::Absolutepath          $cargo_home  = "${home}/.cargo",
+  Stdlib::Absolutepath          $bin         = "${cargo_home}/bin",
   Hash[String[1], Any]          $more        = {},
 ) {
-  include rustup
-
   $params = {
     command     => $command,
     creates     => $creates,
     environment => [
-      "RUSTUP_HOME=${rustup::rustup_home}",
-      "CARGO_HOME=${rustup::cargo_home}",
+      "RUSTUP_HOME=${rustup_home}",
+      "CARGO_HOME=${cargo_home}",
     ] + $environment,
     onlyif      => $onlyif,
-    path        => "${rustup::bin}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    path        => "${bin}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
     refreshonly => $refreshonly,
     'unless'    => $unless,
-    user        => $rustup::user,
-    require     => File[$rustup::rustup_home, $rustup::cargo_home],
+    user        => $user,
   }
 
+  File <| name == $rustup_home or name == $cargo_home |> ->
   exec { "rustup::exec: ${name}":
     * => $params + $more,
   }

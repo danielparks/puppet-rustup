@@ -6,13 +6,18 @@
 
 ### Classes
 
-* [`rustup`](#rustup): Manage rust with rustup
+* [`rustup::global`](#rustupglobal): Manage global Rust installation with `rustup`
 
 ### Defined types
 
-* [`rustup::exec`](#rustupexec): Run a rustup command
+* [`rustup`](#rustup): Manage a user’s Rust installation with `rustup`
+* [`rustup::exec`](#rustupexec): Run a `rustup` command
 * [`rustup::target`](#rustuptarget): Install a target for a toolchain
 * [`rustup::toolchain`](#rustuptoolchain): Install a toolchain
+
+### Functions
+
+* [`rustup::home`](#rustuphome): Return the default home directory for a user on this OS
 
 ### Data types
 
@@ -20,14 +25,14 @@
 
 ## Classes
 
-### <a name="rustup"></a>`rustup`
+### <a name="rustupglobal"></a>`rustup::global`
 
 By default, this uses `curl` to download the installer. Set the `$downloader`
 parameter if you want to use something else.
 
 #### Parameters
 
-The following parameters are available in the `rustup` class:
+The following parameters are available in the `rustup::global` class:
 
 * [`ensure`](#ensure)
 * [`user`](#user)
@@ -62,7 +67,7 @@ Default value: `'rustup'`
 
 Data type: `Boolean`
 
-Whether or not to manage the $rustup_user.
+Whether or not to manage `$user` user.
 
 Default value: ``true``
 
@@ -86,15 +91,15 @@ Default value: `'/bin/bash'`
 
 ##### <a name="env_scripts_append"></a>`env_scripts_append`
 
-Data type: `Array[String[1]]`
+Data type: `Array[Stdlib::Absolutepath]`
 
 Scripts to append with line that sources the cargo environment script.
 
-Default value: `['/etc/bash.bashrc']`
+Default value: `['/etc/bashrc']`
 
 ##### <a name="env_scripts_create"></a>`env_scripts_create`
 
-Data type: `Array[String[1]]`
+Data type: `Array[Stdlib::Absolutepath]`
 
 Paths that will get links to the cargo environment script.
 
@@ -118,7 +123,115 @@ Default value: `"curl -sSf ${installer_source}"`
 
 ## Defined types
 
+### <a name="rustup"></a>`rustup`
+
+The name should be the username.
+
+```puppet
+rustup { 'daniel': }
+```
+
+By default, this uses `curl` to download the installer. Set the `$downloader`
+parameter if you want to use something else.
+
+#### Parameters
+
+The following parameters are available in the `rustup` defined type:
+
+* [`ensure`](#ensure)
+* [`user`](#user)
+* [`home`](#home)
+* [`rustup_home`](#rustup_home)
+* [`cargo_home`](#cargo_home)
+* [`bin`](#bin)
+* [`modify_path`](#modify_path)
+* [`installer_source`](#installer_source)
+* [`downloader`](#downloader)
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `Enum[present, latest, absent]`
+
+* `present` - install rustup, but don’t update it.
+* `latest` - install rustup and update it on every puppet run.
+* `absent` - uninstall rustup and the tools it manages.
+
+Default value: `present`
+
+##### <a name="user"></a>`user`
+
+Data type: `String[1]`
+
+The user to own and manage rustup.
+
+Default value: `$name`
+
+##### <a name="home"></a>`home`
+
+Data type: `Stdlib::Absolutepath`
+
+The user’s home directory. This defaults to `/home/$user` on Linux and
+`/Users/$user` on macOS.
+
+Default value: `rustup::home($user)`
+
+##### <a name="rustup_home"></a>`rustup_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where toolchains are installed. Generally you shouldn’t change this.
+
+Default value: `"${home}/.rustup"`
+
+##### <a name="cargo_home"></a>`cargo_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where `cargo` installs executables. Generally you shouldn’t change this.
+
+Default value: `"${home}/.cargo"`
+
+##### <a name="bin"></a>`bin`
+
+Data type: `Stdlib::Absolutepath`
+
+Where `rustup` installs proxy executables. Generally you shouldn’t change
+this.
+
+Default value: `"${cargo_home}/bin"`
+
+##### <a name="modify_path"></a>`modify_path`
+
+Data type: `Boolean`
+
+Whether or not to let `rustup` modify the user’s `PATH` in their shell init.
+
+Default value: ``true``
+
+##### <a name="installer_source"></a>`installer_source`
+
+Data type: `String[1]`
+
+URL of the rustup installation script. Only used to set `$downloader`.
+
+Default value: `'https://sh.rustup.rs'`
+
+##### <a name="downloader"></a>`downloader`
+
+Data type: `String[1]`
+
+Command to download the rustup installation script to stdout.
+
+Default value: `"curl -sSf ${installer_source}"`
+
 ### <a name="rustupexec"></a>`rustup::exec`
+
+The name should start with the username followed by a colon and a space, then
+the command. For example:
+
+```puppet
+rustup::exec { 'daniel: rustup default nightly': }
+```
 
 [`exec`]: https://puppet.com/docs/puppet/latest/types/exec.html
 
@@ -126,21 +239,36 @@ Default value: `"curl -sSf ${installer_source}"`
 
 The following parameters are available in the `rustup::exec` defined type:
 
+* [`user`](#user)
 * [`command`](#command)
 * [`creates`](#creates)
 * [`environment`](#environment)
 * [`onlyif`](#onlyif)
 * [`refreshonly`](#refreshonly)
 * [`unless`](#unless)
+* [`home`](#home)
+* [`rustup_home`](#rustup_home)
+* [`cargo_home`](#cargo_home)
+* [`bin`](#bin)
 * [`more`](#more)
+
+##### <a name="user"></a>`user`
+
+Data type: `String[1]`
+
+The user to run as. Automatically set if the `$name` of the resource follows
+the rules above.
+
+Default value: `(': ')[0]`
 
 ##### <a name="command"></a>`command`
 
 Data type: `String[1]`
 
-The command to run, e.g. 'rustup default stable'.
+The command to run, e.g. 'rustup default stable'. Automatically set if the
+`$name` of the resource follows the rules above.
 
-Default value: `$name`
+Default value: `(': ')[1]`
 
 ##### <a name="creates"></a>`creates`
 
@@ -183,6 +311,40 @@ Only run when `$unless` returns failure. (See [`exec`] documentation.)
 
 Default value: ``undef``
 
+##### <a name="home"></a>`home`
+
+Data type: `Stdlib::Absolutepath`
+
+The user’s home directory. This defaults to `/home/$user` on Linux and
+`/Users/$user` on macOS.
+
+Default value: `rustup::home($user)`
+
+##### <a name="rustup_home"></a>`rustup_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where toolchains are installed. Generally you shouldn’t change this.
+
+Default value: `"${home}/.rustup"`
+
+##### <a name="cargo_home"></a>`cargo_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where `cargo` installs executables. Generally you shouldn’t change this.
+
+Default value: `"${home}/.cargo"`
+
+##### <a name="bin"></a>`bin`
+
+Data type: `Stdlib::Absolutepath`
+
+Where `rustup` installs proxy executables. Generally you shouldn’t change
+this.
+
+Default value: `"${cargo_home}/bin"`
+
 ##### <a name="more"></a>`more`
 
 Data type: `Hash[String[1], Any]`
@@ -196,15 +358,17 @@ Default value: `{}`
 
 You can name this two ways to automatically set the parameters:
 
-  * `"$target $toolchain"`: install `$target` for `$toolchain`. For example,
-    `'x86_64-unknown-linux-gnu nightly'`.
-  * `$target`: install `$target` for the default toolchain.
+  * `"$user: $target $toolchain"`: install `$target` for `$toolchain` for
+    `$user`. For example, `'daniel: x86_64-unknown-linux-gnu nightly'`.
+  * `"$user: $target"`: install `$target` for the default toolchain for
+    `$user`. For example: `'daniel: stable'`.
 
 #### Parameters
 
 The following parameters are available in the `rustup::target` defined type:
 
 * [`ensure`](#ensure)
+* [`user`](#user)
 * [`target`](#target)
 * [`toolchain`](#toolchain)
 
@@ -215,6 +379,15 @@ Data type: `Enum[present, absent]`
 Whether the target should be present or absent.
 
 Default value: `present`
+
+##### <a name="user"></a>`user`
+
+Data type: `String[1]`
+
+The user to install for. Automatically set if the `$name` of the resource
+follows the rules above.
+
+Default value: `(': ')[0]`
 
 ##### <a name="target"></a>`target`
 
@@ -237,7 +410,12 @@ Default value: `(' ')[1]`
 
 ### <a name="rustuptoolchain"></a>`rustup::toolchain`
 
-The name of the resource is the name of the toolchain to install.
+The name should start with the username followed by a colon and a space, then
+the toolchain. For example:
+
+```puppet
+rustup::toolchain { 'daniel: stable': }
+```
 
 This cannot reliably check for the presence of a toolchain. It will not
 install the toolchain if another toolchain that matches `$egrep` is already
@@ -248,6 +426,8 @@ installed.
 The following parameters are available in the `rustup::toolchain` defined type:
 
 * [`ensure`](#ensure)
+* [`user`](#user)
+* [`toolchain`](#toolchain)
 * [`egrep`](#egrep)
 
 ##### <a name="ensure"></a>`ensure`
@@ -258,13 +438,51 @@ Whether the toolchain should be present or absent.
 
 Default value: `present`
 
+##### <a name="user"></a>`user`
+
+Data type: `String[1]`
+
+The user to install for. Automatically set if the `$name` of the resource
+follows the rules above.
+
+Default value: `(': ')[0]`
+
+##### <a name="toolchain"></a>`toolchain`
+
+Data type: `String[1]`
+
+The name of the toolchain to install, e.g. "stable". Automatically set if
+the `$name` of the resource follows the rules above.
+
+Default value: `(': ')[1]`
+
 ##### <a name="egrep"></a>`egrep`
 
 Data type: `String[1]`
 
 `egrep` compatible regular expression to match the toolchain in the list.
 
-Default value: `"^${name.regsubst('-', '-(.+-)?', 'G')}"`
+Default value: `"^${toolchain.regsubst('-', '-(.+-)?', 'G')}"`
+
+## Functions
+
+### <a name="rustuphome"></a>`rustup::home`
+
+Type: Puppet Language
+
+Return the default home directory for a user on this OS
+
+#### `rustup::home(String[1] $user)`
+
+Return the default home directory for a user on this OS
+
+Returns: `Stdlib::Absolutepath` The path to the home directory.
+
+##### `user`
+
+Data type: `String[1]`
+
+The name of the user.
 
 ## Data types
 

@@ -1,0 +1,2 @@
+---
+rustup::global::env_scripts_append: ["/etc/bash.bashrc"]
