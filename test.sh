@@ -38,8 +38,15 @@ destroy () {
   rake litmus:tear_down
 }
 
-case "$1" in
-  init|update|run|destroy) "$@" ;;
-  --help) usage ;;
-  *) usage >&2 ; exit 1 ;;
-esac
+if [[ -z "$*" ]] ; then
+  usage >&2
+  exit 1
+fi
+
+for action in "$@" ; do
+  case "$action" in
+    init|update|run|destroy) "$action" ;;
+    --help) usage ;;
+    *) usage >&2 ; exit 1 ;;
+  esac
+done
