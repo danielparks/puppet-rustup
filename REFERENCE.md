@@ -85,7 +85,6 @@ Default value: `'/opt/rust'`
 Data type: `String[1]`
 
 Shell for the rustup user. This can be a nologin shell.
-### FIXME test nologin
 
 Default value: `'/bin/bash'`
 

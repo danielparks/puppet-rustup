@@ -17,7 +17,6 @@
 #   cargo directories.
 # @param shell
 #   Shell for the rustup user. This can be a nologin shell.
-#   ### FIXME test nologin
 # @param env_scripts_append
 #   Scripts to append with line that sources the cargo environment script.
 # @param env_scripts_create
