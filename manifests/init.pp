@@ -51,8 +51,8 @@ define rustup (
   } else {
     # Download and run the actual installer
     $modify_path_option = $modify_path ? {
-      true => '--no-modify-path',
-      false => '',
+      true => '',
+      false => '--no-modify-path',
     }
 
     $install_options = "-y --default-toolchain none ${modify_path_option}"
