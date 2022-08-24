@@ -11,6 +11,7 @@
 ### Defined types
 
 * [`rustup`](#rustup): Manage a user’s Rust installation with `rustup`
+* [`rustup::default`](#rustupdefault): Set default toolchain
 * [`rustup::exec`](#rustupexec): Run a `rustup` command
 * [`rustup::target`](#rustuptarget): Install a target for a toolchain
 * [`rustup::toolchain`](#rustuptoolchain): Install a toolchain
@@ -222,6 +223,40 @@ Data type: `String[1]`
 Command to download the rustup installation script to stdout.
 
 Default value: `"curl -sSf ${installer_source}"`
+
+### <a name="rustupdefault"></a>`rustup::default`
+
+The name should start with the username followed by a colon and a space, then
+the toolchain. For example:
+
+```puppet
+rustup::default { 'daniel: stable': }
+```
+
+#### Parameters
+
+The following parameters are available in the `rustup::default` defined type:
+
+* [`user`](#user)
+* [`toolchain`](#toolchain)
+
+##### <a name="user"></a>`user`
+
+Data type: `String[1]`
+
+The user to install for. Automatically set if the `$name` of the resource
+follows the rules above.
+
+Default value: `(': ')[0]`
+
+##### <a name="toolchain"></a>`toolchain`
+
+Data type: `String[1]`
+
+The name of the toolchain to install, e.g. "stable". Automatically set if
+the `$name` of the resource follows the rules above.
+
+Default value: `(': ')[1]`
 
 ### <a name="rustupexec"></a>`rustup::exec`
 

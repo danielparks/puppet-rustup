@@ -47,4 +47,22 @@ describe 'Global rustup management' do
       it { should be_owned_by "rustup" }
     end
   end
+
+  context 'basic uninstall' do
+    it do
+      idempotent_apply(<<~END)
+        class { 'rustup::global':
+          ensure => absent,
+        }
+      END
+
+      expect(user("rustup")).to_not exist
+    end
+
+    describe file("/opt/rust") do
+      it { should_not exist }
+    end
+
+    # FIXME check /etc/bash...
+  end
 end

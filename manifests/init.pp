@@ -43,11 +43,40 @@ define rustup (
   String[1]                     $downloader       = "curl -sSf ${installer_source}",
 ) {
   if $ensure == absent {
-    Rustup::Target <| |> -> Rustup::Toolchain <| |> ->
+    $command = "${bin}/rustup self uninstall -y"
+    rustup::exec { "${user}: ${command}":
+      command     => $command,
+      user        => $user,
+      bin         => $bin,
+      rustup_home => $rustup_home,
+      cargo_home  => $cargo_home,
+      onlyif      => "test -e ${bin}/rustup",
+      tag         => 'rustup-uninstall',
+    }
+
+    # For some reason this doesn’t work with <| name != ... |>
+    Rustup::Exec <| tag != 'rustup-uninstall' |>
+    -> Rustup::Exec["${user}: ${command}"]
+
+    Rustup::Exec <| |> ->
     file { [$rustup_home, $cargo_home]:
       ensure => absent,
       force  => true,
     }
+
+    # FIXME it would be nice to be able to enforce this, but we can’t guarantee
+    # these files exist. Plus, CentOS uses .bash_profile.
+    # if $modify_path {
+    #   [".bashrc", ".profile"].each |$file| {
+    #     $path = "${home}/${file}"
+    #     file_line { "${path} -. \"\$HOME/.cargo/env\"":
+    #       ensure            => absent,
+    #       path              => $path,
+    #       match             => '^[.] "\$HOME/\.cargo/env"$',
+    #       match_for_absence => true,
+    #     }
+    #   }
+    # }
   } else {
     # Download and run the actual installer
     $modify_path_option = $modify_path ? {
