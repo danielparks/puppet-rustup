@@ -27,7 +27,6 @@ group :development do
   gem "voxpupuli-puppet-lint-plugins", '>= 3.0',                 require: false
   gem "github_changelog_generator",                              require: false
   gem "puppet_litmus",                                           require: false, git: 'https://github.com/puppetlabs/puppet_litmus', ref: 'main'
-  gem "puppet-resource_api",                                     require: false
 end
 group :system_tests do
   gem "puppet-module-posix-system-r#{minor_version}", '~> 1.0', require: false, platforms: [:ruby]

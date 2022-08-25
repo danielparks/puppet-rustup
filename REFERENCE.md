@@ -16,6 +16,10 @@
 * [`rustup::target`](#rustuptarget): Install a target for a toolchain
 * [`rustup::toolchain`](#rustuptoolchain): Install a toolchain
 
+### Resource types
+
+* [`rustup_internal`](#rustup_internal)
+
 ### Functions
 
 * [`rustup::home`](#rustuphome): Return the default home directory for a user on this OS
@@ -497,6 +501,50 @@ Data type: `String[1]`
 `egrep` compatible regular expression to match the toolchain in the list.
 
 Default value: `"^${toolchain.regsubst('-', '-(.+-)?', 'G')}"`
+
+## Resource types
+
+### <a name="rustup_internal"></a>`rustup_internal`
+
+The rustup_internal type.
+
+#### Properties
+
+The following properties are available in the `rustup_internal` type.
+
+##### `cargo_home`
+
+Where `cargo` installs executables. Generally you shouldn’t change this.
+
+##### `rustup_home`
+
+Where toolchains are installed. Generally you shouldn’t change this.
+
+#### Parameters
+
+The following parameters are available in the `rustup_internal` type.
+
+* [`modify_path`](#modify_path)
+* [`provider`](#provider)
+* [`user`](#user)
+
+##### <a name="modify_path"></a>`modify_path`
+
+Valid values: ``true``, ``false``, `yes`, `no`
+
+Whether or not to let `rustup` modify the user’s `PATH` in their shell
+init scripts.
+
+##### <a name="provider"></a>`provider`
+
+The specific backend to use for this `rustup_internal` resource. You will seldom need to specify this --- Puppet will
+usually discover the appropriate provider for your platform.
+
+##### <a name="user"></a>`user`
+
+namevar
+
+The user that owns this instance of `rustup`.
 
 ## Functions
 
