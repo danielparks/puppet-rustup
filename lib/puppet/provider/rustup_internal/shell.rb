@@ -3,6 +3,12 @@
 Puppet::Type.type(:rustup_internal).provide(:shell) do
   mk_resource_methods
 
+  # It’s not really reliable to query rustup installations by user, since they
+  # could be installed with CARGO_HOME anywhere.
+  def self.instances
+    fail Puppet::Error, "Cannot query rustup installations."
+  end
+
   def cargo_home
     resource[:cargo_home] || File.join(home(), ".cargo")
   end

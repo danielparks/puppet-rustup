@@ -79,13 +79,6 @@ Puppet::Type.newtype(:rustup_internal) do
 
   autorequire(:file) { self[:rustup_home] }
 
-  # It’s not really reliable to enumerate all the rustup installations on the
-  # system, since they could be installed with CARGO_HOME anywhere. By defining
-  # this function and returning [], we allow individual resources to be queried,
-  # though that isn’t really reliable either.
-  def self.instances
-    []
-  end
 end
 
 #     home: {
