@@ -3,8 +3,17 @@
 require 'spec_helper'
 require 'puppet/type/rustup_internal'
 
-RSpec.describe 'the rustup_internal type' do
-  it 'loads' do
-    expect(Puppet::Type.type(:rustup_internal)).not_to be_nil
+RSpec.describe Puppet::Type.type(:rustup_internal) do
+  it "should load" do
+    expect(described_class).not_to be_nil
+  end
+
+  it "should be able to create a trivial instance" do
+    expect(described_class.new(:name => "user")).to_not be_nil
+  end
+
+  it "should fail with a nil name" do
+    expect { described_class.new(:name => nil) }
+      .to raise_error(Puppet::Error, /Title or name must be provided/)
   end
 end
