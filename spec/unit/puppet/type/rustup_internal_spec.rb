@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'puppet/type/rustup_internal'
 
 RSpec.describe Puppet::Type.type(:rustup_internal) do
   it "should load" do
