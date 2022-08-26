@@ -6,7 +6,7 @@ Puppet::Type.newtype(:rustup_internal) do
   @doc = <<~'END'
     @summary Manage a user’s Rust installation with `rustup`
 
-    Use the [`rustup`][#rustup] defined type instead of this.
+    Use the [`rustup`](#rustup) defined type instead of this.
 
     The name should be the username.
 

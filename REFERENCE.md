@@ -489,7 +489,7 @@ Default value: `"^${toolchain.regsubst('-', '-(.+-)?', 'G')}"`
 
 ### <a name="rustup_internal"></a>`rustup_internal`
 
-Use the [`rustup`][#rustup] defined type instead of this.
+Use the [`rustup`](#rustup) defined type instead of this.
 
 The name should be the username.
 
