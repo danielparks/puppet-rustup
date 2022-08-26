@@ -94,6 +94,26 @@ Puppet::Type.newtype(:rustup_internal) do
 
   autorequire(:file) { dir_and_parent(self[:rustup_home]) }
 
+  newparam(:installer_source) do
+    desc <<~'END'
+      URL of the rustup installation script. Changing this will have no effect
+      after the initial installation.
+    END
+
+    defaultto 'https://sh.rustup.rs'
+
+    validate do |value|
+      if value.empty?
+        raise ArgumentError, 'Installer source must not be blank.'
+      end
+      begin
+        URI.parse(value)
+      rescue
+        raise ArgumentError, 'Installer source must be a valid URL, not "%s".' % value
+      end
+    end
+  end
+
   # rustup may create directories like ~/.cargo, so we want to autorequire their
   # parent directories, too.
   def dir_and_parent(path)
@@ -101,29 +121,3 @@ Puppet::Type.newtype(:rustup_internal) do
   end
 end
 
-#     home: {
-#       type: 'Stdlib::Absolutepath',
-#       desc: <<~'END',
-#         The user’s home directory. This defaults to `/home/$user` on Linux and
-#         `/Users/$user` on macOS.
-#         END
-#       default: '/default', # FIXME
-#       behaviour: :init_only, # FIXME? I guess? Maybe it should delete the old one?
-#     },
-#     bin: {
-#       type: 'Stdlib::Absolutepath',
-#       desc: <<~'END',
-#         Where `rustup` installs proxy executables. Generally you shouldn’t
-#         change this.
-#         END
-#       default: '/default', # FIXME
-#       behaviour: :init_only, # FIXME? I guess? Maybe it should delete the old one?
-#     },
-#     },
-#     installer_source: {
-#       type: 'Stdlib::HTTPUrl',
-#       desc: 'URL of the rustup installation script.',
-#       default: 'https://sh.rustup.rs',
-#       behaviour: :init_only,
-#     },
-#   },

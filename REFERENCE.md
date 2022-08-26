@@ -533,6 +533,7 @@ Default value: `present`
 The following parameters are available in the `rustup_internal` type.
 
 * [`cargo_home`](#cargo_home)
+* [`installer_source`](#installer_source)
 * [`modify_path`](#modify_path)
 * [`provider`](#provider)
 * [`rustup_home`](#rustup_home)
@@ -544,6 +545,13 @@ Where `cargo` installs executables (autorequired). Generally you shouldn’t
 change this.
 
 Default value: `.cargo` in `user`’s home directory.
+
+##### <a name="installer_source"></a>`installer_source`
+
+URL of the rustup installation script. Changing this will have no effect
+after the initial installation.
+
+Default value: `https://sh.rustup.rs`
 
 ##### <a name="modify_path"></a>`modify_path`
 

@@ -31,4 +31,24 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
     expect(described_class.new(:name => "user", :modify_path => false)[:modify_path])
       .to eq(false)
   end
+
+  it "should fail with a blank installer_source" do
+    expect { described_class.new(:name => "user", :installer_source => "") }
+      .to raise_error(Puppet::Error, /Installer source must not be blank/)
+  end
+
+  it "should fail with a bad installer_source" do
+    expect { described_class.new(:name => "user", :installer_source => "s a as") }
+      .to raise_error(Puppet::Error, /Installer source must be a valid URL/)
+  end
+
+  it "should work with a good installer_source" do
+    expect(described_class.new(:name => "user", :installer_source => "http://localhost/foo"))
+      .to_not be_nil
+  end
+
+  it "should have default installer_source" do
+    expect(described_class.new(:name => "user")[:installer_source])
+      .to eq("https://sh.rustup.rs")
+  end
 end

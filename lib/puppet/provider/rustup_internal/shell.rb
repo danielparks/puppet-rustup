@@ -77,9 +77,9 @@ private
   end
 
   def download_into(output)
-    url = URI.parse("https://sh.rustup.rs/")
+    url = URI.parse(resource[:installer_source])
     client = Puppet.runtime[:http]
-    client.get(url, options: {include_system_store: false}) do |response|
+    client.get(url, options: {include_system_store: true}) do |response|
       if ! response.success?
         message = response.body.empty? ? response.reason : response.body
         raise Net::HTTPError.new(
