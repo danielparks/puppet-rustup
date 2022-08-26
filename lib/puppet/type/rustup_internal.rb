@@ -3,7 +3,7 @@
 require 'puppet/parameter/boolean'
 
 Puppet::Type.newtype(:rustup_internal) do
-  @doc = <<~'END',
+  @doc = <<~'END'
     @summary Manage a user’s Rust installation with `rustup`
 
     Use the [`rustup`][#rustup] defined type instead of this.

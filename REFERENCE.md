@@ -18,7 +18,7 @@
 
 ### Resource types
 
-* [`rustup_internal`](#rustup_internal)
+* [`rustup_internal`](#rustup_internal): Manage a user’s Rust installation with `rustup`
 
 ### Functions
 
@@ -506,7 +506,13 @@ Default value: `"^${toolchain.regsubst('-', '-(.+-)?', 'G')}"`
 
 ### <a name="rustup_internal"></a>`rustup_internal`
 
-The rustup_internal type.
+Use the [`rustup`][#rustup] defined type instead of this.
+
+The name should be the username.
+
+**Autorequires:** If Puppet is managing the `user` or the directories
+specified as `cargo_home` and `rustup_home`, then those resources will be
+autorequired.
 
 #### Properties
 
@@ -515,6 +521,16 @@ The following properties are available in the `rustup_internal` type.
 ##### `cargo_home`
 
 Where `cargo` installs executables. Generally you shouldn’t change this.
+
+##### `ensure`
+
+Valid values: `present`, `latest`, `absent`
+
+* `present` - install `rustup`, but don’t update it.
+* `latest` - install `rustup` and update it on every puppet run.
+* `absent` - uninstall `rustup` and the tools it manages.
+
+Default value: `present`
 
 ##### `rustup_home`
 
