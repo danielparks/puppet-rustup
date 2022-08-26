@@ -14,7 +14,7 @@ Puppet::Type.type(:rustup_internal).provide(:shell) do
   end
 
   def rustup_home
-    File.join(home(), ".rustup")
+    resource[:rustup_home] || File.join(home(), ".rustup")
   end
 
   def exists?
