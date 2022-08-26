@@ -33,8 +33,7 @@ Puppet::Type.newtype(:rustup_internal) do
     validate do |value|
       if !value.is_a?(String)
         raise ArgumentError, 'User name must be a String not %s.' % value.class
-      end
-      if value.empty?
+      elsif value.empty?
         raise ArgumentError, 'User name is required.'
       end
     end
