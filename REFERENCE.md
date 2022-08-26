@@ -555,7 +555,10 @@ The following parameters are available in the `rustup_internal` type.
 Valid values: ``true``, ``false``, `yes`, `no`
 
 Whether or not to let `rustup` modify the user’s `PATH` in their shell
-init scripts.
+init scripts. Changing this will have no effect after the initial
+installation.
+
+Default value: ``true``
 
 ##### <a name="provider"></a>`provider`
 

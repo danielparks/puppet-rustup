@@ -21,4 +21,14 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
     expect { described_class.new(:name => "user", :ensure => "dfasdf") }
       .to raise_error(Puppet::Error, /Valid values are present, latest, absent/)
   end
+
+  it "should have default modify_path" do
+    expect(described_class.new(:name => "user")[:modify_path])
+      .to eq(true)
+  end
+
+  it "should accept modify_path" do
+    expect(described_class.new(:name => "user", :modify_path => false)[:modify_path])
+      .to eq(false)
+  end
 end

@@ -51,8 +51,11 @@ Puppet::Type.newtype(:rustup_internal) do
   newparam(:modify_path, :boolean=>true, :parent=>Puppet::Parameter::Boolean) do
     desc <<~'END'
       Whether or not to let `rustup` modify the user’s `PATH` in their shell
-      init scripts.
+      init scripts. Changing this will have no effect after the initial
+      installation.
     END
+
+    defaultto true
   end
 
   newproperty(:cargo_home) do
