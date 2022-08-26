@@ -39,7 +39,7 @@ Puppet::Type.type(:rustup_internal).provide(:shell) do
       end
 
       # The default error message for failure would be confusing.
-      output = execute(command, resource, raise_on_failure: false)
+      output = execute(command, raise_on_failure: false)
       if output.exitstatus != 0
         raise Puppet::ExecutionFailure, "Installing rustup failed: #{output}"
       end
@@ -50,16 +50,16 @@ Puppet::Type.type(:rustup_internal).provide(:shell) do
   end
 
   def update
-    execute([rustup(), "self", "update"], resource)
+    execute([rustup(), "self", "update"])
   end
 
   def destroy
-    execute([rustup(), "self", "uninstall", "-y"], resource)
+    execute([rustup(), "self", "uninstall", "-y"])
   end
 
 private
 
-  def execute(command, resource, raise_on_failure: true)
+  def execute(command, raise_on_failure: true)
     # See https://github.com/puppetlabs/puppet/blob/2b0a129763a4d9f5d861f6ff4ab93b15755a85a6/lib/puppet/provider/exec.rb
     # FIXME timeout?
     Puppet::Util::Execution.execute(
