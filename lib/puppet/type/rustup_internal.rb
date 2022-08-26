@@ -22,13 +22,7 @@ Puppet::Type.newtype(:rustup_internal) do
       * `absent` - uninstall `rustup` and the tools it manages.
     END
 
-    newvalue :present
-    newvalue :latest do
-      # FIXME not sure this actually works
-      provider.update
-    end
-    newvalue :absent
-
+    newvalues :present, :latest, :absent
     defaultto :present
   end
 
