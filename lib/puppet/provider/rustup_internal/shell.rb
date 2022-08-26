@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 Puppet::Type.type(:rustup_internal).provide(:shell) do
+  desc "Run shell-based `rustup` installer on UNIX-like platforms."
+
   mk_resource_methods
 
   # It’s not really reliable to query rustup installations by user, since they
