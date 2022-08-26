@@ -16,6 +16,10 @@
 * [`rustup::target`](#rustuptarget): Install a target for a toolchain
 * [`rustup::toolchain`](#rustuptoolchain): Install a toolchain
 
+### Resource types
+
+* [`rustup_internal`](#rustup_internal): Manage a user’s Rust installation with `rustup`
+
 ### Functions
 
 * [`rustup::home`](#rustuphome): Return the default home directory for a user on this OS
@@ -28,8 +32,15 @@
 
 ### <a name="rustupglobal"></a>`rustup::global`
 
-By default, this uses `curl` to download the installer. Set the `$downloader`
-parameter if you want to use something else.
+Manage global Rust installation with `rustup`
+
+#### Examples
+
+##### Standard usage
+
+```puppet
+include rustup::global
+```
 
 #### Parameters
 
@@ -43,7 +54,6 @@ The following parameters are available in the `rustup::global` class:
 * [`env_scripts_append`](#env_scripts_append)
 * [`env_scripts_create`](#env_scripts_create)
 * [`installer_source`](#installer_source)
-* [`downloader`](#downloader)
 
 ##### <a name="ensure"></a>`ensure`
 
@@ -107,19 +117,12 @@ Default value: `['/etc/profile.d/99-cargo.sh']`
 
 ##### <a name="installer_source"></a>`installer_source`
 
-Data type: `String[1]`
+Data type: `Stdlib::HTTPUrl`
 
-URL of the rustup installation script. Only used to set `$downloader`.
+URL of the rustup installation script. Changing this will have no effect
+after the initial installation.
 
 Default value: `'https://sh.rustup.rs'`
-
-##### <a name="downloader"></a>`downloader`
-
-Data type: `String[1]`
-
-Command to download the rustup installation script to stdout.
-
-Default value: `"curl -sSf ${installer_source}"`
 
 ## Defined types
 
@@ -127,12 +130,13 @@ Default value: `"curl -sSf ${installer_source}"`
 
 The name should be the username.
 
+#### Examples
+
+##### Standard usage
+
 ```puppet
 rustup { 'daniel': }
 ```
-
-By default, this uses `curl` to download the installer. Set the `$downloader`
-parameter if you want to use something else.
 
 #### Parameters
 
@@ -143,10 +147,8 @@ The following parameters are available in the `rustup` defined type:
 * [`home`](#home)
 * [`rustup_home`](#rustup_home)
 * [`cargo_home`](#cargo_home)
-* [`bin`](#bin)
 * [`modify_path`](#modify_path)
 * [`installer_source`](#installer_source)
-* [`downloader`](#downloader)
 
 ##### <a name="ensure"></a>`ensure`
 
@@ -191,38 +193,23 @@ Where `cargo` installs executables. Generally you shouldn’t change this.
 
 Default value: `"${home}/.cargo"`
 
-##### <a name="bin"></a>`bin`
-
-Data type: `Stdlib::Absolutepath`
-
-Where `rustup` installs proxy executables. Generally you shouldn’t change
-this.
-
-Default value: `"${cargo_home}/bin"`
-
 ##### <a name="modify_path"></a>`modify_path`
 
 Data type: `Boolean`
 
-Whether or not to let `rustup` modify the user’s `PATH` in their shell init.
+Whether or not to let `rustup` modify the user’s `PATH` in their shell init
+scripts. Changing this will have no effect after the initial installation.
 
 Default value: ``true``
 
 ##### <a name="installer_source"></a>`installer_source`
 
-Data type: `String[1]`
+Data type: `Stdlib::HTTPUrl`
 
-URL of the rustup installation script. Only used to set `$downloader`.
+URL of the rustup installation script. Changing this will have no effect
+after the initial installation.
 
 Default value: `'https://sh.rustup.rs'`
-
-##### <a name="downloader"></a>`downloader`
-
-Data type: `String[1]`
-
-Command to download the rustup installation script to stdout.
-
-Default value: `"curl -sSf ${installer_source}"`
 
 ### <a name="rustupdefault"></a>`rustup::default`
 
@@ -497,6 +484,85 @@ Data type: `String[1]`
 `egrep` compatible regular expression to match the toolchain in the list.
 
 Default value: `"^${toolchain.regsubst('-', '-(.+-)?', 'G')}"`
+
+## Resource types
+
+### <a name="rustup_internal"></a>`rustup_internal`
+
+Use the [`rustup`][#rustup] defined type instead of this.
+
+The name should be the username.
+
+**Autorequires:** If Puppet is managing the `user` or the directories or
+their parents specified as `cargo_home` and `rustup_home`, then those
+resources will be autorequired.
+
+#### Properties
+
+The following properties are available in the `rustup_internal` type.
+
+##### `ensure`
+
+Valid values: `present`, `latest`, `absent`
+
+* `present` - install `rustup`, but don’t update it.
+* `latest` - install `rustup` and update it on every puppet run.
+* `absent` - uninstall `rustup` and the tools it manages.
+
+Default value: `present`
+
+#### Parameters
+
+The following parameters are available in the `rustup_internal` type.
+
+* [`cargo_home`](#cargo_home)
+* [`installer_source`](#installer_source)
+* [`modify_path`](#modify_path)
+* [`provider`](#provider)
+* [`rustup_home`](#rustup_home)
+* [`user`](#user)
+
+##### <a name="cargo_home"></a>`cargo_home`
+
+Where `cargo` installs executables (autorequired). Generally you shouldn’t
+change this.
+
+Default value: `.cargo` in `user`’s home directory.
+
+##### <a name="installer_source"></a>`installer_source`
+
+URL of the rustup installation script. Changing this will have no effect
+after the initial installation.
+
+Default value: `https://sh.rustup.rs`
+
+##### <a name="modify_path"></a>`modify_path`
+
+Valid values: ``true``, ``false``, `yes`, `no`
+
+Whether or not to let `rustup` modify the user’s `PATH` in their shell
+init scripts. Changing this will have no effect after the initial
+installation.
+
+Default value: ``true``
+
+##### <a name="provider"></a>`provider`
+
+The specific backend to use for this `rustup_internal` resource. You will seldom need to specify this --- Puppet will
+usually discover the appropriate provider for your platform.
+
+##### <a name="rustup_home"></a>`rustup_home`
+
+Where toolchains are installed (autorequired). Generally you shouldn’t
+change this.
+
+Default value: `.rustup` in `user`’s home directory.
+
+##### <a name="user"></a>`user`
+
+namevar
+
+The user that owns this instance of `rustup` (autorequired).
 
 ## Functions
 
