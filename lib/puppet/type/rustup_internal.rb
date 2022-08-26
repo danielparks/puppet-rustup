@@ -15,13 +15,19 @@ Puppet::Type.newtype(:rustup_internal) do
     autorequired.
   END
 
-  # FIXME latest
   ensurable do
     desc <<~'END'
       * `present` - install `rustup`, but don’t update it.
       * `latest` - install `rustup` and update it on every puppet run.
       * `absent` - uninstall `rustup` and the tools it manages.
     END
+
+    newvalue :present
+    newvalue :latest do
+      # FIXME not sure this actually works
+      provider.update
+    end
+    newvalue :absent
 
     defaultto :present
   end

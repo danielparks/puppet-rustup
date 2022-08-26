@@ -16,4 +16,9 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
     expect { described_class.new(:name => nil) }
       .to raise_error(Puppet::Error, /Title or name must be provided/)
   end
+
+  it "should fail with a bad ensure" do
+    expect { described_class.new(:name => "user", :ensure => "dfasdf") }
+      .to raise_error(Puppet::Error, /Valid values are present, latest, absent/)
+  end
 end
