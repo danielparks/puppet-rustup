@@ -510,9 +510,9 @@ Use the [`rustup`][#rustup] defined type instead of this.
 
 The name should be the username.
 
-**Autorequires:** If Puppet is managing the `user` or the directories
-specified as `cargo_home` and `rustup_home`, then those resources will be
-autorequired.
+**Autorequires:** If Puppet is managing the `user` or the directories or
+their parents specified as `cargo_home` and `rustup_home`, then those
+resources will be autorequired.
 
 #### Properties
 
@@ -520,7 +520,10 @@ The following properties are available in the `rustup_internal` type.
 
 ##### `cargo_home`
 
-Where `cargo` installs executables. Generally you shouldn’t change this.
+Where `cargo` installs executables (autorequired). Generally you shouldn’t
+change this.
+
+Default value: `.cargo` in `user`’s home directory.
 
 ##### `ensure`
 
@@ -534,7 +537,10 @@ Default value: `present`
 
 ##### `rustup_home`
 
-Where toolchains are installed. Generally you shouldn’t change this.
+Where toolchains are installed (autorequired). Generally you shouldn’t
+change this.
+
+Default value: `.rustup` in `user`’s home directory.
 
 #### Parameters
 
@@ -560,7 +566,7 @@ usually discover the appropriate provider for your platform.
 
 namevar
 
-The user that owns this instance of `rustup`.
+The user that owns this instance of `rustup` (autorequired).
 
 ## Functions
 

@@ -10,9 +10,9 @@ Puppet::Type.newtype(:rustup_internal) do
 
     The name should be the username.
 
-    **Autorequires:** If Puppet is managing the `user` or the directories
-    specified as `cargo_home` and `rustup_home`, then those resources will be
-    autorequired.
+    **Autorequires:** If Puppet is managing the `user` or the directories or
+    their parents specified as `cargo_home` and `rustup_home`, then those
+    resources will be autorequired.
   END
 
   ensurable do
@@ -34,7 +34,7 @@ Puppet::Type.newtype(:rustup_internal) do
 
   newparam(:user) do
     isnamevar
-    desc 'The user that owns this instance of `rustup`.'
+    desc 'The user that owns this instance of `rustup` (autorequired).'
 
     validate do |value|
       if !value.is_a?(String)
@@ -46,7 +46,7 @@ Puppet::Type.newtype(:rustup_internal) do
     end
   end
 
-  autorequire(:user) { self[:user] }
+  autorequire(:user) { [self[:user]] }
 
   newparam(:modify_path, :boolean=>true, :parent=>Puppet::Parameter::Boolean) do
     desc <<~'END'
@@ -57,7 +57,10 @@ Puppet::Type.newtype(:rustup_internal) do
 
   newproperty(:cargo_home) do
     desc <<~'END'
-      Where `cargo` installs executables. Generally you shouldn’t change this.
+      Where `cargo` installs executables (autorequired). Generally you shouldn’t
+      change this.
+
+      Default value: `.cargo` in `user`’s home directory.
     END
 
     validate do |value|
@@ -68,11 +71,14 @@ Puppet::Type.newtype(:rustup_internal) do
     end
   end
 
-  autorequire(:file) { self[:cargo_home] }
+  autorequire(:file) { dir_and_parent(self[:cargo_home]) }
 
   newproperty(:rustup_home) do
     desc <<~'END'
-      Where toolchains are installed. Generally you shouldn’t change this.
+      Where toolchains are installed (autorequired). Generally you shouldn’t
+      change this.
+
+      Default value: `.rustup` in `user`’s home directory.
     END
 
     validate do |value|
@@ -83,8 +89,13 @@ Puppet::Type.newtype(:rustup_internal) do
     end
   end
 
-  autorequire(:file) { self[:rustup_home] }
+  autorequire(:file) { dir_and_parent(self[:rustup_home]) }
 
+  # rustup may create directories like ~/.cargo, so we want to autorequire their
+  # parent directories, too.
+  def dir_and_parent(path)
+    [path, File::dirname(path)].uniq
+  end
 end
 
 #     home: {
