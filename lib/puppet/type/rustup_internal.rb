@@ -58,7 +58,7 @@ Puppet::Type.newtype(:rustup_internal) do
     defaultto true
   end
 
-  newproperty(:cargo_home) do
+  newparam(:cargo_home) do
     desc <<~'END'
       Where `cargo` installs executables (autorequired). Generally you shouldn’t
       change this.
@@ -76,7 +76,7 @@ Puppet::Type.newtype(:rustup_internal) do
 
   autorequire(:file) { dir_and_parent(self[:cargo_home]) }
 
-  newproperty(:rustup_home) do
+  newparam(:rustup_home) do
     desc <<~'END'
       Where toolchains are installed (autorequired). Generally you shouldn’t
       change this.

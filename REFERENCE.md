@@ -518,13 +518,6 @@ resources will be autorequired.
 
 The following properties are available in the `rustup_internal` type.
 
-##### `cargo_home`
-
-Where `cargo` installs executables (autorequired). Generally you shouldn’t
-change this.
-
-Default value: `.cargo` in `user`’s home directory.
-
 ##### `ensure`
 
 Valid values: `present`, `latest`, `absent`
@@ -535,20 +528,22 @@ Valid values: `present`, `latest`, `absent`
 
 Default value: `present`
 
-##### `rustup_home`
-
-Where toolchains are installed (autorequired). Generally you shouldn’t
-change this.
-
-Default value: `.rustup` in `user`’s home directory.
-
 #### Parameters
 
 The following parameters are available in the `rustup_internal` type.
 
+* [`cargo_home`](#cargo_home)
 * [`modify_path`](#modify_path)
 * [`provider`](#provider)
+* [`rustup_home`](#rustup_home)
 * [`user`](#user)
+
+##### <a name="cargo_home"></a>`cargo_home`
+
+Where `cargo` installs executables (autorequired). Generally you shouldn’t
+change this.
+
+Default value: `.cargo` in `user`’s home directory.
 
 ##### <a name="modify_path"></a>`modify_path`
 
@@ -564,6 +559,13 @@ Default value: ``true``
 
 The specific backend to use for this `rustup_internal` resource. You will seldom need to specify this --- Puppet will
 usually discover the appropriate provider for your platform.
+
+##### <a name="rustup_home"></a>`rustup_home`
+
+Where toolchains are installed (autorequired). Generally you shouldn’t
+change this.
+
+Default value: `.rustup` in `user`’s home directory.
 
 ##### <a name="user"></a>`user`
 
