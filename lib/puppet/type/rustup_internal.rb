@@ -31,10 +31,8 @@ Puppet::Type.newtype(:rustup_internal) do
     desc 'The user that owns this instance of `rustup` (autorequired).'
 
     validate do |value|
-      if !value.is_a?(String)
-        raise ArgumentError, 'User name must be a String not %s.' % value.class
-      elsif value.empty?
-        raise ArgumentError, 'User name is required.'
+      if !value.is_a?(String) || value.empty?
+        fail 'User is required to be a non-empty string.'
       end
     end
   end
@@ -62,7 +60,7 @@ Puppet::Type.newtype(:rustup_internal) do
     validate do |value|
       # need ! value.nil? && ?
       if ! Puppet::Util.absolute_path?(value)
-        fail ArgumentError, 'Cargo home must be an absolute path, not "%s"' % value
+        fail 'Cargo home must be an absolute path, not "%s"' % value
       end
     end
   end
@@ -80,7 +78,7 @@ Puppet::Type.newtype(:rustup_internal) do
     validate do |value|
       # need ! value.nil? && ?
       if ! Puppet::Util.absolute_path?(value)
-        fail ArgumentError, 'Rustup home must be an absolute path, not "%s"' % value
+        fail 'Rustup home must be an absolute path, not "%s"' % value
       end
     end
   end
@@ -97,12 +95,12 @@ Puppet::Type.newtype(:rustup_internal) do
 
     validate do |value|
       if value.empty?
-        raise ArgumentError, 'Installer source must not be blank.'
+        fail 'Installer source must not be blank.'
       end
       begin
         URI.parse(value)
       rescue
-        raise ArgumentError, 'Installer source must be a valid URL, not "%s".' % value
+        fail 'Installer source must be a valid URL, not "%s".' % value
       end
     end
   end
