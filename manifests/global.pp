@@ -1,7 +1,7 @@
 # @summary Manage global Rust installation with `rustup`
 #
-# By default, this uses `curl` to download the installer. Set the `$downloader`
-# parameter if you want to use something else.
+# @example Standard usage
+#   include rustup::global
 #
 # @param ensure
 #   * `present` - install rustup, but don’t update it.
@@ -22,9 +22,8 @@
 # @param env_scripts_create
 #   Paths that will get links to the cargo environment script.
 # @param installer_source
-#   URL of the rustup installation script. Only used to set `$downloader`.
-# @param downloader
-#   Command to download the rustup installation script to stdout.
+#   URL of the rustup installation script. Changing this will have no effect
+#   after the initial installation.
 class rustup::global (
   Enum[present, latest, absent] $ensure             = present,
   String[1]                     $user               = 'rustup',
@@ -33,8 +32,7 @@ class rustup::global (
   String[1]                     $shell              = '/bin/bash',
   Array[Stdlib::Absolutepath]   $env_scripts_append = ['/etc/bashrc'],
   Array[Stdlib::Absolutepath]   $env_scripts_create = ['/etc/profile.d/99-cargo.sh'],
-  String[1]                     $installer_source   = 'https://sh.rustup.rs',
-  String[1]                     $downloader         = "curl -sSf ${installer_source}",
+  Stdlib::HTTPUrl               $installer_source   = 'https://sh.rustup.rs',
 ) {
   $rustup_home = "${home}/rustup"
   $cargo_home = "${home}/cargo"
@@ -127,12 +125,10 @@ class rustup::global (
 
   rustup { $user:
     ensure           => $ensure,
-    home             => $home,
+    user             => $user,
     rustup_home      => $rustup_home,
     cargo_home       => $cargo_home,
-    bin              => $bin,
     modify_path      => false,
     installer_source => $installer_source,
-    downloader       => $downloader,
   }
 }

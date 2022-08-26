@@ -32,8 +32,15 @@
 
 ### <a name="rustupglobal"></a>`rustup::global`
 
-By default, this uses `curl` to download the installer. Set the `$downloader`
-parameter if you want to use something else.
+Manage global Rust installation with `rustup`
+
+#### Examples
+
+##### Standard usage
+
+```puppet
+include rustup::global
+```
 
 #### Parameters
 
@@ -47,7 +54,6 @@ The following parameters are available in the `rustup::global` class:
 * [`env_scripts_append`](#env_scripts_append)
 * [`env_scripts_create`](#env_scripts_create)
 * [`installer_source`](#installer_source)
-* [`downloader`](#downloader)
 
 ##### <a name="ensure"></a>`ensure`
 
@@ -111,19 +117,12 @@ Default value: `['/etc/profile.d/99-cargo.sh']`
 
 ##### <a name="installer_source"></a>`installer_source`
 
-Data type: `String[1]`
+Data type: `Stdlib::HTTPUrl`
 
-URL of the rustup installation script. Only used to set `$downloader`.
+URL of the rustup installation script. Changing this will have no effect
+after the initial installation.
 
 Default value: `'https://sh.rustup.rs'`
-
-##### <a name="downloader"></a>`downloader`
-
-Data type: `String[1]`
-
-Command to download the rustup installation script to stdout.
-
-Default value: `"curl -sSf ${installer_source}"`
 
 ## Defined types
 
@@ -131,12 +130,13 @@ Default value: `"curl -sSf ${installer_source}"`
 
 The name should be the username.
 
+#### Examples
+
+##### Standard usage
+
 ```puppet
 rustup { 'daniel': }
 ```
-
-By default, this uses `curl` to download the installer. Set the `$downloader`
-parameter if you want to use something else.
 
 #### Parameters
 
@@ -147,10 +147,8 @@ The following parameters are available in the `rustup` defined type:
 * [`home`](#home)
 * [`rustup_home`](#rustup_home)
 * [`cargo_home`](#cargo_home)
-* [`bin`](#bin)
 * [`modify_path`](#modify_path)
 * [`installer_source`](#installer_source)
-* [`downloader`](#downloader)
 
 ##### <a name="ensure"></a>`ensure`
 
@@ -195,38 +193,23 @@ Where `cargo` installs executables. Generally you shouldn’t change this.
 
 Default value: `"${home}/.cargo"`
 
-##### <a name="bin"></a>`bin`
-
-Data type: `Stdlib::Absolutepath`
-
-Where `rustup` installs proxy executables. Generally you shouldn’t change
-this.
-
-Default value: `"${cargo_home}/bin"`
-
 ##### <a name="modify_path"></a>`modify_path`
 
 Data type: `Boolean`
 
-Whether or not to let `rustup` modify the user’s `PATH` in their shell init.
+Whether or not to let `rustup` modify the user’s `PATH` in their shell init
+scripts. Changing this will have no effect after the initial installation.
 
 Default value: ``true``
 
 ##### <a name="installer_source"></a>`installer_source`
 
-Data type: `String[1]`
+Data type: `Stdlib::HTTPUrl`
 
-URL of the rustup installation script. Only used to set `$downloader`.
+URL of the rustup installation script. Changing this will have no effect
+after the initial installation.
 
 Default value: `'https://sh.rustup.rs'`
-
-##### <a name="downloader"></a>`downloader`
-
-Data type: `String[1]`
-
-Command to download the rustup installation script to stdout.
-
-Default value: `"curl -sSf ${installer_source}"`
 
 ### <a name="rustupdefault"></a>`rustup::default`
 
