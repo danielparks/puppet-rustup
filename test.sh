@@ -23,6 +23,32 @@ init () {
 
   bolt_task_run puppet_agent::install collection=puppet6 version=latest
   bolt_task_run provision::fix_secure_path path=/opt/puppetlabs/bin
+  snapshot fresh
+  rake litmus:install_module
+}
+
+snapshot () {
+  local name=${1:-general}
+  for box in .vagrant/*/Vagrantfile ; do
+    (
+      cd "$(dirname "$box")"
+      vagrant snapshot save "$name"
+    )
+  done
+}
+
+restore () {
+  local name=${1:-general}
+  for box in .vagrant/*/Vagrantfile ; do
+    (
+      cd "$(dirname "$box")"
+      vagrant snapshot restore "$name"
+    )
+  done
+}
+
+fast-init () {
+  restore fresh
   rake litmus:install_module
 }
 
@@ -45,7 +71,7 @@ fi
 
 for action in "$@" ; do
   case "$action" in
-    init|update|run|destroy) "$action" ;;
+    init|snapshot|restore|fast-init|update|run|destroy) "$action" ;;
     --help) usage ;;
     *) usage >&2 ; exit 1 ;;
   esac
