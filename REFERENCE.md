@@ -493,9 +493,10 @@ Use the [`rustup`](#rustup) defined type instead of this.
 
 The name should be the username.
 
-**Autorequires:** If Puppet is managing the `user` or the directories or
-their parents specified as `cargo_home` and `rustup_home`, then those
-resources will be autorequired.
+**Autorequires:**
+  * The `user`.
+  * The directory specified by `cargo_home` and its parent.
+  * The directory specified by `rustup_home` and its parent.
 
 #### Properties
 
