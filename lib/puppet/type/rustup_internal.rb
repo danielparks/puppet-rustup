@@ -95,8 +95,8 @@ Puppet::Type.newtype(:rustup_internal) do
     defaultto 'https://sh.rustup.rs'
 
     validate do |value|
-      if value.empty?
-        fail 'Installer source must not be blank.'
+      if !value.is_a?(String) || value.empty?
+        fail 'Installer source must be a valid URL, not "%s".' % value
       end
       begin
         URI.parse(value)
