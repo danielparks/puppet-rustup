@@ -17,17 +17,17 @@ Puppet::Type.type(:rustup_internal).provide(:shell) do
   end
 
   def cargo_home
-    resource[:cargo_home] || File.join(home(), ".cargo")
+    resource[:cargo_home] || File.join(home_path(), ".cargo")
   end
 
   def rustup_home
-    resource[:rustup_home] || File.join(home(), ".rustup")
+    resource[:rustup_home] || File.join(home_path(), ".rustup")
   end
 
   def exists?
     # FIXME? this actually checks that root can execute the file. Also, it
     # doesn’t check that it’s not a directory.
-    File.executable?(rustup())
+    File.executable?(rustup_path())
   end
 
   # Changes have been made to the resource; apply them.
@@ -76,11 +76,11 @@ private
   end
 
   def update
-    execute([rustup(), "self", "update"])
+    rustup "self", "update"
   end
 
   def uninstall
-    execute([rustup(), "self", "uninstall", "-y"])
+    rustup "self", "uninstall", "-y"
   end
 
   def execute(command, stdin_file: nil, raise_on_failure: true)
@@ -121,19 +121,24 @@ private
     end
   end
 
-  def rustup
-    File.join(bin(), "rustup")
+  # Convenience function to run rustup
+  def rustup(*args)
+    execute([rustup_path()] + args)
+  end
+
+  def rustup_path
+    File.join(bin_path(), "rustup")
   end
 
   def path_env
-    "#{bin()}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    "#{bin_path()}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
   end
 
-  def bin
+  def bin_path
     File.join(cargo_home(), "bin")
   end
 
-  def home
+  def home_path
     Etc.getpwnam(resource[:user]).dir
   end
 
