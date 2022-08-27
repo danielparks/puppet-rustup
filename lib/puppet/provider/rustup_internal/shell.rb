@@ -3,12 +3,17 @@
 Puppet::Type.type(:rustup_internal).provide(:shell) do
   desc "Run shell-based `rustup` installer on UNIX-like platforms."
 
-  mk_resource_methods
-
   # It’s not really reliable to query rustup installations by user, since they
   # could be installed with CARGO_HOME anywhere.
   def self.instances
     fail "Cannot query rustup installations."
+  end
+
+  # For whatever reason, the resource expected this. An alternate solution is
+  # to call mk_resource_methods, but that adds a bunch more unnecessary methods
+  # that modify @property_hash. We don’t use @property_hash at all, since we
+  # can just access the resource itself.
+  def ensure=(value)
   end
 
   def cargo_home
