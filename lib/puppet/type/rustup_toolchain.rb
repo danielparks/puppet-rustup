@@ -68,7 +68,6 @@ Puppet::Type.newtype(:rustup_toolchain) do
     END
 
     validate do |value|
-      # need ! value.nil? && ?
       unless Puppet::Util.absolute_path?(value)
         raise Puppet::Error, 'Cargo home must be an absolute path, not "%s"' % value
       end
@@ -83,7 +82,6 @@ Puppet::Type.newtype(:rustup_toolchain) do
     END
 
     validate do |value|
-      # need ! value.nil? && ?
       unless Puppet::Util.absolute_path?(value)
         raise Puppet::Error, 'Rustup home must be an absolute path, not "%s"' % value
       end
