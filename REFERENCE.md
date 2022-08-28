@@ -7,6 +7,7 @@
 ### Classes
 
 * [`rustup::global`](#rustupglobal): Manage global Rust installation with `rustup`
+* [`rustup::ordering`](#rustupordering): Set the correct ordering of defined types
 
 ### Defined types
 
@@ -127,6 +128,10 @@ URL of the rustup installation script. Changing this will have no effect
 after the initial installation.
 
 Default value: `'https://sh.rustup.rs'`
+
+### <a name="rustupordering"></a>`rustup::ordering`
+
+This class is used internally; you do not need to include it yourself.
 
 ## Defined types
 
