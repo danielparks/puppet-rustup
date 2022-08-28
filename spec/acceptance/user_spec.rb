@@ -88,6 +88,14 @@ describe 'Per-user rustup management' do
       its(:stderr) { should eq "" }
       its(:exit_status) { should eq 0 }
     end
+
+    describe command("sudo -iu vagrant rustup +stable target list") do
+      its(:stdout) {
+        should match /-unknown-linux-.* \(installed\)$/
+      }
+      its(:stderr) { should eq "" }
+      its(:exit_status) { should eq 0 }
+    end
   end
 
   context 'basic uninstall' do

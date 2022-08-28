@@ -33,6 +33,8 @@ define rustup::toolchain (
   Stdlib::Absolutepath          $rustup_home = "${home}/.rustup",
   Stdlib::Absolutepath          $cargo_home  = "${home}/.cargo",
 ) {
+  include rustup::ordering
+
   rustup_toolchain { $name:
     ensure      => $ensure,
     user        => $user,

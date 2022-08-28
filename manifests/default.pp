@@ -31,7 +31,6 @@ define rustup::default (
   $expected_output = "^${toolchain}(-.*)? [(]default[)]\$"
   $command = "rustup default ${shell_escape($toolchain)}"
 
-  Rustup::Toolchain <| |> ->
   rustup::exec { "${user}: ${command}":
     command     => $command,
     user        => $user,

@@ -33,6 +33,8 @@ define rustup (
   Boolean                       $modify_path      = true,
   Stdlib::HTTPUrl               $installer_source = 'https://sh.rustup.rs',
 ) {
+  include rustup::ordering
+
   rustup_internal { $name:
     ensure           => $ensure,
     user             => $user,
@@ -43,11 +45,10 @@ define rustup (
   }
 
   if $ensure == absent {
-    Rustup::Exec <| |> ->
-    Rustup_internal[$name] ->
     file { [$rustup_home, $cargo_home]:
-      ensure => absent,
-      force  => true,
+      ensure  => absent,
+      force   => true,
+      require => Rustup_internal[$name],
     }
 
     # FIXME it would be nice to be able to enforce this, but we can’t guarantee
@@ -63,13 +64,5 @@ define rustup (
     #     }
     #   }
     # }
-  } else {
-    Rustup_internal[$name] ->
-    Rustup::Exec <| |>
-
-    # Targets are installed or removed after toolchains are installed...
-    Rustup::Toolchain <| ensure == present |> -> Rustup::Target <| |>
-    # ...and before toolchains are removed.
-    Rustup::Target <| |> -> Rustup::Toolchain <| ensure == absent |>
   }
 }

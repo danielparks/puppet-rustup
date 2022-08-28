@@ -36,6 +36,8 @@ define rustup::target (
   Stdlib::Absolutepath  $rustup_home = "${home}/.rustup",
   Stdlib::Absolutepath  $cargo_home  = "${home}/.cargo",
 ) {
+  include rustup::ordering
+
   $filter = $toolchain ? {
     Undef => '',
     String => "--toolchain ${shell_escape($toolchain)}"
