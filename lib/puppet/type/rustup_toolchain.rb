@@ -69,7 +69,7 @@ Puppet::Type.newtype(:rustup_toolchain) do
 
     validate do |value|
       # need ! value.nil? && ?
-      if ! Puppet::Util.absolute_path?(value)
+      unless Puppet::Util.absolute_path?(value)
         raise Puppet::Error, 'Cargo home must be an absolute path, not "%s"' % value
       end
     end
@@ -84,7 +84,7 @@ Puppet::Type.newtype(:rustup_toolchain) do
 
     validate do |value|
       # need ! value.nil? && ?
-      if ! Puppet::Util.absolute_path?(value)
+      unless Puppet::Util.absolute_path?(value)
         raise Puppet::Error, 'Rustup home must be an absolute path, not "%s"' % value
       end
     end
@@ -93,22 +93,21 @@ Puppet::Type.newtype(:rustup_toolchain) do
   def self.title_patterns
     [
       [
-        /\A(.+?): (.+)\Z/,
+        %r{\A(.+?): (.+)\Z},
         [
           [ :user ],
           [ :toolchain ],
-        ]
+        ],
       ],
       # Allow title to be non-structured as long as parameters are set. Accepts
       # an empty string because the error for a missing toolchain is better than
       # “No set of title patterns matched…”
       [
-        /\A(.*?)\Z/,
+        %r{\A(.*?)\Z},
         [
           [ :toolchain ],
-        ]
-      ]
+        ],
+      ],
     ]
   end
 end
-

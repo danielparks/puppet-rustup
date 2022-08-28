@@ -16,37 +16,37 @@ describe 'Global rustup management' do
         rustup::global::toolchain { 'nightly': }
       END
 
-      expect(user("rustup")).to belong_to_group "rustup"
-      expect(user("rustup")).to have_login_shell "/usr/sbin/nologin"
+      expect(user('rustup')).to belong_to_group 'rustup'
+      expect(user('rustup')).to have_login_shell '/usr/sbin/nologin'
     end
 
-    describe file("/opt/rust") do
-      it { should be_directory }
-      it { should be_owned_by "rustup" }
+    describe file('/opt/rust') do
+      it { is_expected.to be_directory }
+      it { is_expected.to be_owned_by 'rustup' }
     end
 
-    describe file("/opt/rust/cargo/bin/rustup") do
-      it { should be_file }
-      it { should be_executable }
-      it { should be_owned_by "rustup" }
+    describe file('/opt/rust/cargo/bin/rustup') do
+      it { is_expected.to be_file }
+      it { is_expected.to be_executable }
+      it { is_expected.to be_owned_by 'rustup' }
     end
 
-    describe command_global_rustup("+stable target list") do
-      its(:stdout) {
-        should match /^wasm32-unknown-unknown \(installed\)$/
-        should match /-unknown-linux-.* \(installed\)$/
-      }
-      its(:stderr) { should eq "" }
-      its(:exit_status) { should eq 0 }
+    describe command_global_rustup('+stable target list') do
+      its(:stdout) do
+        is_expected.to match(%r{^wasm32-unknown-unknown \(installed\)$})
+        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command_global_rustup("+nightly target list") do
-      its(:stdout) {
-        should match /^wasm32-unknown-unknown \(installed\)$/
-        should match /-unknown-linux-.* \(installed\)$/
-      }
-      its(:stderr) { should eq "" }
-      its(:exit_status) { should eq 0 }
+    describe command_global_rustup('+nightly target list') do
+      its(:stdout) do
+        is_expected.to match(%r{^wasm32-unknown-unknown \(installed\)$})
+        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
     end
   end
 
@@ -66,22 +66,22 @@ describe 'Global rustup management' do
       END
     end
 
-    describe command_global_rustup("+stable target list") do
-      its(:stdout) {
-        should match /^wasm32-unknown-unknown \(installed\)$/
-        should match /-unknown-linux-.* \(installed\)$/
-      }
-      its(:stderr) { should eq "" }
-      its(:exit_status) { should eq 0 }
+    describe command_global_rustup('+stable target list') do
+      its(:stdout) do
+        is_expected.to match(%r{^wasm32-unknown-unknown \(installed\)$})
+        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command_global_rustup("+nightly target list") do
-      its(:stdout) {
-        should match /^wasm32-unknown-unknown$/
-        should match /-unknown-linux-.* \(installed\)$/
-      }
-      its(:stderr) { should eq "" }
-      its(:exit_status) { should eq 0 }
+    describe command_global_rustup('+nightly target list') do
+      its(:stdout) do
+        is_expected.to match(%r{^wasm32-unknown-unknown$})
+        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
     end
   end
 
@@ -103,22 +103,22 @@ describe 'Global rustup management' do
       END
     end
 
-    describe command_global_rustup("+stable target list") do
-      its(:stdout) {
-        should match /^wasm32-unknown-unknown \(installed\)$/
-        should match /-unknown-linux-.* \(installed\)$/
-      }
-      its(:stderr) { should eq "" }
-      its(:exit_status) { should eq 0 }
+    describe command_global_rustup('+stable target list') do
+      its(:stdout) do
+        is_expected.to match(%r{^wasm32-unknown-unknown \(installed\)$})
+        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command_global_rustup("toolchain list") do
-      its(:stdout) {
-        should match /^stable-.* \(default\)$/
-        should_not match /^nightly-/
-      }
-      its(:stderr) { should eq "" }
-      its(:exit_status) { should eq 0 }
+    describe command_global_rustup('toolchain list') do
+      its(:stdout) do
+        is_expected.to match(%r{^stable-.* \(default\)$})
+        is_expected.not_to match(%r{^nightly-})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
     end
   end
 
@@ -142,11 +142,11 @@ describe 'Global rustup management' do
         }
       END
 
-      expect(user("rustup")).to_not exist
+      expect(user('rustup')).not_to exist
     end
 
-    describe file("/opt/rust") do
-      it { should_not exist }
+    describe file('/opt/rust') do
+      it { is_expected.not_to exist }
     end
   end
 
@@ -156,18 +156,18 @@ describe 'Global rustup management' do
         include rustup::global
       END
 
-      expect(user("rustup")).to belong_to_group "rustup"
+      expect(user('rustup')).to belong_to_group 'rustup'
     end
 
-    describe file("/opt/rust") do
-      it { should be_directory }
-      it { should be_owned_by "rustup" }
+    describe file('/opt/rust') do
+      it { is_expected.to be_directory }
+      it { is_expected.to be_owned_by 'rustup' }
     end
 
-    describe file("/opt/rust/cargo/bin/rustup") do
-      it { should be_file }
-      it { should be_executable }
-      it { should be_owned_by "rustup" }
+    describe file('/opt/rust/cargo/bin/rustup') do
+      it { is_expected.to be_file }
+      it { is_expected.to be_executable }
+      it { is_expected.to be_owned_by 'rustup' }
     end
   end
 
@@ -179,13 +179,13 @@ describe 'Global rustup management' do
         }
       END
 
-      expect(user("rustup")).to_not exist
+      expect(user('rustup')).not_to exist
     end
 
-    describe file("/opt/rust") do
-      it { should_not exist }
+    describe file('/opt/rust') do
+      it { is_expected.not_to exist }
     end
 
-    # FIXME check /etc/bash...
+    # FIXME: check /etc/bash...
   end
 end

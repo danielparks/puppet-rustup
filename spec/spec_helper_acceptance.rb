@@ -1,6 +1,7 @@
 # frozen_string_literal: true
-#
-# Created to use litmus per https://puppetlabs.github.io/litmus/Converting-modules-to-use-Litmus.html
+
+# Created to use litmus per:
+# https://puppetlabs.github.io/litmus/Converting-modules-to-use-Litmus.html
 
 require 'puppet_litmus'
 PuppetLitmus.configure!

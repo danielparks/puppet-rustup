@@ -33,14 +33,14 @@ Puppet::Type.newtype(:rustup_internal) do
 
     validate do |value|
       if !value.is_a?(String) || value.empty?
-        fail 'User is required to be a non-empty string.'
+        raise 'User is required to be a non-empty string.'
       end
     end
   end
 
   autorequire(:user) { [self[:user]] }
 
-  newparam(:modify_path, :boolean=>true, :parent=>Puppet::Parameter::Boolean) do
+  newparam(:modify_path, boolean: true, parent: Puppet::Parameter::Boolean) do
     desc <<~'END'
       Whether or not to let `rustup` modify the user’s `PATH` in their shell
       init scripts. Changing this will have no effect after the initial
@@ -60,8 +60,8 @@ Puppet::Type.newtype(:rustup_internal) do
 
     validate do |value|
       # need ! value.nil? && ?
-      if ! Puppet::Util.absolute_path?(value)
-        fail 'Cargo home must be an absolute path, not "%s"' % value
+      unless Puppet::Util.absolute_path?(value)
+        raise 'Cargo home must be an absolute path, not "%s"' % value
       end
     end
   end
@@ -78,8 +78,8 @@ Puppet::Type.newtype(:rustup_internal) do
 
     validate do |value|
       # need ! value.nil? && ?
-      if ! Puppet::Util.absolute_path?(value)
-        fail 'Rustup home must be an absolute path, not "%s"' % value
+      unless Puppet::Util.absolute_path?(value)
+        raise 'Rustup home must be an absolute path, not "%s"' % value
       end
     end
   end
@@ -96,12 +96,12 @@ Puppet::Type.newtype(:rustup_internal) do
 
     validate do |value|
       if !value.is_a?(String) || value.empty?
-        fail 'Installer source must be a valid URL, not "%s".' % value
+        raise 'Installer source must be a valid URL, not "%s".' % value
       end
       begin
         URI.parse(value)
       rescue
-        fail 'Installer source must be a valid URL, not "%s".' % value
+        raise 'Installer source must be a valid URL, not "%s".' % value
       end
     end
   end
@@ -109,7 +109,6 @@ Puppet::Type.newtype(:rustup_internal) do
   # rustup may create directories like ~/.cargo, so we want to autorequire their
   # parent directories, too.
   def dir_and_parent(path)
-    [path, File::dirname(path)].uniq
+    [path, File.dirname(path)].uniq
   end
 end
-

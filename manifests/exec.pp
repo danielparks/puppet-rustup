@@ -68,8 +68,8 @@ define rustup::exec (
     user        => $user,
   }
 
-  File <| name == $rustup_home or name == $cargo_home |> ->
-  exec { "rustup::exec: ${name}":
+  File <| name == $rustup_home or name == $cargo_home |>
+  -> exec { "rustup::exec: ${name}":
     * => $params + $more,
   }
 }

@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
-require_relative "../rustup_exec"
+require_relative '../rustup_exec'
 
 Puppet::Type.type(:rustup_toolchain).provide(
-  :exec, :parent => Puppet::Provider::RustupExec
+  :exec, parent: Puppet::Provider::RustupExec
 ) do
-  desc "Use `rustup` to manage toolchains."
+  desc 'Use `rustup` to manage toolchains.'
 
   # Determine if this toolchain has been installed on the system for this user
   def exists?
     rustup_installed? &&
-    make_toolchain_matcher(resource[:toolchain]).match?(
-      rustup("toolchain", "list"))
+      make_toolchain_matcher(resource[:toolchain]).match?(
+        rustup('toolchain', 'list'),
+      )
   end
 
   # There are some flaws in this.
@@ -25,13 +26,13 @@ Puppet::Type.type(:rustup_toolchain).provide(
   def make_toolchain_matcher(input)
     parts = parse_partial_toolchain(input).map.with_index do |part, i|
       if part.nil?
-        default_toolchain_triple()[i]
+        default_toolchain_triple[i]
       else
         Regexp.escape(part)
       end
     end
     parts.select! { |part| !part.nil? }
-    /^#{parts.join('-')}(?: \(default\))?$/
+    %r{^#{parts.join('-')}(?: \(default\))?$}
   end
 
   # Parse a partial toolchain descriptor into its parts.
@@ -83,12 +84,12 @@ Puppet::Type.type(:rustup_toolchain).provide(
       "musl",
     ].join('|')
     # rubocop:enable Style/StringLiterals
-    re = /\A(.*?)(?:-(#{archs}))?(?:-(#{oses}))?(?:-(#{envs}))?\Z/
+    re = %r{\A(.*?)(?:-(#{archs}))?(?:-(#{oses}))?(?:-(#{envs}))?\Z}
     match = re.match(input)
     if match.nil?
       [nil, nil, nil, nil]
     else
-      match[1,4]
+      match[1, 4]
     end
   end
 
@@ -97,7 +98,7 @@ Puppet::Type.type(:rustup_toolchain).provide(
   # This is used in exists?, which gets called at least twice, and we’d prefer
   # not to call `rustup show` more than we have to.
   def default_toolchain_triple
-    @default_toolchain_triple ||= parse_default_triple()
+    @default_toolchain_triple ||= parse_default_triple
   end
 
   # Parse default “triple” from `rustup show`.
@@ -106,7 +107,7 @@ Puppet::Type.type(:rustup_toolchain).provide(
   # should always be "" or nil, but might not be true if rust has added a new
   # platform for the toolchain.
   def parse_default_triple
-    input = load_default_triple()
+    input = load_default_triple
     if input.nil?
       [nil, nil, nil, nil]
     else
@@ -118,17 +119,17 @@ Puppet::Type.type(:rustup_toolchain).provide(
   #
   # Returns string.
   def load_default_triple
-    rustup("show").split(/[\r\n]+/).each do |line|
-      if line =~ /^Default host:\s+(\S+)$/i
-        debug("Got default host (triple): #{$1}")
-        return $1
+    rustup('show').split(%r{[\r\n]+}).each do |line|
+      if line =~ %r{^Default host:\s+(\S+)$}i
+        debug("Got default host (triple): #{Regexp.last_match(1)}")
+        return Regexp.last_match(1)
       end
     end
 
     nil
   end
 
-protected
+  protected
 
   # Install toolchain for the first time.
   #
@@ -136,7 +137,7 @@ protected
   #   * exists? == false
   #   * ensure != :absent
   def install
-    rustup "toolchain", "install", "--no-self-update", resource[:toolchain]
+    rustup 'toolchain', 'install', '--no-self-update', resource[:toolchain]
   end
 
   # Update previously installed `rustup`.
@@ -154,6 +155,6 @@ protected
   #   * exists? == true
   #   * ensure == :absent
   def uninstall
-    rustup "toolchain", "uninstall", resource[:toolchain]
+    rustup 'toolchain', 'uninstall', resource[:toolchain]
   end
 end

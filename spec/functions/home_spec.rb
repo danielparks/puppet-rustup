@@ -9,10 +9,10 @@ describe 'rustup::home' do
     context "on #{os}" do
       let(:facts) { os_facts }
 
-      if os.start_with? "darwin-"
-        it { is_expected.to run.with_params("foo").and_return("/Users/foo") }
+      if os.start_with? 'darwin-'
+        it { is_expected.to run.with_params('foo').and_return('/Users/foo') }
       else
-        it { is_expected.to run.with_params("foo").and_return("/home/foo") }
+        it { is_expected.to run.with_params('foo').and_return('/home/foo') }
       end
     end
   end

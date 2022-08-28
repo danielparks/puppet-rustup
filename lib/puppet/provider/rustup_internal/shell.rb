@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-require_relative "../rustup_exec"
+require_relative '../rustup_exec'
 
 Puppet::Type.type(:rustup_internal).provide(
-  :shell, :parent => Puppet::Provider::RustupExec
+  :shell, parent: Puppet::Provider::RustupExec
 ) do
-  desc "Run shell-based `rustup` installer on UNIX-like platforms."
+  desc 'Run shell-based `rustup` installer on UNIX-like platforms.'
 
   # Determine if `rustup` has been installed on the system for this user
   def exists?
     rustup_installed?
   end
 
-protected
+  protected
 
   # Install `rustup` for the first time.
   #
@@ -29,11 +29,11 @@ protected
       url = URI.parse(resource[:installer_source])
       debug("Starting download from #{url} into #{script.path}")
       download_into(url, script)
-      script.flush()
+      script.flush
 
-      command = %w{/bin/sh -s -- -y --default-toolchain none}
-      if ! resource[:modify_path]
-        command << "--no-modify-path"
+      command = ['/bin/sh', '-s', '--', '-y', '--default-toolchain', 'none']
+      unless resource[:modify_path]
+        command << '--no-modify-path'
       end
 
       # The default error message for failure would be confusing.
@@ -43,8 +43,8 @@ protected
       end
     ensure
       debug("Deleting #{script.path}")
-      script.close()
-      script.unlink()
+      script.close
+      script.unlink
     end
   end
 
@@ -54,7 +54,7 @@ protected
   #   * exists? == true
   #   * ensure == :latest
   def update
-    rustup "self", "update"
+    rustup 'self', 'update'
   end
 
   # Uninstall previously installed `rustup`.
@@ -63,18 +63,19 @@ protected
   #   * exists? == true
   #   * ensure == :absent
   def uninstall
-    rustup "self", "uninstall", "-y"
+    rustup 'self', 'uninstall', '-y'
   end
 
   # Download a URL into a stream
   def download_into(url, output)
     client = Puppet.runtime[:http]
-    client.get(url, options: {include_system_store: true}) do |response|
-      if ! response.success?
+    client.get(url, options: { include_system_store: true }) do |response|
+      unless response.success?
         message = response.body.empty? ? response.reason : response.body
         raise Net::HTTPError.new(
           "Error #{response.code} on SERVER: #{message}",
-          Puppet::HTTP::ResponseConverter.to_ruby_response(response))
+          Puppet::HTTP::ResponseConverter.to_ruby_response(response),
+        )
       end
 
       response.read_body do |chunk|

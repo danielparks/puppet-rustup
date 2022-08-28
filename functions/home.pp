@@ -5,5 +5,5 @@
 # @return [Stdlib::Absolutepath]
 #   The path to the home directory.
 function rustup::home(String[1] $user) >> Stdlib::Absolutepath {
-    "${lookup('rustup::home', Stdlib::Absolutepath)}${user}"
+  "${lookup('rustup::home', Stdlib::Absolutepath)}${user}"
 }

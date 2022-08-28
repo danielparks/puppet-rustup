@@ -39,7 +39,7 @@ class rustup::global (
   $bin = "${cargo_home}/bin"
 
   $ensure_simple = $ensure ? {
-    absent  => absent,
+    'absent'  => absent,
     default => present,
   }
 
@@ -88,9 +88,9 @@ class rustup::global (
     group   => $user,
     mode    => '0555',
     content => epp('rustup/env.sh.epp', {
-      bin         => $bin,
-      rustup_home => $rustup_home,
-      cargo_home  => $cargo_home,
+        bin         => $bin,
+        rustup_home => $rustup_home,
+        cargo_home  => $cargo_home,
     }),
   }
 
@@ -109,8 +109,8 @@ class rustup::global (
 
   # Add scripts to /etc/profile.d and similar.
   $link_ensure = $ensure_simple ? {
-    present => link,
-    absent  => absent,
+    'present' => link,
+    'absent'  => absent,
   }
 
   $env_scripts_create.each |$path| {
@@ -119,7 +119,7 @@ class rustup::global (
       owner  => 'root',
       group  => '0',
       mode   => '0444',
-      target => "${home}/env.sh"
+      target => "${home}/env.sh",
     }
   }
 
