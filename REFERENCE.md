@@ -85,7 +85,7 @@ Default value: ``true``
 
 ##### <a name="home"></a>`home`
 
-Data type: `String[1]`
+Data type: `Stdlib::Absolutepath`
 
 Where to install rustup and the rust toolchains. Will contain rustup and
 cargo directories.
@@ -94,7 +94,7 @@ Default value: `'/opt/rust'`
 
 ##### <a name="shell"></a>`shell`
 
-Data type: `String[1]`
+Data type: `Stdlib::Absolutepath`
 
 Shell for the rustup user. This can be a nologin shell.
 
@@ -227,6 +227,9 @@ The following parameters are available in the `rustup::default` defined type:
 
 * [`user`](#user)
 * [`toolchain`](#toolchain)
+* [`home`](#home)
+* [`rustup_home`](#rustup_home)
+* [`cargo_home`](#cargo_home)
 
 ##### <a name="user"></a>`user`
 
@@ -245,6 +248,32 @@ The name of the toolchain to install, e.g. "stable". Automatically set if
 the `$name` of the resource follows the rules above.
 
 Default value: `(': ')[1]`
+
+##### <a name="home"></a>`home`
+
+Data type: `Stdlib::Absolutepath`
+
+The user’s home directory. This defaults to `/home/$user` on Linux and
+`/Users/$user` on macOS. This is only used to calculate defaults for the
+`$rustup_home` and `$cargo_home` parameters.
+
+Default value: `rustup::home($user)`
+
+##### <a name="rustup_home"></a>`rustup_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where toolchains are installed. Generally you shouldn’t change this.
+
+Default value: `"${home}/.rustup"`
+
+##### <a name="cargo_home"></a>`cargo_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where `cargo` installs executables. Generally you shouldn’t change this.
+
+Default value: `"${home}/.cargo"`
 
 ### <a name="rustupexec"></a>`rustup::exec`
 
@@ -338,7 +367,8 @@ Default value: ``undef``
 Data type: `Stdlib::Absolutepath`
 
 The user’s home directory. This defaults to `/home/$user` on Linux and
-`/Users/$user` on macOS.
+`/Users/$user` on macOS. This is only used to calculate defaults for the
+`$rustup_home` and `$cargo_home` parameters.
 
 Default value: `rustup::home($user)`
 
@@ -393,6 +423,9 @@ The following parameters are available in the `rustup::target` defined type:
 * [`user`](#user)
 * [`target`](#target)
 * [`toolchain`](#toolchain)
+* [`home`](#home)
+* [`rustup_home`](#rustup_home)
+* [`cargo_home`](#cargo_home)
 
 ##### <a name="ensure"></a>`ensure`
 
@@ -429,6 +462,32 @@ The name of the toolchain in which to install the target, e.g. "stable".
 resource follows the rules above.
 
 Default value: `(' ')[1]`
+
+##### <a name="home"></a>`home`
+
+Data type: `Stdlib::Absolutepath`
+
+The user’s home directory. This defaults to `/home/$user` on Linux and
+`/Users/$user` on macOS. This is only used to calculate defaults for the
+`$rustup_home` and `$cargo_home` parameters.
+
+Default value: `rustup::home($user)`
+
+##### <a name="rustup_home"></a>`rustup_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where toolchains are installed. Generally you shouldn’t change this.
+
+Default value: `"${home}/.rustup"`
+
+##### <a name="cargo_home"></a>`cargo_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where `cargo` installs executables. Generally you shouldn’t change this.
+
+Default value: `"${home}/.cargo"`
 
 ### <a name="rustuptoolchain"></a>`rustup::toolchain`
 
@@ -483,7 +542,8 @@ Default value: `(': ')[1]`
 Data type: `Stdlib::Absolutepath`
 
 The user’s home directory. This defaults to `/home/$user` on Linux and
-`/Users/$user` on macOS.
+`/Users/$user` on macOS. This is only used to calculate defaults for the
+`$rustup_home` and `$cargo_home` parameters.
 
 Default value: `rustup::home($user)`
 

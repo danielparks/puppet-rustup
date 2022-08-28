@@ -26,7 +26,8 @@
 #   Only run when `$unless` returns failure. (See [`exec`] documentation.)
 # @param home
 #   The user’s home directory. This defaults to `/home/$user` on Linux and
-#   `/Users/$user` on macOS.
+#   `/Users/$user` on macOS. This is only used to calculate defaults for the
+#   `$rustup_home` and `$cargo_home` parameters.
 # @param rustup_home
 #   Where toolchains are installed. Generally you shouldn’t change this.
 # @param cargo_home
