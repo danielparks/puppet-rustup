@@ -60,7 +60,8 @@ define rustup::target (
     rustup::exec { "${user}: ${command}":
       command     => $command,
       user        => $user,
-      onlyif      => $is_installed,
+      # Skip if rustup isn’t installed at all:
+      onlyif      => "sh -c 'command -v rustup &>/dev/null' && ${is_installed}",
       rustup_home => $rustup_home,
       cargo_home  => $cargo_home,
     }

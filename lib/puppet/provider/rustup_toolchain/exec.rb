@@ -9,6 +9,7 @@ Puppet::Type.type(:rustup_toolchain).provide(
 
   # Determine if this toolchain has been installed on the system for this user
   def exists?
+    rustup_installed? &&
     make_toolchain_matcher(resource[:toolchain]).match?(
       rustup("toolchain", "list"))
   end

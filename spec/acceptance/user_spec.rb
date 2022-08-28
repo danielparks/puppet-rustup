@@ -46,7 +46,41 @@ describe 'Per-user rustup management' do
     end
   end
 
-  context 'basic install' do
+  context 'trivial uninstall' do
+    it do
+      idempotent_apply(<<~END)
+        rustup { 'vagrant':
+          ensure => absent,
+        }
+      END
+    end
+
+    describe file("/home/vagrant/.rustup") do
+      it { should_not exist }
+    end
+
+    describe file("/home/vagrant/.cargo") do
+      it { should_not exist }
+    end
+
+    describe file("/home/vagrant/.bashrc") do
+      it { should be_file }
+      its(:content) { should_not match %r{^\. "\$HOME/\.cargo/env"$} }
+    end
+
+    describe file("/home/vagrant/.profile") do
+      it { should be_file }
+      its(:content) { should_not match %r{^\. "\$HOME/\.cargo/env"$} }
+    end
+
+    describe command("sudo -iu vagrant echo '$PATH'") do
+      its(:stdout) { should_not match %r{(\A|:)/home/vagrant/\.cargo/bin(:|\Z)} }
+      its(:stderr) { should eq "" }
+      its(:exit_status) { should eq 0 }
+    end
+  end
+
+  context 'multi-resource install' do
     it do
       idempotent_apply(<<~END)
         package { 'gcc': } # Needed for cargo install
@@ -98,10 +132,16 @@ describe 'Per-user rustup management' do
     end
   end
 
-  context 'basic uninstall' do
+  context 'multi-resource uninstall' do
     it do
       idempotent_apply(<<~END)
         rustup { 'vagrant':
+          ensure => absent,
+        }
+        rustup::toolchain { 'vagrant: stable':
+          ensure => absent,
+        }
+        rustup::target { 'vagrant: wasm32-unknown-unknown stable':
           ensure => absent,
         }
       END

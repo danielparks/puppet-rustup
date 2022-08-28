@@ -122,6 +122,34 @@ describe 'Global rustup management' do
     end
   end
 
+  context 'multi-resource uninstall' do
+    it do
+      idempotent_apply(<<~END)
+        class { 'rustup::global':
+          ensure => absent,
+        }
+        rustup::global::toolchain { 'stable':
+          ensure => absent,
+        }
+        rustup::global::toolchain { 'nightly':
+          ensure => absent,
+        }
+        rustup::global::target { 'wasm32-unknown-unknown stable':
+          ensure => absent,
+        }
+        rustup::global::target { 'wasm32-unknown-unknown nightly':
+          ensure => absent,
+        }
+      END
+
+      expect(user("rustup")).to_not exist
+    end
+
+    describe file("/opt/rust") do
+      it { should_not exist }
+    end
+  end
+
   context 'basic install' do
     it do
       idempotent_apply(<<~END)

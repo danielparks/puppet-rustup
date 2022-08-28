@@ -9,9 +9,7 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Determine if `rustup` has been installed on the system for this user
   def exists?
-    # FIXME? this actually checks that root can execute the file. Also, it
-    # doesn’t check that it’s not a directory.
-    File.executable?(rustup_path())
+    rustup_installed?
   end
 
 protected
