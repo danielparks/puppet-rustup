@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe 'rustup' do
-  let(:title) { 'user' }
+describe 'rustup::target' do
+  let(:title) { 'user: target toolchain' }
   let(:params) do
     {}
   end
