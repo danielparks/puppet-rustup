@@ -33,7 +33,7 @@ Puppet::Type.newtype(:rustup_toolchain) do
 
     validate do |value|
       if !value.is_a?(String) || value.empty?
-        fail 'User is required to be a non-empty string.'
+        raise Puppet::Error, 'User is required to be a non-empty string.'
       end
     end
   end
@@ -47,16 +47,16 @@ Puppet::Type.newtype(:rustup_toolchain) do
 
     validate do |value|
       if !value.is_a?(String) || value.empty?
-        fail 'Toolchain is required to be a non-empty string.'
+        raise Puppet::Error, 'Toolchain is required to be a non-empty string.'
       end
     end
   end
 
   validate do
     if !self[:user].is_a?(String) || self[:user].empty?
-      fail 'User is required to be a non-empty string.'
+      raise Puppet::Error, 'User is required to be a non-empty string.'
     elsif !self[:toolchain].is_a?(String) || self[:toolchain].empty?
-      fail 'Toolchain is required to be a non-empty string.'
+      raise Puppet::Error, 'Toolchain is required to be a non-empty string.'
     end
   end
 
@@ -70,7 +70,7 @@ Puppet::Type.newtype(:rustup_toolchain) do
     validate do |value|
       # need ! value.nil? && ?
       if ! Puppet::Util.absolute_path?(value)
-        fail 'Cargo home must be an absolute path, not "%s"' % value
+        raise Puppet::Error, 'Cargo home must be an absolute path, not "%s"' % value
       end
     end
   end
@@ -85,7 +85,7 @@ Puppet::Type.newtype(:rustup_toolchain) do
     validate do |value|
       # need ! value.nil? && ?
       if ! Puppet::Util.absolute_path?(value)
-        fail 'Rustup home must be an absolute path, not "%s"' % value
+        raise Puppet::Error, 'Rustup home must be an absolute path, not "%s"' % value
       end
     end
   end
