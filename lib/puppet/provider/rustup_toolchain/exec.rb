@@ -15,13 +15,29 @@ Puppet::Type.type(:rustup_toolchain).provide(
 
   # There are some flaws in this.
   #
-  #   * If you have non-host toolchains (e.g. you run an ARM toolchain on x86_64
-  #     under emulation), this may incorrectly match one of them. For example,
-  #     if you have stable-aarch64-apple-ios installed on your x86_64 host, this
-  #     will match that even though it should not.
+  #   * This is kludged together. I didn’t take the time to figure out all the
+  #     edge cases that rustup deals with.
   #
   #   * It will break as soon as rust adds a new triple to run toolchains on.
-  def make_toolchain_matcher(partial)
+  #
+  # public for testing
+  def make_toolchain_matcher(input)
+    parts = parse_partial_toolchain(input).map.with_index do |part, i|
+      if part.nil?
+        default_toolchain_triple()[i]
+      else
+        Regexp.escape(part)
+      end
+    end
+    parts.select! { |part| !part.nil? }
+    /^#{parts.join('-')}(?: \(default\))?$/
+  end
+
+  # Parse a partial toolchain descriptor into its parts.
+  #
+  # FIXME this will break as soon as Rust adds a new platform for the toolchain
+  # to run on.
+  def parse_partial_toolchain(input)
     # From https://github.com/rust-lang/rustup/blob/6bc5d2c340e1dd9880b68564a19f0dea384c849c/src/dist/triple.rs
     archs = [
       "i386",
@@ -64,15 +80,49 @@ Puppet::Type.type(:rustup_toolchain).provide(
       "android",
       "musl",
     ].join('|')
-    re = /\A(.+?)(?:-(#{archs}))?(?:-(#{oses}))?(?:-(#{envs}))?\Z/
-    parts = re.match(partial)[1,4].map do |part|
-      if part.nil?
-        ".+"
-      else
-        Regexp.escape(part)
+    re = /\A(.*?)(?:-(#{archs}))?(?:-(#{oses}))?(?:-(#{envs}))?\Z/
+    match = re.match(input)
+    if match.nil?
+      [nil, nil, nil, nil]
+    else
+      match[1,4]
+    end
+  end
+
+  # Memoized version of parse_default_triple.
+  #
+  # This is used in exists?, which gets called at least twice, and we’d prefer
+  # not to call `rustup show` more than we have to.
+  def default_toolchain_triple
+    @default_toolchain_triple ||= parse_default_triple()
+  end
+
+  # Parse default “triple” from `rustup show`.
+  #
+  # Returns partial toolchain descriptor as a 4 element array. The first part
+  # should always be "" or nil, but might not be true if rust has added a new
+  # platform for the toolchain.
+  def parse_default_triple
+    input = load_default_triple()
+    if input.nil?
+      [nil, nil, nil, nil]
+    else
+      parse_partial_toolchain("-#{input}")
+    end
+  end
+
+  # Load default “triple” from `rustup show`.
+  #
+  # Returns string.
+  def load_default_triple
+    rustup("show").split(/[\r\n]+/).each do |line|
+      if line =~ /^Default host:\s+(\S+)$/i
+        debug("Got default host (triple): #{$1}")
+        return $1
       end
     end
-    /^#{parts.join('-')}(?: \(default\))?$/
+
+    nil
   end
 
 protected
