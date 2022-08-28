@@ -31,7 +31,7 @@ Puppet::Type.type(:rustup_toolchain).provide(
         Regexp.escape(part)
       end
     end
-    parts.select! { |part| !part.nil? }
+    parts.reject! { |part| part.nil? }
     %r{^#{parts.join('-')}(?: \(default\))?$}
   end
 

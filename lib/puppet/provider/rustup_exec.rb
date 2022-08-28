@@ -81,7 +81,7 @@ class Puppet::Provider::RustupExec < Puppet::Provider
     }
 
     stdin_message = stdin_file ? " and stdin_file #{stdin_file}" : ''
-    debug("Running #{command} for user #{resource[:user]} with environment" +
+    debug("Running #{command} for user #{resource[:user]} with environment" \
       " #{environment}#{stdin_message}")
 
     # FIXME: timeout?

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Guard clauses are sometimes ambigious, and often harder to read.
+# rubocop:disable Style/GuardClause
+
 Puppet::Type.newtype(:rustup_toolchain) do
   @doc = <<~'END'
     @summary Manage a toolchain
@@ -62,28 +65,30 @@ Puppet::Type.newtype(:rustup_toolchain) do
 
   newparam(:cargo_home) do
     desc <<~'END'
-      Where `cargo` installs executables. Generally you shouldn’t change this.
+        Where `cargo` installs executables. Generally you shouldn’t change this.
 
-      Default value: `.cargo` in `user`’s home directory.
-    END
+        Default value: `.cargo` in `user`’s home directory.
+      END
 
     validate do |value|
       unless Puppet::Util.absolute_path?(value)
-        raise Puppet::Error, 'Cargo home must be an absolute path, not "%s"' % value
+        raise Puppet::Error, 'Cargo home must be an absolute path, not "%s"' \
+          % value
       end
     end
   end
 
   newparam(:rustup_home) do
     desc <<~'END'
-      Where toolchains are installed. Generally you shouldn’t change this.
+        Where toolchains are installed. Generally you shouldn’t change this.
 
-      Default value: `.rustup` in `user`’s home directory.
-    END
+        Default value: `.rustup` in `user`’s home directory.
+      END
 
     validate do |value|
       unless Puppet::Util.absolute_path?(value)
-        raise Puppet::Error, 'Rustup home must be an absolute path, not "%s"' % value
+        raise Puppet::Error, 'Rustup home must be an absolute path, not "%s"' \
+          % value
       end
     end
   end
