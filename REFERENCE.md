@@ -19,6 +19,7 @@
 ### Resource types
 
 * [`rustup_internal`](#rustup_internal): Manage a user’s Rust installation with `rustup`
+* [`rustup_toolchain`](#rustup_toolchain): Manage a toolchain
 
 ### Functions
 
@@ -438,10 +439,6 @@ the toolchain. For example:
 rustup::toolchain { 'daniel: stable': }
 ```
 
-This cannot reliably check for the presence of a toolchain. It will not
-install the toolchain if another toolchain that matches `$egrep` is already
-installed.
-
 #### Parameters
 
 The following parameters are available in the `rustup::toolchain` defined type:
@@ -449,13 +446,17 @@ The following parameters are available in the `rustup::toolchain` defined type:
 * [`ensure`](#ensure)
 * [`user`](#user)
 * [`toolchain`](#toolchain)
-* [`egrep`](#egrep)
+* [`home`](#home)
+* [`rustup_home`](#rustup_home)
+* [`cargo_home`](#cargo_home)
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Enum[present, absent]`
+Data type: `Enum[present, latest, absent]`
 
-Whether the toolchain should be present or absent.
+* `present` - install toolchain if it doesn’t exist, but don’t update it.
+* `latest` - install toolchain and update it on every puppet run.
+* `absent` - uninstall toolchain.
 
 Default value: `present`
 
@@ -477,13 +478,30 @@ the `$name` of the resource follows the rules above.
 
 Default value: `(': ')[1]`
 
-##### <a name="egrep"></a>`egrep`
+##### <a name="home"></a>`home`
 
-Data type: `String[1]`
+Data type: `Stdlib::Absolutepath`
 
-`egrep` compatible regular expression to match the toolchain in the list.
+The user’s home directory. This defaults to `/home/$user` on Linux and
+`/Users/$user` on macOS.
 
-Default value: `"^${toolchain.regsubst('-', '-(.+-)?', 'G')}"`
+Default value: `rustup::home($user)`
+
+##### <a name="rustup_home"></a>`rustup_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where toolchains are installed. Generally you shouldn’t change this.
+
+Default value: `"${home}/.rustup"`
+
+##### <a name="cargo_home"></a>`cargo_home`
+
+Data type: `Stdlib::Absolutepath`
+
+Where `cargo` installs executables. Generally you shouldn’t change this.
+
+Default value: `"${home}/.cargo"`
 
 ## Resource types
 
@@ -493,9 +511,10 @@ Use the [`rustup`](#rustup) defined type instead of this.
 
 The name should be the username.
 
-**Autorequires:** If Puppet is managing the `user` or the directories or
-their parents specified as `cargo_home` and `rustup_home`, then those
-resources will be autorequired.
+**Autorequires:**
+  * The `user`.
+  * The directory specified by `cargo_home` and its parent.
+  * The directory specified by `rustup_home` and its parent.
 
 #### Properties
 
@@ -563,6 +582,72 @@ Default value: `.rustup` in `user`’s home directory.
 namevar
 
 The user that owns this instance of `rustup` (autorequired).
+
+### <a name="rustup_toolchain"></a>`rustup_toolchain`
+
+The name should start with the username followed by a colon and a space,
+then the toolchain. For example:
+
+```puppet
+rustup::toolchain { 'daniel: stable': }
+```
+
+**Autorequires:**
+  * The `user`.
+  * The `rustup` resource with a name matching `user`.
+
+#### Properties
+
+The following properties are available in the `rustup_toolchain` type.
+
+##### `ensure`
+
+Valid values: `present`, `latest`, `absent`
+
+* `present` - install toolchain, but don’t update it.
+* `latest` - install toolchain and update it on every puppet run.
+* `absent` - uninstall toolchain.
+
+Default value: `present`
+
+#### Parameters
+
+The following parameters are available in the `rustup_toolchain` type.
+
+* [`cargo_home`](#cargo_home)
+* [`provider`](#provider)
+* [`rustup_home`](#rustup_home)
+* [`toolchain`](#toolchain)
+* [`user`](#user)
+
+##### <a name="cargo_home"></a>`cargo_home`
+
+Where `cargo` installs executables. Generally you shouldn’t change this.
+
+Default value: `.cargo` in `user`’s home directory.
+
+##### <a name="provider"></a>`provider`
+
+The specific backend to use for this `rustup_toolchain` resource. You will seldom need to specify this --- Puppet will
+usually discover the appropriate provider for your platform.
+
+##### <a name="rustup_home"></a>`rustup_home`
+
+Where toolchains are installed. Generally you shouldn’t change this.
+
+Default value: `.rustup` in `user`’s home directory.
+
+##### <a name="toolchain"></a>`toolchain`
+
+namevar
+
+The toolchain
+
+##### <a name="user"></a>`user`
+
+namevar
+
+The user that owns this toolchain (autorequired).
 
 ## Functions
 

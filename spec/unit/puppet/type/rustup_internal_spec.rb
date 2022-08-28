@@ -16,6 +16,11 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
       .to raise_error(Puppet::Error, /Title or name must be provided/)
   end
 
+  it "fails with a blank name" do
+    expect { described_class.new(:name => "") }
+      .to raise_error(Puppet::Error, /User is required to be a non-empty string/)
+  end
+
   it "fails with a bad ensure" do
     expect { described_class.new(:name => "user", :ensure => "dfasdf") }
       .to raise_error(Puppet::Error, /Valid values are present, latest, absent/)
@@ -31,17 +36,42 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
       .to eq(false)
   end
 
-  it "fails with a blank installer_source" do
-    expect { described_class.new(:name => "user", :installer_source => "") }
-      .to raise_error(Puppet::Error, /Installer source must not be blank/)
+  it "fails with a relative rustup_home" do
+    expect { described_class.new(:name => "user", :rustup_home => "dfasdf") }
+      .to raise_error(Puppet::Error, /Rustup home must be an absolute path/)
   end
 
-  it "fails with a bad installer_source" do
+  it "fails with a nil rustup_home" do
+    expect { described_class.new(:name => "user", :rustup_home => nil) }
+      .to raise_error(Puppet::Error, /Got nil value for rustup_home/)
+  end
+
+  it "works with an absolute rustup_home" do
+    expect(described_class.new(:name => "user", :rustup_home => "/opt/rustup"))
+      .not_to be_nil
+  end
+
+  it "fails with a number installer_source" do
+    expect { described_class.new(:name => "user", :installer_source => 3) }
+      .to raise_error(Puppet::Error, /Installer source must be a valid URL/)
+  end
+
+  it "fails with a nil installer_source" do
+    expect { described_class.new(:name => "user", :installer_source => nil) }
+      .to raise_error(Puppet::Error, /Got nil value for installer_source/)
+  end
+
+  it "fails with a blank installer_source" do
+    expect { described_class.new(:name => "user", :installer_source => "") }
+      .to raise_error(Puppet::Error, /Installer source must be a valid URL/)
+  end
+
+  it "fails with a non-URL installer_source" do
     expect { described_class.new(:name => "user", :installer_source => "s a as") }
       .to raise_error(Puppet::Error, /Installer source must be a valid URL/)
   end
 
-  it "works with a good installer_source" do
+  it "works with a URL installer_source" do
     expect(described_class.new(:name => "user", :installer_source => "http://localhost/foo"))
       .to_not be_nil
   end

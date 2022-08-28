@@ -10,9 +10,10 @@ Puppet::Type.newtype(:rustup_internal) do
 
     The name should be the username.
 
-    **Autorequires:** If Puppet is managing the `user` or the directories or
-    their parents specified as `cargo_home` and `rustup_home`, then those
-    resources will be autorequired.
+    **Autorequires:**
+      * The `user`.
+      * The directory specified by `cargo_home` and its parent.
+      * The directory specified by `rustup_home` and its parent.
   END
 
   ensurable do
@@ -94,8 +95,8 @@ Puppet::Type.newtype(:rustup_internal) do
     defaultto 'https://sh.rustup.rs'
 
     validate do |value|
-      if value.empty?
-        fail 'Installer source must not be blank.'
+      if !value.is_a?(String) || value.empty?
+        fail 'Installer source must be a valid URL, not "%s".' % value
       end
       begin
         URI.parse(value)

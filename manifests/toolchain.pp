@@ -7,41 +7,36 @@
 # rustup::toolchain { 'daniel: stable': }
 # ```
 #
-# This cannot reliably check for the presence of a toolchain. It will not
-# install the toolchain if another toolchain that matches `$egrep` is already
-# installed.
-#
 # @param ensure
-#   Whether the toolchain should be present or absent.
+#   * `present` - install toolchain if it doesn’t exist, but don’t update it.
+#   * `latest` - install toolchain and update it on every puppet run.
+#   * `absent` - uninstall toolchain.
 # @param user
 #   The user to install for. Automatically set if the `$name` of the resource
 #   follows the rules above.
 # @param toolchain
 #   The name of the toolchain to install, e.g. "stable". Automatically set if
 #   the `$name` of the resource follows the rules above.
-# @param egrep
-#   `egrep` compatible regular expression to match the toolchain in the list.
+# @param home
+#   The user’s home directory. This defaults to `/home/$user` on Linux and
+#   `/Users/$user` on macOS.
+# @param rustup_home
+#   Where toolchains are installed. Generally you shouldn’t change this.
+# @param cargo_home
+#   Where `cargo` installs executables. Generally you shouldn’t change this.
 define rustup::toolchain (
-  Enum[present, absent] $ensure    = present,
-  String[1]             $user      = $name.split(': ')[0],
-  String[1]             $toolchain = $name.split(': ')[1],
-  String[1]             $egrep     = "^${toolchain.regsubst('-', '-(.+-)?', 'G')}",
+  Enum[present, latest, absent] $ensure      = present,
+  String[1]                     $user        = $name.split(': ')[0],
+  String[1]                     $toolchain   = $name.split(': ')[1],
+  Stdlib::Absolutepath          $home        = rustup::home($user),
+  Stdlib::Absolutepath          $rustup_home = "${home}/.rustup",
+  Stdlib::Absolutepath          $cargo_home  = "${home}/.cargo",
 ) {
-  $is_installed = "rustup toolchain list | egrep ${shell_escape($egrep)}"
-
-  if $ensure == present {
-    $command = "rustup toolchain install --no-self-update ${shell_escape($toolchain)}"
-    rustup::exec { "${user}: ${command}":
-      command => $command,
-      user    => $user,
-      unless  => $is_installed,
-    }
-  } else {
-    $command = "rustup toolchain uninstall ${shell_escape($toolchain)}"
-    rustup::exec { "${user}: ${command}":
-      command => $command,
-      user    => $user,
-      onlyif  => $is_installed,
-    }
+  rustup_toolchain { $name:
+    ensure      => $ensure,
+    user        => $user,
+    toolchain   => $toolchain,
+    rustup_home => $rustup_home,
+    cargo_home  => $cargo_home,
   }
 }
