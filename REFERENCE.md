@@ -13,6 +13,9 @@
 * [`rustup`](#rustup): Manage a user’s Rust installation with `rustup`
 * [`rustup::default`](#rustupdefault): Set default toolchain
 * [`rustup::exec`](#rustupexec): Run a `rustup` command
+* [`rustup::global::default`](#rustupglobaldefault): Set default toolchain for global installation
+* [`rustup::global::target`](#rustupglobaltarget): Install a target for a toolchain for global installation
+* [`rustup::global::toolchain`](#rustupglobaltoolchain): Install a toolchain for global installation
 * [`rustup::target`](#rustuptarget): Install a target for a toolchain
 * [`rustup::toolchain`](#rustuptoolchain): Install a toolchain
 
@@ -405,6 +408,105 @@ Other parameters to pass to exec. They may override any of the other
 parameters.
 
 Default value: `{}`
+
+### <a name="rustupglobaldefault"></a>`rustup::global::default`
+
+The name should be the name of a toolchain. For example:
+
+```puppet
+rustup::global::default { 'stable': }
+```
+
+#### Parameters
+
+The following parameters are available in the `rustup::global::default` defined type:
+
+* [`toolchain`](#toolchain)
+
+##### <a name="toolchain"></a>`toolchain`
+
+Data type: `String[1]`
+
+The name of the toolchain to install, e.g. "stable".
+
+Default value: `$name`
+
+### <a name="rustupglobaltarget"></a>`rustup::global::target`
+
+You can name this two ways to automatically set the parameters:
+
+  * `"$target $toolchain"`: install `$target` for `$toolchain` in the global
+    installation. For example, `'x86_64-unknown-linux-gnu nightly'`.
+  * `"$target"`: install `$target` for the default toolchain in the global
+    installation. For example: `'stable'`.
+
+#### Parameters
+
+The following parameters are available in the `rustup::global::target` defined type:
+
+* [`ensure`](#ensure)
+* [`target`](#target)
+* [`toolchain`](#toolchain)
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `Enum[present, absent]`
+
+Whether the target should be present or absent.
+
+Default value: `present`
+
+##### <a name="target"></a>`target`
+
+Data type: `String[1]`
+
+The name of the target to install, e.g. "sparcv9-sun-solaris". Automatically
+set if the `$name` of the resource follows the rules above.
+
+Default value: `(' ')[0]`
+
+##### <a name="toolchain"></a>`toolchain`
+
+Data type: `Optional[String[1]]`
+
+The name of the toolchain in which to install the target, e.g. "stable".
+`undef` means the default toolchain. Automatically set if the `$name` of the
+resource follows the rules above.
+
+Default value: `(' ')[1]`
+
+### <a name="rustupglobaltoolchain"></a>`rustup::global::toolchain`
+
+The name should just be the toolchain. For example:
+
+```puppet
+rustup::global::toolchain { 'stable': }
+```
+
+#### Parameters
+
+The following parameters are available in the `rustup::global::toolchain` defined type:
+
+* [`ensure`](#ensure)
+* [`toolchain`](#toolchain)
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `Enum[present, latest, absent]`
+
+* `present` - install toolchain if it doesn’t exist, but don’t update it.
+* `latest` - install toolchain and update it on every puppet run.
+* `absent` - uninstall toolchain.
+
+Default value: `present`
+
+##### <a name="toolchain"></a>`toolchain`
+
+Data type: `String[1]`
+
+The name of the toolchain to install, e.g. "stable".
+
+Default value: `$name`
 
 ### <a name="rustuptarget"></a>`rustup::target`
 
