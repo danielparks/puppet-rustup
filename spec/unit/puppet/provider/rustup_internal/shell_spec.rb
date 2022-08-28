@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Puppet::Type.type(:rustup_internal).provider(:shell) do
   it 'refuses to load instances' do
     expect { described_class.instances }
-      .to raise_error(RuntimeError, %r{Cannot query rustup installations})
+      .to raise_error(Puppet::Error, %r{Cannot query rustup installations})
   end
 
   let :resource do

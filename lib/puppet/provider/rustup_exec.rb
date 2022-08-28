@@ -5,7 +5,7 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   # It’s not really reliable to query rustup installations by user, since they
   # could be installed with CARGO_HOME anywhere.
   def self.instances
-    raise 'Cannot query rustup installations.'
+    raise Puppet::Error, 'Cannot query rustup installations.'
   end
 
   # For whatever reason, the resource expected this. An alternate solution is to

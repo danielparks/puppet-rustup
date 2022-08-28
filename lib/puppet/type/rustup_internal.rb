@@ -33,7 +33,7 @@ Puppet::Type.newtype(:rustup_internal) do
 
     validate do |value|
       if !value.is_a?(String) || value.empty?
-        raise 'User is required to be a non-empty string.'
+        raise Puppet::Error, 'User is required to be a non-empty string.'
       end
     end
   end
@@ -60,7 +60,8 @@ Puppet::Type.newtype(:rustup_internal) do
 
     validate do |value|
       unless Puppet::Util.absolute_path?(value)
-        raise 'Cargo home must be an absolute path, not "%s"' % value
+        raise Puppet::Error, 'Cargo home must be an absolute path, not "%s"' \
+          % value
       end
     end
   end
@@ -77,7 +78,8 @@ Puppet::Type.newtype(:rustup_internal) do
 
     validate do |value|
       unless Puppet::Util.absolute_path?(value)
-        raise 'Rustup home must be an absolute path, not "%s"' % value
+        raise Puppet::Error, 'Rustup home must be an absolute path, not "%s"' \
+          % value
       end
     end
   end
@@ -94,12 +96,14 @@ Puppet::Type.newtype(:rustup_internal) do
 
     validate do |value|
       if !value.is_a?(String) || value.empty?
-        raise 'Installer source must be a valid URL, not "%s".' % value
+        raise Puppet::Error, 'Installer source must be a valid URL, not "%s".' \
+          % value
       end
       begin
         URI.parse(value)
       rescue
-        raise 'Installer source must be a valid URL, not "%s".' % value
+        raise Puppet::Error, 'Installer source must be a valid URL, not "%s".' \
+          % value
       end
     end
   end
