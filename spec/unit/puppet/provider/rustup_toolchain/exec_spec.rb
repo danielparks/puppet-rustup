@@ -8,11 +8,12 @@ RSpec.describe Puppet::Type.type(:rustup_toolchain).provider(:exec) do
       .to raise_error(Puppet::Error, %r{Cannot query rustup installations})
   end
 
+  let :type do
+    Puppet::Type.type(:rustup_toolchain)
+  end
+
   let :resource do
-    Puppet::Type.type(:rustup_toolchain).new(
-      title: 'root: toolchain',
-      provider: :exec,
-    )
+    type.new(title: 'root: toolchain', provider: :exec)
   end
 
   let :provider do
@@ -51,5 +52,11 @@ RSpec.describe Puppet::Type.type(:rustup_toolchain).provider(:exec) do
       expect(provider.make_toolchain_matcher('custom-toolchain-pc-windows'))
         .to eq(%r{^custom\-toolchain-x86_64-pc\-windows(?: \(default\))?$})
     end
+  end
+
+  it 'fails for invalid user' do
+    resource = type.new(title: 'invalid-user: toolchain', provider: :exec)
+    expect { described_class.new(resource).rustup_home }
+      .to raise_error(ArgumentError, %r{can't find user for invalid-user})
   end
 end
