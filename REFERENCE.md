@@ -31,7 +31,7 @@
 
 ### Data types
 
-* [`Rustup::OptionalStringOrArray`](#rustupoptionalstringorarray): Convenience type to make params easier to read.
+* [`Rustup::OptionalStringOrArray`](#rustupoptionalstringorarray): Convenience type to make params easier to read
 
 ## Classes
 
@@ -840,7 +840,7 @@ The name of the user.
 
 ### <a name="rustupoptionalstringorarray"></a>`Rustup::OptionalStringOrArray`
 
-Convenience type to make params easier to read.
+Convenience type to make params easier to read
 
 Alias of
 
