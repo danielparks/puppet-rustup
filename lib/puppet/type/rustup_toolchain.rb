@@ -65,10 +65,10 @@ Puppet::Type.newtype(:rustup_toolchain) do
 
   newparam(:cargo_home) do
     desc <<~'END'
-        Where `cargo` installs executables. Generally you shouldn’t change this.
+      Where `cargo` installs executables. Generally you shouldn’t change this.
 
-        Default value: `.cargo` in `user`’s home directory.
-      END
+      Default value: `.cargo` in `user`’s home directory.
+    END
 
     # This won’t work on macOS, but then most people will be using the defined
     # type wrapper anyway. This is only really useful with `puppet resource`.
@@ -84,10 +84,10 @@ Puppet::Type.newtype(:rustup_toolchain) do
 
   newparam(:rustup_home) do
     desc <<~'END'
-        Where toolchains are installed. Generally you shouldn’t change this.
+      Where toolchains are installed. Generally you shouldn’t change this.
 
-        Default value: `.rustup` in `user`’s home directory.
-      END
+      Default value: `.rustup` in `user`’s home directory.
+    END
 
     # This won’t work on macOS, but then most people will be using the defined
     # type wrapper anyway. This is only really useful with `puppet resource`.
