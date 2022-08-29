@@ -17,10 +17,9 @@ RSpec.describe Puppet::Type.type(:rustup_internal).provider(:shell) do
     resource = type.new(
       title: 'non_existant_user',
       ensure: 'absent',
-      cargo_home: '/home/non_existant_user/.cargo',
-      rustup_home: '/home/non_existant_user/.rustup',
       provider: :shell,
     )
+    expect(resource[:cargo_home]).to eq '/home/non_existant_user/.cargo'
     expect(described_class.new(resource).exists?).to be(false)
   end
 end
