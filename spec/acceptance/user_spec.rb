@@ -171,4 +171,22 @@ describe 'Per-user rustup management' do
       its(:exit_status) { is_expected.to eq 0 }
     end
   end
+
+  it 'supports ensure=>absent with non-existant user' do
+    expect(user('non_existant_user')).not_to exist
+
+    idempotent_apply(<<~END)
+      rustup { 'non_existant_user':
+        ensure => absent,
+      }
+      rustup::toolchain { 'non_existant_user: stable':
+        ensure => absent,
+      }
+      rustup::target { 'non_existant_user: wasm32-unknown-unknown stable':
+        ensure => absent,
+      }
+    END
+
+    expect(user('non_existant_user')).not_to exist
+  end
 end

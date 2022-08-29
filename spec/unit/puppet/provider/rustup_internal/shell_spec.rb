@@ -12,15 +12,15 @@ RSpec.describe Puppet::Type.type(:rustup_internal).provider(:shell) do
     Puppet::Type.type(:rustup_internal)
   end
 
-  it 'has correct rustup_home' do
-    resource = type.new(title: 'root', provider: :shell)
-    expect(described_class.new(resource).rustup_home)
-      .to eq(File.expand_path('~root/.rustup'))
-  end
-
-  it 'fails for invalid user' do
-    resource = type.new(title: 'invalid-user', provider: :shell)
-    expect { described_class.new(resource).rustup_home }
-      .to raise_error(ArgumentError, %r{can't find user for invalid-user})
+  it 'succeeds for non-existant user when ensure=>absent' do
+    # Assumes that /home/non_existant_user/.cargo/... doesn’t exist.
+    resource = type.new(
+      title: 'non_existant_user',
+      ensure: 'absent',
+      cargo_home: '/home/non_existant_user/.cargo',
+      rustup_home: '/home/non_existant_user/.rustup',
+      provider: :shell,
+    )
+    expect(described_class.new(resource).exists?).to be(false)
   end
 end
