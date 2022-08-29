@@ -5,3 +5,7 @@ def command_global_rustup(params)
     'RUSTUP_HOME=/opt/rust/rustup CARGO_HOME=/opt/rust/cargo ' \
     "/opt/rust/cargo/bin/rustup #{params}")
 end
+
+def command_as_vagrant(cmd)
+  command("sudo -iu vagrant #{cmd}")
+end

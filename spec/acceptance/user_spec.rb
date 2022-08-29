@@ -31,16 +31,29 @@ describe 'Per-user rustup management' do
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe command("sudo -iu vagrant echo '$PATH'") do
-      its(:stdout) { is_expected.to match %r{(\A|:)/home/vagrant/\.cargo/bin:} }
+    describe command_as_vagrant("echo '$PATH'") do
+      its(:stdout) {
+        is_expected.to match %r{(\A|:)/home/vagrant/\.cargo/bin:}
+        is_expected.to_not match %r{/opt/rust/cargo/bin}
+      }
       its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+
+    describe command_as_vagrant("rustup toolchain list") do
+      its(:stdout) { is_expected.to match %r{^no installed toolchains$} }
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+
+    describe command_as_vagrant('rm -rf hello-world') do
       its(:exit_status) { is_expected.to eq 0 }
     end
 
     # FIXME: this test will fail if there is any present rustup installation. As
     # long as the tests are run in order (sigh), they should clean themselves
     # up. Unfortunately, there doesn’t seem to be a way to just reset the VM.
-    describe command('sudo -iu vagrant cargo install petname') do
+    describe command_as_vagrant('cargo init hello-world --bin --quiet') do
       its(:stderr) { is_expected.to match(%r{error: rustup could not choose a version of cargo to run}) }
       its(:exit_status) { is_expected.to be > 0 }
     end
@@ -111,19 +124,33 @@ describe 'Per-user rustup management' do
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe command("sudo -iu vagrant echo '$PATH'") do
+    describe command_as_vagrant("echo '$PATH'") do
       its(:stdout) { is_expected.to match %r{(\A|:)/home/vagrant/\.cargo/bin:} }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command('sudo -iu vagrant cargo install --quiet petname') do
+    describe command_as_vagrant('rm -rf hello-world') do
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+
+    describe command_as_vagrant('cargo init hello-world --bin --quiet') do
       its(:stdout) { is_expected.to eq '' }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command('sudo -iu vagrant rustup +stable target list') do
+    describe command_as_vagrant('cargo install --quiet --path hello-world') do
+      its(:stdout) { is_expected.to eq '' }
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+
+    describe file('/home/vagrant/.cargo/bin/hello-world') do
+      it { is_expected.to be_executable }
+    end
+
+    describe command_as_vagrant('rustup +stable target list') do
       its(:stdout) do
         is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
       end
@@ -165,7 +192,7 @@ describe 'Per-user rustup management' do
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe command("sudo -iu vagrant echo '$PATH'") do
+    describe command_as_vagrant("echo '$PATH'") do
       its(:stdout) { is_expected.not_to match %r{(\A|:)/home/vagrant/\.cargo/bin(:|\Z)} }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
