@@ -69,8 +69,7 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   # Ensure it’s really gone.
   #
   # This is called if ensure == :absent even if exists? == false.
-  def ensure_absent
-  end
+  def ensure_absent; end
 
   # Run a command as the user
   def execute(command, stdin_file: nil, raise_on_failure: true)

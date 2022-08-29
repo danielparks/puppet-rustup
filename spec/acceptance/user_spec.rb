@@ -32,15 +32,15 @@ describe 'Per-user rustup management' do
     end
 
     describe command_as_vagrant("echo '$PATH'") do
-      its(:stdout) {
+      its(:stdout) do
         is_expected.to match %r{(\A|:)/home/vagrant/\.cargo/bin:}
-        is_expected.to_not match %r{/opt/rust/cargo/bin}
-      }
+        is_expected.not_to match %r{/opt/rust/cargo/bin}
+      end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command_as_vagrant("rustup toolchain list") do
+    describe command_as_vagrant('rustup toolchain list') do
       its(:stdout) { is_expected.to match %r{^no installed toolchains$} }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
