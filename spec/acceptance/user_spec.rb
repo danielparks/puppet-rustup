@@ -258,12 +258,10 @@ describe 'Per-user rustup management' do
         home   => '/rustup_test',
       }
 
-      # FIXME currently this runs before rustup. How should it handle the user
-      # being going, but the installation being present?
-      #rustup::toolchain { 'rustup_test: stable':
-      #  ensure => absent,
-      #  home   => '/rustup_test',
-      #}
+      rustup::toolchain { 'rustup_test: stable':
+        ensure => absent,
+        home   => '/rustup_test',
+      }
     END
 
     expect(user('rustup_test')).not_to exist
