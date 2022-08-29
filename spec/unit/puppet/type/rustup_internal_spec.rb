@@ -8,14 +8,16 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
   end
 
   describe 'a trivial instance' do
-    subject { described_class.new(title: 'user') }
+    let :resource do
+      described_class.new(title: 'user')
+    end
 
     it 'has the correct parameters' do
-      expect(subject).not_to be_nil
-      expect(subject[:modify_path]).to eq true
-      expect(subject[:rustup_home]).to eq '/home/user/.rustup'
-      expect(subject[:cargo_home]).to eq '/home/user/.cargo'
-      expect(subject[:installer_source]).to eq 'https://sh.rustup.rs'
+      expect(resource).not_to be_nil
+      expect(resource[:modify_path]).to eq true
+      expect(resource[:rustup_home]).to eq '/home/user/.rustup'
+      expect(resource[:cargo_home]).to eq '/home/user/.cargo'
+      expect(resource[:installer_source]).to eq 'https://sh.rustup.rs'
     end
   end
 
