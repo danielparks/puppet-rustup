@@ -70,6 +70,10 @@ Puppet::Type.newtype(:rustup_toolchain) do
         Default value: `.cargo` in `user`’s home directory.
       END
 
+    # This won’t work on macOS, but then most people will be using the defined
+    # type wrapper anyway. This is only really useful with `puppet resource`.
+    defaultto { "/home/#{resource[:user]}/.cargo" }
+
     validate do |value|
       unless Puppet::Util.absolute_path?(value)
         raise Puppet::Error, 'Cargo home must be an absolute path, not "%s"' \
@@ -84,6 +88,10 @@ Puppet::Type.newtype(:rustup_toolchain) do
 
         Default value: `.rustup` in `user`’s home directory.
       END
+
+    # This won’t work on macOS, but then most people will be using the defined
+    # type wrapper anyway. This is only really useful with `puppet resource`.
+    defaultto { "/home/#{resource[:user]}/.rustup" }
 
     validate do |value|
       unless Puppet::Util.absolute_path?(value)

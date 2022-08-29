@@ -7,8 +7,16 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
     expect(described_class).not_to be_nil
   end
 
-  it 'creates a trivial instance' do
-    expect(described_class.new(name: 'user')).not_to be_nil
+  describe 'a trivial instance' do
+    subject { described_class.new(title: 'user') }
+
+    it 'has the correct parameters' do
+      expect(subject).not_to be_nil
+      expect(subject[:modify_path]).to eq true
+      expect(subject[:rustup_home]).to eq '/home/user/.rustup'
+      expect(subject[:cargo_home]).to eq '/home/user/.cargo'
+      expect(subject[:installer_source]).to eq 'https://sh.rustup.rs'
+    end
   end
 
   it 'fails with a nil name' do
@@ -24,11 +32,6 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
   it 'fails with a bad ensure' do
     expect { described_class.new(name: 'user', ensure: 'dfasdf') }
       .to raise_error(Puppet::Error, %r{Valid values are present, latest, absent})
-  end
-
-  it 'has a default for modify_path' do
-    expect(described_class.new(name: 'user')[:modify_path])
-      .to eq(true)
   end
 
   it 'accepts modify_path' do
@@ -74,10 +77,5 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
   it 'works with a URL installer_source' do
     expect(described_class.new(name: 'user', installer_source: 'http://localhost/foo'))
       .not_to be_nil
-  end
-
-  it 'has a default for installer_source' do
-    expect(described_class.new(name: 'user')[:installer_source])
-      .to eq('https://sh.rustup.rs')
   end
 end
