@@ -8,15 +8,19 @@ RSpec.describe Puppet::Type.type(:rustup_internal).provider(:shell) do
       .to raise_error(Puppet::Error, %r{Cannot query rustup installations})
   end
 
-  let :resource do
-    Puppet::Type.type(:rustup_internal).new(title: 'root', provider: :shell)
+  let :type do
+    Puppet::Type.type(:rustup_internal)
   end
 
-  let :provider do
-    described_class.new(resource)
-  end
-
-  it 'has correct rustup_home' do
-    expect(provider.rustup_home).to eq(File.expand_path('~root/.rustup'))
+  it 'succeeds for non-existant user when ensure=>absent' do
+    # Assumes that /home/non_existant_user/.cargo/... doesn’t exist.
+    resource = type.new(
+      title: 'non_existant_user',
+      ensure: 'absent',
+      cargo_home: '/home/non_existant_user/.cargo',
+      rustup_home: '/home/non_existant_user/.rustup',
+      provider: :shell,
+    )
+    expect(described_class.new(resource).exists?).to be(false)
   end
 end

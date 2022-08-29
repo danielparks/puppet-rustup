@@ -7,11 +7,18 @@ RSpec.describe Puppet::Type.type(:rustup_toolchain) do
     expect(described_class).not_to be_nil
   end
 
-  it 'creates a trivial instance' do
-    instance = described_class.new(title: 'u: t')
-    expect(instance).not_to be_nil
-    expect(instance[:user]).to eq('u')
-    expect(instance[:toolchain]).to eq('t')
+  describe 'a trivial instance' do
+    let :resource do
+      described_class.new(title: 'u: t')
+    end
+
+    it 'has the correct parameters' do
+      expect(resource).not_to be_nil
+      expect(resource[:user]).to eq 'u'
+      expect(resource[:toolchain]).to eq 't'
+      expect(resource[:rustup_home]).to eq '/home/u/.rustup'
+      expect(resource[:cargo_home]).to eq '/home/u/.cargo'
+    end
   end
 
   it 'fails with a nil title' do
@@ -29,15 +36,22 @@ RSpec.describe Puppet::Type.type(:rustup_toolchain) do
       .to raise_error(Puppet::Error, %r{User is required})
   end
 
-  it 'works with an non-structured title and parameters' do
-    instance = described_class.new(
-      title: 'a',
-      user: 'u',
-      toolchain: 't',
-    )
-    expect(instance).not_to be_nil
-    expect(instance[:user]).to eq('u')
-    expect(instance[:toolchain]).to eq('t')
+  describe 'an instance with a non-structured title' do
+    let :resource do
+      described_class.new(
+        title: 'a',
+        user: 'u',
+        toolchain: 't',
+      )
+    end
+
+    it 'has the correct parameters' do
+      expect(resource).not_to be_nil
+      expect(resource[:user]).to eq 'u'
+      expect(resource[:toolchain]).to eq 't'
+      expect(resource[:rustup_home]).to eq '/home/u/.rustup'
+      expect(resource[:cargo_home]).to eq '/home/u/.cargo'
+    end
   end
 
   it 'fails with a bad ensure' do

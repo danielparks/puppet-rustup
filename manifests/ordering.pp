@@ -2,18 +2,19 @@
 #
 # This class is used internally; you do not need to include it yourself.
 class rustup::ordering {
-  # Run rustup::exec after installations are installed...
-  Rustup_internal <| ensure != absent |>
-  -> Rustup::Exec <| |>
-  # ...and before installations are removed.
-  -> Rustup_internal <| ensure == absent |>
+  # Generally exec requires an installation...
+  Rustup_internal <| |> -> Rustup::Exec <| |>
+  # ...except when the installation is being deleted. In that case, the exec
+  # probably doesn’t need to run. Making the exec dependent on `rustup` being
+  # installed can help:
+  #
+  #     onlyif => "sh -c 'command -v rustup &>/dev/null' && ...",
 
   # Targets go after installations, toolchains, and defaults are installed...
-  Rustup_internal <| ensure != absent |>
+  Rustup_internal <| |>
   -> Rustup_toolchain <| ensure != absent |>
   -> Rustup::Default <| |>
   -> Rustup::Target <| |>
-  # ...and before toolchains and installations are removed.
+  # ...and before toolchains are removed.
   -> Rustup_toolchain <| ensure == absent |>
-  -> Rustup_internal <| ensure == absent |>
 }

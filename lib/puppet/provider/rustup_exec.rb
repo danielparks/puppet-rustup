@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Guard clauses are sometimes ambigious, and often harder to read.
+# rubocop:disable Style/GuardClause
+
 # Base class for rustup providers
 class Puppet::Provider::RustupExec < Puppet::Provider
   # It’s not really reliable to query rustup installations by user, since they
@@ -13,16 +16,6 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   # unnecessary methods that modify @property_hash. We don’t use @property_hash
   # at all, since we can just access the resource itself.
   def ensure=(value); end
-
-  # Get the cargo home set on the resource, or figure out what it should be
-  def cargo_home
-    resource[:cargo_home] || File.join(home_path, '.cargo')
-  end
-
-  # Get the rustup home set on the resource, or figure out what it should be
-  def rustup_home
-    resource[:rustup_home] || File.join(home_path, '.rustup')
-  end
 
   # Determine if the resource exists on the system
   def exists?
@@ -40,6 +33,10 @@ class Puppet::Provider::RustupExec < Puppet::Provider
     elsif resource[:ensure] != :absent
       # Does not exist, but should.
       install
+    end
+
+    if resource[:ensure] == :absent
+      ensure_absent
     end
   end
 
@@ -72,12 +69,17 @@ class Puppet::Provider::RustupExec < Puppet::Provider
     raise 'Unimplemented.'
   end
 
+  # Ensure it’s really gone.
+  #
+  # This is called if ensure == :absent even if exists? == false.
+  def ensure_absent; end
+
   # Run a command as the user
   def execute(command, stdin_file: nil, raise_on_failure: true)
     environment = {
       'PATH' => path_env,
-      'RUSTUP_HOME' => rustup_home,
-      'CARGO_HOME' => cargo_home,
+      'RUSTUP_HOME' => resource[:rustup_home],
+      'CARGO_HOME' => resource[:cargo_home],
     }
 
     stdin_message = stdin_file ? " and stdin_file #{stdin_file}" : ''
@@ -120,12 +122,7 @@ class Puppet::Provider::RustupExec < Puppet::Provider
 
   # Get path to directory where cargo installs binaries
   def bin_path
-    File.join(cargo_home, 'bin')
-  end
-
-  # Get user’s HOME path from the user database
-  def home_path
-    Etc.getpwnam(resource[:user]).dir
+    File.join(resource[:cargo_home], 'bin')
   end
 
   # Output a debugging message
