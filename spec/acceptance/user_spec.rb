@@ -3,7 +3,7 @@
 require 'spec_helper_acceptance'
 
 describe 'Per-user rustup management' do
-  context 'install without toolchain' do
+  context 'supports installing without toolchain' do
     it do
       idempotent_apply(<<~END)
         rustup { 'vagrant': }
@@ -46,7 +46,7 @@ describe 'Per-user rustup management' do
     end
   end
 
-  context 'trivial uninstall' do
+  context 'supports trivial uninstall for a real user' do
     it do
       idempotent_apply(<<~END)
         rustup { 'vagrant':
@@ -73,14 +73,14 @@ describe 'Per-user rustup management' do
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe command("sudo -iu vagrant echo '$PATH'") do
+    describe command_as_vagrant("echo '$PATH'") do
       its(:stdout) { is_expected.not_to match %r{(\A|:)/home/vagrant/\.cargo/bin(:|\Z)} }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
   end
 
-  context 'multi-resource install' do
+  context 'supports multi-resource install' do
     it do
       idempotent_apply(<<~END)
         package { 'gcc': } # Needed for cargo install
@@ -132,7 +132,7 @@ describe 'Per-user rustup management' do
     end
   end
 
-  context 'multi-resource uninstall' do
+  context 'supports multi-resource uninstall for a real user' do
     it do
       idempotent_apply(<<~END)
         rustup { 'vagrant':
