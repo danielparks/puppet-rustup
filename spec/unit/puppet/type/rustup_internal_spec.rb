@@ -15,6 +15,7 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
     it 'has the correct parameters' do
       expect(resource).not_to be_nil
       expect(resource[:modify_path]).to eq true
+      expect(resource[:home]).to eq '/home/user'
       expect(resource[:rustup_home]).to eq '/home/user/.rustup'
       expect(resource[:cargo_home]).to eq '/home/user/.cargo'
       expect(resource[:installer_source]).to eq 'https://sh.rustup.rs'

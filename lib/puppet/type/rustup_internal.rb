@@ -12,6 +12,7 @@ Puppet::Type.newtype(:rustup_internal) do
 
     **Autorequires:**
       * The `user`.
+      * The directory specified by `home`.
       * The directory specified by `cargo_home` and its parent.
       * The directory specified by `rustup_home` and its parent.
   END
@@ -50,17 +51,36 @@ Puppet::Type.newtype(:rustup_internal) do
     defaultto true
   end
 
+  newparam(:home) do
+    desc <<~'END'
+      The user’s home directory (autorequired).
+
+      Default value: `"/home/${user}"`
+    END
+
+    # This won’t work on macOS, but then most people will be using the defined
+    # type wrapper anyway. This is only really useful with `puppet resource`.
+    defaultto { "/home/#{resource[:user]}" }
+
+    validate do |value|
+      unless Puppet::Util.absolute_path?(value)
+        raise Puppet::Error, 'User home must be an absolute path, not "%s"' \
+          % value
+      end
+    end
+  end
+
+  autorequire(:file) { [self[:home]] }
+
   newparam(:cargo_home) do
     desc <<~'END'
       Where `cargo` installs executables (autorequired). Generally you shouldn’t
       change this.
 
-      Default value: `.cargo` in `user`’s home directory.
+      Default value: `"${home}/.cargo"`
     END
 
-    # This won’t work on macOS, but then most people will be using the defined
-    # type wrapper anyway. This is only really useful with `puppet resource`.
-    defaultto { "/home/#{resource[:user]}/.cargo" }
+    defaultto { "#{resource[:home]}/.cargo" }
 
     validate do |value|
       unless Puppet::Util.absolute_path?(value)
@@ -77,12 +97,10 @@ Puppet::Type.newtype(:rustup_internal) do
       Where toolchains are installed (autorequired). Generally you shouldn’t
       change this.
 
-      Default value: `.rustup` in `user`’s home directory.
+      Default value: `"${home}/.rustup"`
     END
 
-    # This won’t work on macOS, but then most people will be using the defined
-    # type wrapper anyway. This is only really useful with `puppet resource`.
-    defaultto { "/home/#{resource[:user]}/.rustup" }
+    defaultto { "#{resource[:home]}/.rustup" }
 
     validate do |value|
       unless Puppet::Util.absolute_path?(value)

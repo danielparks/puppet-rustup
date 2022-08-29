@@ -680,6 +680,7 @@ The name should be the username.
 
 **Autorequires:**
   * The `user`.
+  * The directory specified by `home`.
   * The directory specified by `cargo_home` and its parent.
   * The directory specified by `rustup_home` and its parent.
 
@@ -702,6 +703,7 @@ Default value: `present`
 The following parameters are available in the `rustup_internal` type.
 
 * [`cargo_home`](#cargo_home)
+* [`home`](#home)
 * [`installer_source`](#installer_source)
 * [`modify_path`](#modify_path)
 * [`provider`](#provider)
@@ -713,7 +715,13 @@ The following parameters are available in the `rustup_internal` type.
 Where `cargo` installs executables (autorequired). Generally you shouldn’t
 change this.
 
-Default value: `.cargo` in `user`’s home directory.
+Default value: `"${home}/.cargo"`
+
+##### <a name="home"></a>`home`
+
+The user’s home directory (autorequired).
+
+Default value: `"/home/${user}"`
 
 ##### <a name="installer_source"></a>`installer_source`
 
@@ -742,7 +750,7 @@ usually discover the appropriate provider for your platform.
 Where toolchains are installed (autorequired). Generally you shouldn’t
 change this.
 
-Default value: `.rustup` in `user`’s home directory.
+Default value: `"${home}/.rustup"`
 
 ##### <a name="user"></a>`user`
 

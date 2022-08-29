@@ -38,6 +38,7 @@ define rustup (
   rustup_internal { $name:
     ensure           => $ensure,
     user             => $user,
+    home             => $home,
     rustup_home      => $rustup_home,
     cargo_home       => $cargo_home,
     modify_path      => $modify_path,
