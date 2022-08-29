@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
+# Guard clauses are sometimes ambigious, and often harder to read.
+# rubocop:disable Style/GuardClause
+
 require_relative '../rustup_exec'
+require_relative '../../../puppet_x/rustup/util'
 
 Puppet::Type.type(:rustup_internal).provide(
   :shell, parent: Puppet::Provider::RustupExec
@@ -83,6 +87,37 @@ Puppet::Type.type(:rustup_internal).provide(
     # `secure: true` fails in that case... or maybe that’s all it does?
     FileUtils.rm_rf(resource[:rustup_home])
     FileUtils.rm_rf(resource[:cargo_home])
+
+    if resource[:modify_path]
+      # Remove environment changes from shell scripts
+      source_line = '. "%s/env"' % cargo_home_str
+      rc_files = [
+        # FIXME: deal with ZDOTDIR?
+        '.zshenv', '.zprofile',
+        '.bash_profile', '.bash_login', '.bashrc',
+        '.profile'
+      ]
+      rc_files.each do |rc_file|
+        path = File.join(resource[:home], rc_file)
+        if File.exist? path
+          PuppetX::Rustup::Util.remove_file_line(path, source_line)
+        end
+      end
+    end
+  end
+
+  # Get cargo_home for use in shell init scripts.
+  #
+  # Reproduces cargo_home_str() in rustup/src/cli/self_update/shell.rs
+  #
+  # @see https://github.com/rust-lang/rustup/blob/a441c41679386cf62ebd9e49af6d8b37cd792af6/src/cli/self_update/shell.rs#L54-L68
+  def cargo_home_str
+    if resource[:cargo_home] == File.join(resource[:home], '.cargo')
+      # Special case
+      '$HOME/.cargo'
+    else
+      resource[:cargo_home]
+    end
   end
 
   # Download a URL into a stream

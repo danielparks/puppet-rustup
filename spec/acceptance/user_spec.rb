@@ -220,52 +220,124 @@ describe 'Per-user rustup management' do
   it 'can remove itself after the user was deleted' do
     expect(user('rustup_test')).not_to exist
 
-    # Generate a separate directory to hold .cargo so we can test that rustup
-    # ensure=>absent works when the user is gone but the directory is not.
-    idempotent_apply(<<~'END')
+    apply_manifest(<<~'END')
       user { 'rustup_test':
         ensure     => present,
         managehome => true,
       }
 
-      file { '/rustup_test':
-        ensure  => directory,
+      file { '/home/rustup_test/.bashrc':
+        ensure  => file,
         owner   => 'rustup_test',
         group   => 'rustup_test',
-        mode    => '0755',
+        mode    => '0644',
+        content => "# .bashrc\n",
         require => User['rustup_test'],
+        before  => Rustup['rustup_test'],
       }
 
-      rustup { 'rustup_test':
-        home => '/rustup_test',
-      }
-
-      rustup::default { 'rustup_test: stable':
-        home => '/rustup_test',
-      }
+      rustup { 'rustup_test': }
+      rustup::default { 'rustup_test: stable': }
     END
 
     expect(user('rustup_test')).to exist
-    expect(file('/rustup_test/.cargo/bin/rustup')).to exist
+    expect(file('/home/rustup_test/.cargo/bin/rustup')).to exist
+    expect(file('/home/rustup_test/.bashrc').content)
+      .to eq %(# .bashrc\n. "$HOME/.cargo/env"\n)
 
-    idempotent_apply(<<~'END')
+    apply_manifest(<<~'END')
       user { 'rustup_test':
         ensure => absent,
-      }
-
-      rustup { 'rustup_test':
-        ensure => absent,
-        home   => '/rustup_test',
-      }
-
-      rustup::toolchain { 'rustup_test: stable':
-        ensure => absent,
-        home   => '/rustup_test',
       }
     END
 
     expect(user('rustup_test')).not_to exist
-    expect(file('/rustup_test')).to exist
-    expect(file('/rustup_test/.cargo')).not_to exist
+    expect(file('/home/rustup_test/.cargo/bin/rustup')).to exist
+    expect(file('/home/rustup_test/.bashrc').content)
+      .to eq %(# .bashrc\n. "$HOME/.cargo/env"\n)
+
+    idempotent_apply(<<~'END')
+      rustup { 'rustup_test':
+        ensure => absent,
+      }
+
+      rustup::toolchain { 'rustup_test: stable':
+        ensure => absent,
+      }
+    END
+
+    expect(user('rustup_test')).not_to exist
+    expect(file('/home/rustup_test')).to exist
+    expect(file('/home/rustup_test/.cargo')).not_to exist
+    expect(file('/home/rustup_test/.bashrc').content).to eq %(# .bashrc\n)
+  end
+
+  it 'can remove itself after the user was deleted (with custom cargo_home)' do
+    expect(user('rustup_test')).not_to exist
+
+    apply_manifest(<<~'END')
+      user { 'rustup_test':
+        ensure     => present,
+        managehome => true,
+      }
+
+      file {
+        default:
+          owner   => 'rustup_test',
+          group   => 'rustup_test',
+          mode    => '0644',
+          require => User['rustup_test'],
+          before  => Rustup['rustup_test'],
+        ;
+        '/home/rustup_test/.bashrc':
+          ensure  => file,
+          content => "# .bashrc\n",
+        ;
+        ['/home/rustup_test/a', '/home/rustup_test/a/b']:
+          ensure => directory,
+        ;
+      }
+
+      rustup { 'rustup_test':
+        cargo_home => '/home/rustup_test/a/b/.cargo',
+      }
+
+      rustup::default { 'rustup_test: stable':
+        cargo_home => '/home/rustup_test/a/b/.cargo',
+      }
+    END
+
+    expect(user('rustup_test')).to exist
+    expect(file('/home/rustup_test/a/b/.cargo/bin/rustup')).to exist
+    expect(file('/home/rustup_test/.bashrc').content)
+      .to eq %(# .bashrc\n. "/home/rustup_test/a/b/.cargo/env"\n)
+
+    apply_manifest(<<~'END')
+      user { 'rustup_test':
+        ensure => absent,
+      }
+    END
+
+    expect(user('rustup_test')).not_to exist
+    expect(file('/home/rustup_test/a/b/.cargo/bin/rustup')).to exist
+    expect(file('/home/rustup_test/.bashrc').content)
+      .to eq %(# .bashrc\n. "/home/rustup_test/a/b/.cargo/env"\n)
+
+    idempotent_apply(<<~'END')
+      rustup { 'rustup_test':
+        ensure     => absent,
+        cargo_home => '/home/rustup_test/a/b/.cargo',
+      }
+
+      rustup::toolchain { 'rustup_test: stable':
+        ensure     => absent,
+        cargo_home => '/home/rustup_test/a/b/.cargo',
+      }
+    END
+
+    expect(user('rustup_test')).not_to exist
+    expect(file('/home/rustup_test')).to exist
+    expect(file('/home/rustup_test/a/b/.cargo')).not_to exist
+    expect(file('/home/rustup_test/.bashrc').content).to eq %(# .bashrc\n)
   end
 end
