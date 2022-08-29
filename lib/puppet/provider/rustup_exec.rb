@@ -31,6 +31,10 @@ class Puppet::Provider::RustupExec < Puppet::Provider
       # Does not exist, but should.
       install
     end
+
+    if resource[:ensure] == :absent
+      ensure_absent
+    end
   end
 
   protected
@@ -60,6 +64,12 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   #   * ensure == :absent
   def uninstall
     raise 'Unimplemented.'
+  end
+
+  # Ensure it’s really gone.
+  #
+  # This is called if ensure == :absent even if exists? == false.
+  def ensure_absent
   end
 
   # Run a command as the user

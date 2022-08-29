@@ -63,7 +63,26 @@ Puppet::Type.type(:rustup_internal).provide(
   #   * exists? == true
   #   * ensure == :absent
   def uninstall
+    begin
+      Etc.getpwnam(resource[:user])
+    rescue ArgumentError
+      # User doesn’t exist; rely on ensure_absent to delete things.
+      return
+    end
+
+    # User exists, go ahead and uninstall.
     rustup 'self', 'uninstall', '-y'
+  end
+
+  # Ensure it’s really gone.
+  #
+  # This is called if ensure == :absent even if exists? == false.
+  def ensure_absent
+    # FIXME use `secure: true`? I’m confused about what the vulnerablity is. It
+    # seems to require a world-writable parent directory, but it looks like
+    # `secure: true` fails in that case... or maybe that’s all it does?
+    FileUtils.rm_rf(resource[:rustup_home])
+    FileUtils.rm_rf(resource[:cargo_home])
   end
 
   # Download a URL into a stream

@@ -216,4 +216,58 @@ describe 'Per-user rustup management' do
 
     expect(user('non_existant_user')).not_to exist
   end
+
+  it 'can remove itself after the user was deleted' do
+    expect(user('rustup_test')).not_to exist
+
+    # Generate a separate directory to hold .cargo so we can test that rustup
+    # ensure=>absent works when the user is gone but the directory is not.
+    idempotent_apply(<<~END)
+      user { 'rustup_test':
+        ensure     => present,
+        managehome => true,
+      }
+
+      file { '/rustup_test':
+        ensure  => directory,
+        owner   => 'rustup_test',
+        group   => 'rustup_test',
+        mode    => '0755',
+        require => User['rustup_test'],
+      }
+
+      rustup { 'rustup_test':
+        home => '/rustup_test',
+      }
+
+      rustup::default { 'rustup_test: stable':
+        home => '/rustup_test',
+      }
+    END
+
+    expect(user('rustup_test')).to exist
+    expect(file('/rustup_test/.cargo/bin/rustup')).to exist
+
+    idempotent_apply(<<~END)
+      user { 'rustup_test':
+        ensure => absent,
+      }
+
+      rustup { 'rustup_test':
+        ensure => absent,
+        home   => '/rustup_test',
+      }
+
+      # FIXME currently this runs before rustup. How should it handle the user
+      # being going, but the installation being present?
+      #rustup::toolchain { 'rustup_test: stable':
+      #  ensure => absent,
+      #  home   => '/rustup_test',
+      #}
+    END
+
+    expect(user('rustup_test')).not_to exist
+    expect(file('/rustup_test')).to exist
+    expect(file('/rustup_test/.cargo')).not_to exist
+  end
 end
