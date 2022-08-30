@@ -20,7 +20,7 @@
 #   Where `cargo` installs executables. Generally you shouldn’t change this.
 # @param modify_path
 #   Whether or not to let `rustup` modify the user’s `PATH` in their shell init
-#   scripts. Changing this will have no effect after the initial installation.
+#   scripts. This only affects the initial installation and removal.
 # @param installer_source
 #   URL of the rustup installation script. Changing this will have no effect
 #   after the initial installation.
@@ -43,27 +43,5 @@ define rustup (
     cargo_home       => $cargo_home,
     modify_path      => $modify_path,
     installer_source => $installer_source,
-  }
-
-  if $ensure == absent {
-    file { [$rustup_home, $cargo_home]:
-      ensure  => absent,
-      force   => true,
-      require => Rustup_internal[$name],
-    }
-
-    # FIXME it would be nice to be able to enforce this, but we can’t guarantee
-    # these files exist. Plus, CentOS uses .bash_profile.
-    # if $modify_path {
-    #   [".bashrc", ".profile"].each |$file| {
-    #     $path = "${home}/${file}"
-    #     file_line { "${path} -. \"\$HOME/.cargo/env\"":
-    #       ensure            => absent,
-    #       path              => $path,
-    #       match             => '^[.] "\$HOME/\.cargo/env"$',
-    #       match_for_absence => true,
-    #     }
-    #   }
-    # }
   }
 }
