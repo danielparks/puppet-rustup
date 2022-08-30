@@ -207,7 +207,7 @@ Default value: `"${home}/.cargo"`
 Data type: `Boolean`
 
 Whether or not to let `rustup` modify the user’s `PATH` in their shell init
-scripts. Changing this will have no effect after the initial installation.
+scripts. This only affects the initial installation and removal.
 
 Default value: ``true``
 
@@ -735,8 +735,7 @@ Default value: `https://sh.rustup.rs`
 Valid values: ``true``, ``false``, `yes`, `no`
 
 Whether or not to let `rustup` modify the user’s `PATH` in their shell
-init scripts. Changing this will have no effect after the initial
-installation.
+init scripts. This only affects the initial installation and removal.
 
 Default value: ``true``
 
