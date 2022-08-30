@@ -5,7 +5,7 @@ require 'spec_helper_acceptance'
 describe 'Per-user rustup management' do
   context 'supports installing without toolchain' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         rustup { 'vagrant': }
       END
     end
@@ -61,7 +61,7 @@ describe 'Per-user rustup management' do
 
   context 'supports trivial uninstall for a real user' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         rustup { 'vagrant':
           ensure => absent,
         }
@@ -95,7 +95,7 @@ describe 'Per-user rustup management' do
 
   context 'supports multi-resource install' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         package { 'gcc': } # Needed for cargo install
         rustup { 'vagrant': }
         rustup::toolchain { 'vagrant: stable': }
@@ -161,7 +161,7 @@ describe 'Per-user rustup management' do
 
   context 'supports multi-resource uninstall for a real user' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         rustup { 'vagrant':
           ensure => absent,
         }
@@ -202,7 +202,7 @@ describe 'Per-user rustup management' do
   it 'supports ensure=>absent with non-existant user' do
     expect(user('non_existant_user')).not_to exist
 
-    idempotent_apply(<<~END)
+    idempotent_apply(<<~'END')
       rustup { 'non_existant_user':
         ensure => absent,
       }
@@ -222,7 +222,7 @@ describe 'Per-user rustup management' do
 
     # Generate a separate directory to hold .cargo so we can test that rustup
     # ensure=>absent works when the user is gone but the directory is not.
-    idempotent_apply(<<~END)
+    idempotent_apply(<<~'END')
       user { 'rustup_test':
         ensure     => present,
         managehome => true,
@@ -248,7 +248,7 @@ describe 'Per-user rustup management' do
     expect(user('rustup_test')).to exist
     expect(file('/rustup_test/.cargo/bin/rustup')).to exist
 
-    idempotent_apply(<<~END)
+    idempotent_apply(<<~'END')
       user { 'rustup_test':
         ensure => absent,
       }

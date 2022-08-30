@@ -5,7 +5,7 @@ require 'spec_helper_acceptance'
 describe 'Global rustup management' do
   context 'supports out-of-order targets and toolchains with a nologin shell' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         class { 'rustup::global':
           shell => '/usr/sbin/nologin',
         }
@@ -52,7 +52,7 @@ describe 'Global rustup management' do
 
   context 'supports uninstalling a target with a nologin shell' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         class { 'rustup::global':
           shell => '/usr/sbin/nologin',
         }
@@ -87,7 +87,7 @@ describe 'Global rustup management' do
 
   context 'supports uninstalling a toolchain with a nologin shell' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         class { 'rustup::global':
           shell => '/usr/sbin/nologin',
         }
@@ -124,7 +124,7 @@ describe 'Global rustup management' do
 
   context 'supports ensure=>absent on multiple resources at once' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         class { 'rustup::global':
           ensure => absent,
         }
@@ -152,7 +152,7 @@ describe 'Global rustup management' do
 
   context 'supports basic install with no toolchain' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         include rustup::global
       END
 
@@ -173,7 +173,7 @@ describe 'Global rustup management' do
 
   context 'supports basic global uninstall' do
     it do
-      idempotent_apply(<<~END)
+      idempotent_apply(<<~'END')
         class { 'rustup::global':
           ensure => absent,
         }
