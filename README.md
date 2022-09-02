@@ -18,7 +18,6 @@ use it:
 ~~~ puppet
 rustup { 'user': }
 rustup::toolchain { 'user: stable': }
-rustup::default { 'user: stable': }
 rustup::target { 'user: x86_64-unknown-linux-gnux32': }
 rustup::toolchain { 'user: nightly': }
 rustup::target { 'user: x86_64-unknown-linux-gnux32 nightly': }
@@ -30,7 +29,6 @@ rustup::target { 'user: x86_64-unknown-linux-musl nightly': }
 ~~~ puppet
 include rustup::global
 rustup::global::toolchain { 'stable': }
-rustup::global::default { 'stable': }
 rustup::global::target { 'x86_64-unknown-linux-gnux32': }
 rustup::global::toolchain { 'nightly': }
 rustup::global::target { 'x86_64-unknown-linux-gnux32 nightly': }

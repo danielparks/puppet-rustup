@@ -65,4 +65,9 @@ module PuppetX::Rustup::Util
   def self.non_empty_string?(input)
     input.is_a?(String) && !input.empty?
   end
+
+  # Check that input is nil or a non-empty string.
+  def self.nil_or_non_empty_string?(input)
+    input.nil? || non_empty_string?(input)
+  end
 end

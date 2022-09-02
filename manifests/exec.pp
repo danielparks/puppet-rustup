@@ -72,4 +72,12 @@ define rustup::exec (
   -> exec { "rustup::exec: ${name}":
     * => $params + $more,
   }
+
+  # Generally exec requires an installation...
+  Rustup_internal <| |> -> Exec["rustup::exec: ${name}"]
+  # ...except when the installation is being deleted. In that case, the exec
+  # probably doesn’t need to run. Making the exec dependent on `rustup` being
+  # installed can help:
+  #
+  #     onlyif => "sh -c 'command -v rustup &>/dev/null' && ...",
 }

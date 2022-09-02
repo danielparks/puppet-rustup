@@ -11,6 +11,19 @@
 #   * `absent` - uninstall rustup and the tools it manages.
 # @param user
 #   The user to own and manage rustup.
+# @param default_toolchain
+#   Which toolchain should be the default.
+# @param toolchains
+#   The toolchains to install.
+# @param purge_toolchains
+#   Whether or not to uninstall toolchains that aren’t managed by Puppet.
+# @param targets
+#   The targets to install. These can take two forms:
+#
+#     * `"$target $toolchain"`: Install `$target` for `$toolchain`.
+#     * `"$target"`: Install `$target` for the default toolchain.
+# @param purge_targets
+#   Whether or not to uninstall targets that aren’t managed by Puppet.
 # @param home
 #   The user’s home directory. This defaults to `/home/$user` on Linux and
 #   `/Users/$user` on macOS.
@@ -25,23 +38,51 @@
 #   URL of the rustup installation script. Changing this will have no effect
 #   after the initial installation.
 define rustup (
-  Enum[present, latest, absent] $ensure           = present,
-  String[1]                     $user             = $name,
-  Stdlib::Absolutepath          $home             = rustup::home($user),
-  Stdlib::Absolutepath          $rustup_home      = "${home}/.rustup",
-  Stdlib::Absolutepath          $cargo_home       = "${home}/.cargo",
-  Boolean                       $modify_path      = true,
-  Stdlib::HTTPUrl               $installer_source = 'https://sh.rustup.rs',
+  Enum[present, latest, absent] $ensure            = present,
+  String[1]                     $user              = $name,
+  Optional[String[1]]           $default_toolchain = undef,
+  Array[String[1]]              $toolchains        = [],
+  Boolean                       $purge_toolchains  = true,
+  Array[String[1]]              $targets           = [],
+  Boolean                       $purge_targets     = true,
+  Stdlib::Absolutepath          $home              = rustup::home($user),
+  Stdlib::Absolutepath          $rustup_home       = "${home}/.rustup",
+  Stdlib::Absolutepath          $cargo_home        = "${home}/.cargo",
+  Boolean                       $modify_path       = true,
+  Stdlib::HTTPUrl               $installer_source  = 'https://sh.rustup.rs',
 ) {
-  include rustup::ordering
+  if $ensure == absent {
+    $_toolchains = []
+    $_targets = []
+  } else {
+    $_toolchains = $toolchains.map |$toolchain| {
+      {
+        ensure    => present,
+        toolchain => $toolchain,
+      }
+    }
+
+    $_targets = $targets.map |$target| {
+      {
+        ensure    => present,
+        target    => $target.split(' ')[0],
+        toolchain => $target.split(' ')[1],
+      }
+    }
+  }
 
   rustup_internal { $name:
-    ensure           => $ensure,
-    user             => $user,
-    home             => $home,
-    rustup_home      => $rustup_home,
-    cargo_home       => $cargo_home,
-    modify_path      => $modify_path,
-    installer_source => $installer_source,
+    ensure            => $ensure,
+    user              => $user,
+    default_toolchain => $default_toolchain,
+    toolchains        => $_toolchains,
+    purge_toolchains  => $purge_toolchains,
+    targets           => $_targets,
+    purge_targets     => $purge_targets,
+    home              => $home,
+    rustup_home       => $rustup_home,
+    cargo_home        => $cargo_home,
+    modify_path       => $modify_path,
+    installer_source  => $installer_source,
   }
 }
