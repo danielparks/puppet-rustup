@@ -79,9 +79,11 @@ class Puppet::Provider::RustupExec < Puppet::Provider
       'CARGO_HOME' => resource[:cargo_home],
     }
 
-    stdin_message = stdin_file ? " and stdin_file #{stdin_file}" : ''
-    debug("Running #{command} for user #{resource[:user]} with environment" \
-      " #{environment}#{stdin_message}")
+    debug do
+      stdin_message = stdin_file ? " and stdin_file #{stdin_file.inspect}" : ''
+      "Running #{command.inspect} for user #{resource[:user].inspect} with " \
+      "environment #{environment.inspect}#{stdin_message}"
+    end
 
     # FIXME: timeout?
     Puppet::Util::Execution.execute(
@@ -123,7 +125,14 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   end
 
   # Output a debugging message
-  def debug(message)
-    Puppet.debug("#{self.class.resource_type.name}: #{message}")
+  def debug(*args)
+    Puppet.debug do
+      message = if block_given?
+                  yield(*args)
+                else
+                  args.join(' ')
+                end
+      "#{self.class.resource_type.name}: #{message}"
+    end
   end
 end

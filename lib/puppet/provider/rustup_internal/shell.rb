@@ -28,7 +28,9 @@ Puppet::Type.type(:rustup_internal).provide(
     script = Tempfile.new(['puppet-rustup-init', '.sh'])
     begin
       url = URI.parse(resource[:installer_source])
-      debug("Starting download from #{url} into #{script.path}")
+      debug do
+        "Starting download from #{url.inspect} into #{script.path.inspect}"
+      end
       download_into(url, script)
       script.flush
 
@@ -43,7 +45,7 @@ Puppet::Type.type(:rustup_internal).provide(
         raise Puppet::ExecutionFailure, "Installing rustup failed: #{output}"
       end
     ensure
-      debug("Deleting #{script.path}")
+      debug { "Deleting #{script.path.inspect}" }
       script.close
       script.unlink
     end
