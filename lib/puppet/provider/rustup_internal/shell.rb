@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# Guard clauses are sometimes ambigious, and often harder to read.
-# rubocop:disable Style/GuardClause
-
 require_relative '../rustup_exec'
 require_relative '../../../puppet_x/rustup/util'
 

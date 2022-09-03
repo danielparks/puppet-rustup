@@ -19,3 +19,11 @@ Gemfile:
         ref: 'main'
 spec/spec_helper.rb:
   mock_with: ':rspec'
+.rubocop.yml:
+  default_configs:
+    # Guard clauses are sometimes ambigious, and often harder to read.
+    Style/GuardClause:
+      Enabled: false
+    # Using next instead of if often makes things harder to read.
+    Style/Next:
+      Enabled: false

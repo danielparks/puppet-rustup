@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# Guard clauses are sometimes ambigious, and often harder to read.
-# rubocop:disable Style/GuardClause
-
 Puppet::Type.newtype(:rustup_toolchain) do
   @doc = <<~'END'
     @summary Manage a toolchain

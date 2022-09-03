@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# Guard clauses are sometimes ambigious, and often harder to read.
-# rubocop:disable Style/GuardClause
-
 require 'puppet_x'
 
 # Support module for rustup
