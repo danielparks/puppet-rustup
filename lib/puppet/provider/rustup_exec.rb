@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# Guard clauses are sometimes ambigious, and often harder to read.
-# rubocop:disable Style/GuardClause
-
 # Base class for rustup providers
 class Puppet::Provider::RustupExec < Puppet::Provider
   # It’s not really reliable to query rustup installations by user, since they
