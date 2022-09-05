@@ -135,4 +135,20 @@ class Puppet::Provider::RustupExec < Puppet::Provider
       "#{self.class.resource_type.name}: #{message}"
     end
   end
+
+  # Add logging methods for the other levels
+  Puppet::Util::Log.eachlevel do |level|
+    if level == :debug
+      next
+    end
+
+    define_method(level) do |*args, &block|
+      message = if block.nil?
+                  args.join(' ')
+                else
+                  block.call(*args)
+                end
+      Puppet.send_log(level, "#{self.class.resource_type.name}: #{message}")
+    end
+  end
 end
