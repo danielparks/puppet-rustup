@@ -33,7 +33,7 @@ Puppet::Type.newtype(:rustup_internal) do
     desc 'The user that owns this instance of `rustup` (autorequired).'
 
     validate do |value|
-      if !value.is_a?(String) || value.empty?
+      unless PuppetX::Rustup::Util.non_empty_string? value
         raise Puppet::Error, 'User is required to be a non-empty string.'
       end
     end
@@ -120,7 +120,7 @@ Puppet::Type.newtype(:rustup_internal) do
     defaultto 'https://sh.rustup.rs'
 
     validate do |value|
-      if !value.is_a?(String) || value.empty?
+      unless PuppetX::Rustup::Util.non_empty_string? value
         raise Puppet::Error, 'Installer source must be a valid URL, not "%s".' \
           % value
       end

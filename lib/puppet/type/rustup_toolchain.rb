@@ -32,7 +32,7 @@ Puppet::Type.newtype(:rustup_toolchain) do
     desc 'The user that owns this toolchain (autorequired).'
 
     validate do |value|
-      if !value.is_a?(String) || value.empty?
+      unless PuppetX::Rustup::Util.non_empty_string? value
         raise Puppet::Error, 'User is required to be a non-empty string.'
       end
     end
@@ -46,16 +46,16 @@ Puppet::Type.newtype(:rustup_toolchain) do
     desc 'The toolchain'
 
     validate do |value|
-      if !value.is_a?(String) || value.empty?
+      unless PuppetX::Rustup::Util.non_empty_string? value
         raise Puppet::Error, 'Toolchain is required to be a non-empty string.'
       end
     end
   end
 
   validate do
-    if !self[:user].is_a?(String) || self[:user].empty?
+    if !PuppetX::Rustup::Util.non_empty_string? self[:user]
       raise Puppet::Error, 'User is required to be a non-empty string.'
-    elsif !self[:toolchain].is_a?(String) || self[:toolchain].empty?
+    elsif !PuppetX::Rustup::Util.non_empty_string? self[:toolchain]
       raise Puppet::Error, 'Toolchain is required to be a non-empty string.'
     end
   end

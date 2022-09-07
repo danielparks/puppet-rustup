@@ -24,5 +24,10 @@ module PuppetX::Rustup
         IO.write(path, contents)
       end
     end
+
+    # Check that input is a non-empty string.
+    def self.non_empty_string?(input)
+      input.is_a?(String) && !input.empty?
+    end
   end
 end
