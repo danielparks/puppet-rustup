@@ -17,6 +17,8 @@ Puppet::Type.newtype(:rustup_internal) do
       * The directory specified by `rustup_home` and its parent.
   END
 
+  # This will consult provider.exists? and determine whether or not to a change
+  # has been made based on that (latest will always result in a change).
   ensurable do
     desc <<~'END'
       * `present` - install `rustup`, but don’t update it.
@@ -24,7 +26,9 @@ Puppet::Type.newtype(:rustup_internal) do
       * `absent` - uninstall `rustup` and the tools it manages.
     END
 
-    newvalues :present, :latest, :absent
+    newvalue(:present) { provider.create }
+    newvalue(:latest) { provider.update }
+    newvalue(:absent) { provider.destroy }
     defaultto :present
   end
 

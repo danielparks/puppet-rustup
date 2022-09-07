@@ -14,57 +14,46 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   # at all, since we can just access the resource itself.
   def ensure=(value); end
 
-  # Determine if the resource exists on the system
+  # Determine if the resource exists on the system.
   def exists?
     raise 'Unimplemented.'
   end
 
-  # Changes have been made to the resource; apply them.
-  def flush
-    if exists?
-      if resource[:ensure] == :absent
-        uninstall
-      elsif resource[:ensure] == :latest
-        update
-      end
-    elsif resource[:ensure] != :absent
-      # Does not exist, but should.
-      install
-    end
+  # The resource thinks we need to create it on the system.
+  #
+  # This is called from the `ensurable` block on the resource, e.g:
+  #     newvalue(:present) { provider.create }
+  def create
+    raise 'Unimplemented.'
+  end
 
+  # The resource thinks we need to update it on the system.
+  #
+  # This is called from the `ensurable` block on the resource, e.g:
+  #     newvalue(:latest) { provider.update }
+  def update
+    raise 'Unimplemented.'
+  end
+
+  # The resource thinks we need to destroy it on the system.
+  #
+  # This is called from the `ensurable` block on the resource, e.g:
+  #     newvalue(:absent) { provider.destroy }
+  def destroy
+    raise 'Unimplemented.'
+  end
+
+  # Changes have been made to the resource; apply them.
+  #
+  # Installing, updating, and uninstalling rustup is handled separately because
+  # of the way Puppet logs things.
+  def flush
     if resource[:ensure] == :absent
       ensure_absent
     end
   end
 
   protected
-
-  # Install resource for the first time.
-  #
-  # Will only be called if both:
-  #   * exists? == false
-  #   * ensure != :absent
-  def install
-    raise 'Unimplemented.'
-  end
-
-  # Update a previously installed resource.
-  #
-  # Will only be called if both:
-  #   * exists? == true
-  #   * ensure == :latest
-  def update
-    raise 'Unimplemented.'
-  end
-
-  # Uninstall a previously installed resource.
-  #
-  # Will only be called if both:
-  #   * exists? == true
-  #   * ensure == :absent
-  def uninstall
-    raise 'Unimplemented.'
-  end
 
   # Ensure it’s really gone.
   #

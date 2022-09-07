@@ -8,19 +8,13 @@ Puppet::Type.type(:rustup_internal).provide(
 ) do
   desc 'Run shell-based `rustup` installer on UNIX-like platforms.'
 
-  # Determine if `rustup` has been installed on the system for this user
+  # Determine if `rustup` has been installed on the system for this user.
   def exists?
     rustup_installed?
   end
 
-  protected
-
-  # Install `rustup` for the first time.
-  #
-  # Will only be called if both:
-  #   * exists? == false
-  #   * ensure != :absent
-  def install
+  # The resource thinks we need to install `rustup`.
+  def create
     # Puppet::Util::Execution.execute can’t accept an IO stream or a string as
     # stdin, so we save the script as a file and pipe it into stdin. (We don’t
     # run the script file directly because we cannot guarantee that the user we
@@ -52,21 +46,13 @@ Puppet::Type.type(:rustup_internal).provide(
     end
   end
 
-  # Update previously installed `rustup`.
-  #
-  # Will only be called if both:
-  #   * exists? == true
-  #   * ensure == :latest
+  # The resource thinks we need to update `rustup`.
   def update
     rustup 'self', 'update'
   end
 
-  # Uninstall previously installed `rustup`.
-  #
-  # Will only be called if both:
-  #   * exists? == true
-  #   * ensure == :absent
-  def uninstall
+  # The resource thinks we need to uninstall `rustup`.
+  def destroy
     begin
       Etc.getpwnam(resource[:user])
     rescue ArgumentError
@@ -77,6 +63,8 @@ Puppet::Type.type(:rustup_internal).provide(
     # User exists, go ahead and uninstall.
     rustup 'self', 'uninstall', '-y'
   end
+
+  protected
 
   # Ensure it’s really gone.
   #

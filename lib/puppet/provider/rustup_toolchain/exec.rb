@@ -7,12 +7,27 @@ Puppet::Type.type(:rustup_toolchain).provide(
 ) do
   desc 'Use `rustup` to manage toolchains.'
 
-  # Determine if this toolchain has been installed on the system for this user
+  # Determine if this toolchain has been installed on the system for this user.
   def exists?
     rustup_installed? &&
       make_toolchain_matcher(resource[:toolchain]).match?(
         rustup('toolchain', 'list'),
       )
+  end
+
+  # The resource thinks we need to install the toolchain.
+  def create
+    rustup 'toolchain', 'install', '--no-self-update', resource[:toolchain]
+  end
+
+  # The resource thinks we need to update the toolchain.
+  def update
+    create
+  end
+
+  # The resource thinks we need to uninstall the toolchain.
+  def destroy
+    rustup 'toolchain', 'uninstall', resource[:toolchain]
   end
 
   # There are some flaws in this.
@@ -127,34 +142,5 @@ Puppet::Type.type(:rustup_toolchain).provide(
     end
 
     nil
-  end
-
-  protected
-
-  # Install toolchain for the first time.
-  #
-  # Will only be called if both:
-  #   * exists? == false
-  #   * ensure != :absent
-  def install
-    rustup 'toolchain', 'install', '--no-self-update', resource[:toolchain]
-  end
-
-  # Update previously installed `rustup`.
-  #
-  # Will only be called if both:
-  #   * exists? == true
-  #   * ensure == :latest
-  def update
-    install
-  end
-
-  # Uninstall a previously installed toolchain.
-  #
-  # Will only be called if both:
-  #   * exists? == true
-  #   * ensure == :absent
-  def uninstall
-    rustup 'toolchain', 'uninstall', resource[:toolchain]
   end
 end

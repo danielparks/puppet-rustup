@@ -16,6 +16,8 @@ Puppet::Type.newtype(:rustup_toolchain) do
       * The `rustup` resource with a name matching `user`.
   END
 
+  # This will consult provider.exists? and determine whether or not to a change
+  # has been made based on that (latest will always result in a change).
   ensurable do
     desc <<~'END'
       * `present` - install toolchain, but don’t update it.
@@ -23,7 +25,9 @@ Puppet::Type.newtype(:rustup_toolchain) do
       * `absent` - uninstall toolchain.
     END
 
-    newvalues :present, :latest, :absent
+    newvalue(:present) { provider.create }
+    newvalue(:latest) { provider.update }
+    newvalue(:absent) { provider.destroy }
     defaultto :present
   end
 
