@@ -50,13 +50,21 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   def flush
     if resource[:ensure] == :absent
       ensure_absent
+    else
+      ensure_not_absent
     end
   end
 
   # Ensure it’s really gone.
   #
-  # This is called if ensure == :absent even if exists? == false.
+  # This is called if `ensure` is `absent` even if `exists? == false`.
   def ensure_absent; end
+
+  # Make sure all the bits and pieces are installed.
+  #
+  # This is called when `ensure` is not `absent`, i.e. `present` or `latest`. It
+  # is called even if `exist? == true`.
+  def ensure_not_absent; end
 
   # Determine if `rustup` has been installed on the system for this user
   def rustup_installed?
