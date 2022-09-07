@@ -15,34 +15,23 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # The resource thinks we need to install `rustup`.
   def create
+    url = URI.parse(resource[:installer_source])
+
     # Puppet::Util::Execution.execute can’t accept an IO stream or a string as
     # stdin, so we save the script as a file and pipe it into stdin. (We don’t
     # run the script file directly because we cannot guarantee that the user we
     # wish to run it as will have access, even with chmod.)
-    script = Tempfile.new(['puppet-rustup-init', '.sh'])
-    begin
-      url = URI.parse(resource[:installer_source])
-      debug do
-        "Starting download from #{url.inspect} into #{script.path.inspect}"
-      end
-      download_into(url, script)
-      script.flush
-
+    PuppetX::Rustup::Util.download(url, ['puppet-rustup-init', '.sh']) do |sh|
       command = ['/bin/sh', '-s', '--', '-y', '--default-toolchain', 'none']
       unless resource[:modify_path]
         command << '--no-modify-path'
       end
 
       # The default error message for failure would be confusing.
-      output = execute(command, stdin_file: script.path,
-        raise_on_failure: false)
+      output = execute(command, stdin_file: sh.path, raise_on_failure: false)
       if output.exitstatus != 0
         raise Puppet::ExecutionFailure, "Installing rustup failed: #{output}"
       end
-    ensure
-      debug { "Deleting #{script.path.inspect}" }
-      script.close
-      script.unlink
     end
   end
 
@@ -105,24 +94,6 @@ Puppet::Type.type(:rustup_internal).provide(
       '$HOME/.cargo'
     else
       resource[:cargo_home]
-    end
-  end
-
-  # Download a URL into a stream
-  def download_into(url, output)
-    client = Puppet.runtime[:http]
-    client.get(url, options: { include_system_store: true }) do |response|
-      unless response.success?
-        message = response.body.empty? ? response.reason : response.body
-        raise Net::HTTPError.new(
-          "Error #{response.code} on SERVER: #{message}",
-          Puppet::HTTP::ResponseConverter.to_ruby_response(response),
-        )
-      end
-
-      response.read_body do |chunk|
-        output.print(chunk)
-      end
     end
   end
 end

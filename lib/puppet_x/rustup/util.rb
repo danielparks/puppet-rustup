@@ -4,6 +4,44 @@ require_relative '../rustup'
 
 # Utility functions for rustup
 module PuppetX::Rustup::Util
+  # Download a URL into a stream.
+  def self.download_into(url, output)
+    client = Puppet.runtime[:http]
+    client.get(url, options: { include_system_store: true }) do |response|
+      unless response.success?
+        message = response.body.empty? ? response.reason : response.body
+        raise Net::HTTPError.new(
+          "Error #{response.code} on SERVER: #{message}",
+          Puppet::HTTP::ResponseConverter.to_ruby_response(response),
+        )
+      end
+
+      response.read_body do |chunk|
+        output.print(chunk)
+      end
+    end
+  end
+
+  # Make a download available as a `Tempfile` in a block.
+  #
+  #     download('https://example.com/test.sh', ['test', '.sh']) do |file|
+  #       puts "#{file.path} will be deleted after the block ends."
+  #     end
+  def self.download(url, basename = '', &block)
+    file = Tempfile.new(basename)
+    begin
+      Puppet.debug { "Downloading #{url.inspect} into #{file.path.inspect}" }
+      PuppetX::Rustup::Util.download_into(url, file)
+      file.flush
+
+      block.call(file)
+    ensure
+      Puppet.debug { "Deleting #{file.path.inspect}" }
+      file.close
+      file.unlink
+    end
+  end
+
   # Remove a line from a file.
   #
   # This does the removal in place to avoid problems with symlinks, hard
