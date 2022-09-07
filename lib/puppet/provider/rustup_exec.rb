@@ -53,38 +53,10 @@ class Puppet::Provider::RustupExec < Puppet::Provider
     end
   end
 
-  protected
-
   # Ensure it’s really gone.
   #
   # This is called if ensure == :absent even if exists? == false.
   def ensure_absent; end
-
-  # Run a command as the user
-  def execute(command, stdin_file: nil, raise_on_failure: true)
-    environment = {
-      'PATH' => path_env,
-      'RUSTUP_HOME' => resource[:rustup_home],
-      'CARGO_HOME' => resource[:cargo_home],
-    }
-
-    debug do
-      stdin_message = stdin_file ? " and stdin_file #{stdin_file.inspect}" : ''
-      "Running #{command.inspect} for user #{resource[:user].inspect} with " \
-      "environment #{environment.inspect}#{stdin_message}"
-    end
-
-    # FIXME: timeout?
-    Puppet::Util::Execution.execute(
-      command,
-      failonfail: raise_on_failure,
-      uid: resource[:user],
-      combine: true,
-      stdinfile: stdin_file,
-      override_locale: false,
-      custom_environment: environment,
-    )
-  end
 
   # Determine if `rustup` has been installed on the system for this user
   def rustup_installed?
@@ -111,6 +83,34 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   # Get path to directory where cargo installs binaries
   def bin_path
     File.join(resource[:cargo_home], 'bin')
+  end
+
+  protected
+
+  # Run a command as the user
+  def execute(command, stdin_file: nil, raise_on_failure: true)
+    environment = {
+      'PATH' => path_env,
+      'RUSTUP_HOME' => resource[:rustup_home],
+      'CARGO_HOME' => resource[:cargo_home],
+    }
+
+    debug do
+      stdin_message = stdin_file ? " and stdin_file #{stdin_file.inspect}" : ''
+      "Running #{command.inspect} for user #{resource[:user].inspect} with " \
+      "environment #{environment.inspect}#{stdin_message}"
+    end
+
+    # FIXME: timeout?
+    Puppet::Util::Execution.execute(
+      command,
+      failonfail: raise_on_failure,
+      uid: resource[:user],
+      combine: true,
+      stdinfile: stdin_file,
+      override_locale: false,
+      custom_environment: environment,
+    )
   end
 
   # Output a debugging message
