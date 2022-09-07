@@ -120,16 +120,14 @@ Puppet::Type.newtype(:rustup_internal) do
     defaultto 'https://sh.rustup.rs'
 
     validate do |value|
-      unless PuppetX::Rustup::Util.non_empty_string? value
-        raise Puppet::Error, 'Installer source must be a valid URL, not "%s".' \
-          % value
+      unless PuppetX::Rustup::Util.non_empty_string?(value) \
+          && URI.parse(value).absolute?
+        # The message is ignored and recreated in the rescue clause.
+        raise Puppet::Error
       end
-      begin
-        URI.parse(value)
-      rescue
-        raise Puppet::Error, 'Installer source must be a valid URL, not "%s".' \
-          % value
-      end
+    rescue
+      raise Puppet::Error, 'Installer source must be a valid URL, not %s.' \
+        % value.inspect
     end
   end
 
