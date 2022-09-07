@@ -54,7 +54,11 @@ describe 'Per-user rustup management' do
     # long as the tests are run in order (sigh), they should clean themselves
     # up. Unfortunately, there doesn’t seem to be a way to just reset the VM.
     describe command_as_vagrant('cargo init hello-world --bin --quiet') do
-      its(:stderr) { is_expected.to match(%r{error: rustup could not choose a version of cargo to run}) }
+      its(:stderr) do
+        is_expected.to match(
+          %r{error: rustup could not choose a version of cargo to run},
+        )
+      end
       its(:exit_status) { is_expected.to be > 0 }
     end
   end
@@ -87,7 +91,9 @@ describe 'Per-user rustup management' do
     end
 
     describe command_as_vagrant("echo '$PATH'") do
-      its(:stdout) { is_expected.not_to match %r{(\A|:)/home/vagrant/\.cargo/bin(:|\Z)} }
+      its(:stdout) do
+        is_expected.not_to match %r{(\A|:)/home/vagrant/\.cargo/bin(:|\Z)}
+      end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
@@ -193,7 +199,9 @@ describe 'Per-user rustup management' do
     end
 
     describe command_as_vagrant("echo '$PATH'") do
-      its(:stdout) { is_expected.not_to match %r{(\A|:)/home/vagrant/\.cargo/bin(:|\Z)} }
+      its(:stdout) do
+        is_expected.not_to match %r{(\A|:)/home/vagrant/\.cargo/bin(:|\Z)}
+      end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end

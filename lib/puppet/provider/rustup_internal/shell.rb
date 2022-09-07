@@ -40,7 +40,8 @@ Puppet::Type.type(:rustup_internal).provide(
       end
 
       # The default error message for failure would be confusing.
-      output = execute(command, stdin_file: script.path, raise_on_failure: false)
+      output = execute(command, stdin_file: script.path,
+        raise_on_failure: false)
       if output.exitstatus != 0
         raise Puppet::ExecutionFailure, "Installing rustup failed: #{output}"
       end

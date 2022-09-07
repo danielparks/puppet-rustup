@@ -29,12 +29,14 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
 
   it 'fails with a blank title' do
     expect { described_class.new(title: '') }
-      .to raise_error(Puppet::Error, %r{User is required to be a non-empty string})
+      .to raise_error(Puppet::Error,
+        %r{User is required to be a non-empty string})
   end
 
   it 'fails with a bad ensure' do
     expect { described_class.new(title: 'user', ensure: 'dfasdf') }
-      .to raise_error(Puppet::Error, %r{Valid values are present, latest, absent})
+      .to raise_error(Puppet::Error,
+        %r{Valid values are present, latest, absent})
   end
 
   it 'accepts modify_path' do

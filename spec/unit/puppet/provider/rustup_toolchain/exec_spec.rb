@@ -43,7 +43,9 @@ RSpec.describe Puppet::Type.type(:rustup_toolchain).provider(:exec) do
 
     it 'for "custom-toolchain-mscv"' do
       expect(provider.make_toolchain_matcher('custom-toolchain-msvc'))
-        .to eq(%r{^custom\-toolchain-x86_64-apple-darwin-msvc(?: \(default\))?$})
+        .to eq(
+          %r{^custom\-toolchain-x86_64-apple-darwin-msvc(?: \(default\))?$},
+        )
     end
 
     it 'for "custom-toolchain-pc-windows"' do

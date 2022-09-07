@@ -56,7 +56,8 @@ RSpec.describe Puppet::Type.type(:rustup_toolchain) do
 
   it 'fails with a bad ensure' do
     expect { described_class.new(title: 'u: t', ensure: 'dfasdf') }
-      .to raise_error(Puppet::Error, %r{Valid values are present, latest, absent})
+      .to raise_error(Puppet::Error,
+        %r{Valid values are present, latest, absent})
   end
 
   it 'fails with a relative rustup_home' do
