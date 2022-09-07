@@ -72,9 +72,9 @@ Puppet::Type.newtype(:rustup_toolchain) do
     defaultto { "/home/#{resource[:user]}/.cargo" }
 
     validate do |value|
-      unless Puppet::Util.absolute_path?(value)
-        raise Puppet::Error, 'Cargo home must be an absolute path, not "%s"' \
-          % value
+      unless Puppet::Util.absolute_path? value
+        raise Puppet::Error, 'Cargo home must be an absolute path, not %s' \
+          % value.inspect
       end
     end
   end
@@ -91,9 +91,9 @@ Puppet::Type.newtype(:rustup_toolchain) do
     defaultto { "/home/#{resource[:user]}/.rustup" }
 
     validate do |value|
-      unless Puppet::Util.absolute_path?(value)
-        raise Puppet::Error, 'Rustup home must be an absolute path, not "%s"' \
-          % value
+      unless Puppet::Util.absolute_path? value
+        raise Puppet::Error, 'Rustup home must be an absolute path, not %s' \
+          % value.inspect
       end
     end
   end
