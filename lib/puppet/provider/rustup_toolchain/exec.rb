@@ -134,10 +134,11 @@ Puppet::Type.type(:rustup_toolchain).provide(
   #
   # Returns string.
   def load_default_triple
-    rustup('show').split(%r{[\r\n]+}).each do |line|
+    rustup('show').lines.each do |line|
       if line =~ %r{^Default host:\s+(\S+)$}i
-        debug { "Got default host (triple): #{Regexp.last_match(1).inspect}" }
-        return Regexp.last_match(1)
+        triple = Regexp.last_match(1)
+        debug { "Got default host (triple): #{triple.inspect}" }
+        return triple
       end
     end
 
