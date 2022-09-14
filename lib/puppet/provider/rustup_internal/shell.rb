@@ -42,9 +42,7 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # The resource thinks we need to uninstall `rustup`.
   def destroy
-    begin
-      Etc.getpwnam(resource[:user])
-    rescue ArgumentError
+    unless user_exists?
       # User doesn’t exist; rely on ensure_absent to delete things.
       return
     end

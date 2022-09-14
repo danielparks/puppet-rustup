@@ -93,10 +93,26 @@ class Puppet::Provider::RustupExec < Puppet::Provider
     File.join(resource[:cargo_home], 'bin')
   end
 
+  # Get the entry in /etc/passwd for the specified user.
+  def user_entry
+    Etc.getpwnam(resource[:user])
+  rescue ArgumentError
+    nil
+  end
+
+  # Check if the specified user actually exists.
+  def user_exists?
+    !user_entry.nil?
+  end
+
   protected
 
   # Run a command as the user
   def execute(command, stdin_file: nil, raise_on_failure: true)
+    unless user_exists?
+      raise Puppet::Error, "User #{resource[:user].inspect} does not exist."
+    end
+
     environment = {
       'PATH' => path_env,
       'RUSTUP_HOME' => resource[:rustup_home],
