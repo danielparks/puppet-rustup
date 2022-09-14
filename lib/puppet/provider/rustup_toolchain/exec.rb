@@ -9,10 +9,14 @@ Puppet::Type.type(:rustup_toolchain).provide(
 
   # Determine if this toolchain has been installed on the system for this user.
   def exists?
-    rustup_installed? &&
-      make_toolchain_matcher(resource[:toolchain]).match?(
-        rustup('toolchain', 'list'),
-      )
+    unless rustup_installed?
+      return false
+    end
+
+    full_name = normalize_toolchain_name(resource[:toolchain])
+    %r{^#{Regexp.escape(full_name)}(?: \(default\))?$}.match?(
+      rustup('toolchain', 'list'),
+    )
   end
 
   # The resource thinks we need to install the toolchain.
@@ -30,6 +34,8 @@ Puppet::Type.type(:rustup_toolchain).provide(
     rustup 'toolchain', 'uninstall', resource[:toolchain]
   end
 
+  # Normalize a toolchain name (not nil).
+  #
   # There are some flaws in this.
   #
   #   * This is kludged together. I didn’t take the time to figure out all the
@@ -38,16 +44,16 @@ Puppet::Type.type(:rustup_toolchain).provide(
   #   * It will break as soon as rust adds a new triple to run toolchains on.
   #
   # public for testing
-  def make_toolchain_matcher(input)
+  def normalize_toolchain_name(input)
+    if input.nil?
+      raise ArgumentError, 'normalize_toolchain_name expects a string, not nil'
+    end
+
     parts = parse_partial_toolchain(input).map.with_index do |part, i|
-      if part.nil?
-        default_toolchain_triple[i]
-      else
-        Regexp.escape(part)
-      end
+      part || default_toolchain_triple[i]
     end
     parts.reject! { |part| part.nil? }
-    %r{^#{parts.join('-')}(?: \(default\))?$}
+    parts.join('-')
   end
 
   # Parse a partial toolchain descriptor into its parts.

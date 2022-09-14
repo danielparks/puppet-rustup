@@ -30,27 +30,25 @@ RSpec.describe Puppet::Type.type(:rustup_toolchain).provider(:exec) do
       .to eq(['', 'x86_64', 'apple-darwin', nil])
   end
 
-  context 'produces good toolchain matchers' do
-    it 'for "stable"' do
-      expect(provider.make_toolchain_matcher('stable'))
-        .to eq(%r{^stable-x86_64-apple-darwin(?: \(default\))?$})
+  context 'correctly normalizes toolchain' do
+    it '"stable"' do
+      expect(provider.normalize_toolchain_name('stable'))
+        .to eq('stable-x86_64-apple-darwin')
     end
 
-    it 'for "custom-toolchain"' do
-      expect(provider.make_toolchain_matcher('custom-toolchain'))
-        .to eq(%r{^custom\-toolchain-x86_64-apple-darwin(?: \(default\))?$})
+    it '"custom-toolchain"' do
+      expect(provider.normalize_toolchain_name('custom-toolchain'))
+        .to eq('custom-toolchain-x86_64-apple-darwin')
     end
 
-    it 'for "custom-toolchain-mscv"' do
-      expect(provider.make_toolchain_matcher('custom-toolchain-msvc'))
-        .to eq(
-          %r{^custom\-toolchain-x86_64-apple-darwin-msvc(?: \(default\))?$},
-        )
+    it '"custom-toolchain-mscv"' do
+      expect(provider.normalize_toolchain_name('custom-toolchain-msvc'))
+        .to eq('custom-toolchain-x86_64-apple-darwin-msvc')
     end
 
-    it 'for "custom-toolchain-pc-windows"' do
-      expect(provider.make_toolchain_matcher('custom-toolchain-pc-windows'))
-        .to eq(%r{^custom\-toolchain-x86_64-pc\-windows(?: \(default\))?$})
+    it '"custom-toolchain-pc-windows"' do
+      expect(provider.normalize_toolchain_name('custom-toolchain-pc-windows'))
+        .to eq('custom-toolchain-x86_64-pc-windows')
     end
   end
 
