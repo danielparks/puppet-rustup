@@ -101,11 +101,12 @@ describe 'Per-user rustup management' do
 
   context 'supports multi-resource install' do
     it do
+      # FIXME: need a way to specify that the default target should be installed
       idempotent_apply(<<~'END')
         package { 'gcc': } # Needed for cargo install
         rustup { 'vagrant': }
         rustup::toolchain { 'vagrant: stable': }
-        rustup::default { 'vagrant: stable': }
+        rustup::target { 'vagrant: x86_64-unknown-linux-gnu stable': }
       END
     end
 
@@ -245,7 +246,7 @@ describe 'Per-user rustup management' do
       }
 
       rustup { 'rustup_test': }
-      rustup::default { 'rustup_test: stable': }
+      rustup::toolchain { 'rustup_test: stable': }
     END
 
     expect(user('rustup_test')).to exist
@@ -310,9 +311,7 @@ describe 'Per-user rustup management' do
         cargo_home => '/home/rustup_test/a/b/.cargo',
       }
 
-      rustup::default { 'rustup_test: stable':
-        cargo_home => '/home/rustup_test/a/b/.cargo',
-      }
+      rustup::toolchain { 'rustup_test: stable': }
     END
 
     expect(user('rustup_test')).to exist
@@ -338,8 +337,7 @@ describe 'Per-user rustup management' do
       }
 
       rustup::toolchain { 'rustup_test: stable':
-        ensure     => absent,
-        cargo_home => '/home/rustup_test/a/b/.cargo',
+        ensure => absent,
       }
     END
 

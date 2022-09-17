@@ -19,11 +19,8 @@ define rustup::global::toolchain (
   include rustup::global
 
   rustup::toolchain { "${rustup::global::user}: ${name}":
-    ensure      => $ensure,
-    user        => $rustup::global::user,
-    toolchain   => $toolchain,
-    home        => $rustup::global::home,
-    rustup_home => $rustup::global::rustup_home,
-    cargo_home  => $rustup::global::cargo_home,
+    ensure    => $ensure,
+    rustup    => $rustup::global::user,
+    toolchain => $toolchain,
   }
 }

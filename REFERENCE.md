@@ -7,14 +7,11 @@
 ### Classes
 
 * [`rustup::global`](#rustupglobal): Manage global Rust installation with `rustup`
-* [`rustup::ordering`](#rustupordering): Set the correct ordering of defined types
 
 ### Defined types
 
 * [`rustup`](#rustup): Manage a user’s Rust installation with `rustup`
-* [`rustup::default`](#rustupdefault): Set default toolchain
 * [`rustup::exec`](#rustupexec): Run a `rustup` command
-* [`rustup::global::default`](#rustupglobaldefault): Set default toolchain for global installation
 * [`rustup::global::target`](#rustupglobaltarget): Install a target for a toolchain for global installation
 * [`rustup::global::toolchain`](#rustupglobaltoolchain): Install a toolchain for global installation
 * [`rustup::target`](#rustuptarget): Install a target for a toolchain
@@ -23,7 +20,6 @@
 ### Resource types
 
 * [`rustup_internal`](#rustup_internal): Manage a user’s Rust installation with `rustup`
-* [`rustup_toolchain`](#rustup_toolchain): Manage a toolchain
 
 ### Functions
 
@@ -129,10 +125,6 @@ after the initial installation.
 
 Default value: `'https://sh.rustup.rs'`
 
-### <a name="rustupordering"></a>`rustup::ordering`
-
-This class is used internally; you do not need to include it yourself.
-
 ## Defined types
 
 ### <a name="rustup"></a>`rustup`
@@ -153,6 +145,11 @@ The following parameters are available in the `rustup` defined type:
 
 * [`ensure`](#ensure)
 * [`user`](#user)
+* [`default_toolchain`](#default_toolchain)
+* [`toolchains`](#toolchains)
+* [`purge_toolchains`](#purge_toolchains)
+* [`targets`](#targets)
+* [`purge_targets`](#purge_targets)
 * [`home`](#home)
 * [`rustup_home`](#rustup_home)
 * [`cargo_home`](#cargo_home)
@@ -176,6 +173,49 @@ Data type: `String[1]`
 The user to own and manage rustup.
 
 Default value: `$name`
+
+##### <a name="default_toolchain"></a>`default_toolchain`
+
+Data type: `Optional[String[1]]`
+
+Which toolchain should be the default.
+
+Default value: ``undef``
+
+##### <a name="toolchains"></a>`toolchains`
+
+Data type: `Array[String[1]]`
+
+The toolchains to install.
+
+Default value: `[]`
+
+##### <a name="purge_toolchains"></a>`purge_toolchains`
+
+Data type: `Boolean`
+
+Whether or not to uninstall toolchains that aren’t managed by Puppet.
+
+Default value: ``true``
+
+##### <a name="targets"></a>`targets`
+
+Data type: `Array[String[1]]`
+
+The targets to install. These can take two forms:
+
+  * `"$target $toolchain"`: Install `$target` for `$toolchain`.
+  * `"$target"`: Install `$target` for the default toolchain.
+
+Default value: `[]`
+
+##### <a name="purge_targets"></a>`purge_targets`
+
+Data type: `Boolean`
+
+Whether or not to uninstall targets that aren’t managed by Puppet.
+
+Default value: ``true``
 
 ##### <a name="home"></a>`home`
 
@@ -219,69 +259,6 @@ URL of the rustup installation script. Changing this will have no effect
 after the initial installation.
 
 Default value: `'https://sh.rustup.rs'`
-
-### <a name="rustupdefault"></a>`rustup::default`
-
-The name should start with the username followed by a colon and a space, then
-the toolchain. For example:
-
-```puppet
-rustup::default { 'daniel: stable': }
-```
-
-#### Parameters
-
-The following parameters are available in the `rustup::default` defined type:
-
-* [`user`](#user)
-* [`toolchain`](#toolchain)
-* [`home`](#home)
-* [`rustup_home`](#rustup_home)
-* [`cargo_home`](#cargo_home)
-
-##### <a name="user"></a>`user`
-
-Data type: `String[1]`
-
-The user to install for. Automatically set if the `$name` of the resource
-follows the rules above.
-
-Default value: `(': ')[0]`
-
-##### <a name="toolchain"></a>`toolchain`
-
-Data type: `String[1]`
-
-The name of the toolchain to install, e.g. "stable". Automatically set if
-the `$name` of the resource follows the rules above.
-
-Default value: `(': ')[1]`
-
-##### <a name="home"></a>`home`
-
-Data type: `Stdlib::Absolutepath`
-
-The user’s home directory. This defaults to `/home/$user` on Linux and
-`/Users/$user` on macOS. This is only used to calculate defaults for the
-`$rustup_home` and `$cargo_home` parameters.
-
-Default value: `rustup::home($user)`
-
-##### <a name="rustup_home"></a>`rustup_home`
-
-Data type: `Stdlib::Absolutepath`
-
-Where toolchains are installed. Generally you shouldn’t change this.
-
-Default value: `"${home}/.rustup"`
-
-##### <a name="cargo_home"></a>`cargo_home`
-
-Data type: `Stdlib::Absolutepath`
-
-Where `cargo` installs executables. Generally you shouldn’t change this.
-
-Default value: `"${home}/.cargo"`
 
 ### <a name="rustupexec"></a>`rustup::exec`
 
@@ -414,28 +391,6 @@ parameters.
 
 Default value: `{}`
 
-### <a name="rustupglobaldefault"></a>`rustup::global::default`
-
-The name should be the name of a toolchain. For example:
-
-```puppet
-rustup::global::default { 'stable': }
-```
-
-#### Parameters
-
-The following parameters are available in the `rustup::global::default` defined type:
-
-* [`toolchain`](#toolchain)
-
-##### <a name="toolchain"></a>`toolchain`
-
-Data type: `String[1]`
-
-The name of the toolchain to install, e.g. "stable".
-
-Default value: `$name`
-
 ### <a name="rustupglobaltarget"></a>`rustup::global::target`
 
 You can name this two ways to automatically set the parameters:
@@ -517,22 +472,21 @@ Default value: `$name`
 
 You can name this two ways to automatically set the parameters:
 
-  * `"$user: $target $toolchain"`: install `$target` for `$toolchain` for
-    `$user`. For example, `'daniel: x86_64-unknown-linux-gnu nightly'`.
-  * `"$user: $target"`: install `$target` for the default toolchain for
-    `$user`. For example: `'daniel: stable'`.
+  * `"$rustup: $target $toolchain"`: install `$target` for `$toolchain` for
+    the `rustup` resource named `$rustup` (normally the username). For
+    example, `'daniel: x86_64-unknown-linux-gnu nightly'`.
+  * `"$rustup: $target"`: install `$target` for the default toolchain for
+    the `rustup` resource named `$rustup` (normally the username). For
+    example: `'daniel: stable'`.
 
 #### Parameters
 
 The following parameters are available in the `rustup::target` defined type:
 
 * [`ensure`](#ensure)
-* [`user`](#user)
+* [`rustup`](#rustup)
 * [`target`](#target)
 * [`toolchain`](#toolchain)
-* [`home`](#home)
-* [`rustup_home`](#rustup_home)
-* [`cargo_home`](#cargo_home)
 
 ##### <a name="ensure"></a>`ensure`
 
@@ -542,12 +496,12 @@ Whether the target should be present or absent.
 
 Default value: `present`
 
-##### <a name="user"></a>`user`
+##### <a name="rustup"></a>`rustup`
 
 Data type: `String[1]`
 
-The user to install for. Automatically set if the `$name` of the resource
-follows the rules above.
+The name of the `rustup` installation (normally the username). Automatically
+set if the `$name` of the resource follows the rules above.
 
 Default value: `(': ')[0]`
 
@@ -570,36 +524,11 @@ resource follows the rules above.
 
 Default value: `(' ')[1]`
 
-##### <a name="home"></a>`home`
-
-Data type: `Stdlib::Absolutepath`
-
-The user’s home directory. This defaults to `/home/$user` on Linux and
-`/Users/$user` on macOS. This is only used to calculate defaults for the
-`$rustup_home` and `$cargo_home` parameters.
-
-Default value: `rustup::home($user)`
-
-##### <a name="rustup_home"></a>`rustup_home`
-
-Data type: `Stdlib::Absolutepath`
-
-Where toolchains are installed. Generally you shouldn’t change this.
-
-Default value: `"${home}/.rustup"`
-
-##### <a name="cargo_home"></a>`cargo_home`
-
-Data type: `Stdlib::Absolutepath`
-
-Where `cargo` installs executables. Generally you shouldn’t change this.
-
-Default value: `"${home}/.cargo"`
-
 ### <a name="rustuptoolchain"></a>`rustup::toolchain`
 
-The name should start with the username followed by a colon and a space, then
-the toolchain. For example:
+The name should start with the name of the `rustup` resource (normally the
+name of the user) followed by a colon and a space, then the toolchain. For
+example:
 
 ```puppet
 rustup::toolchain { 'daniel: stable': }
@@ -610,11 +539,8 @@ rustup::toolchain { 'daniel: stable': }
 The following parameters are available in the `rustup::toolchain` defined type:
 
 * [`ensure`](#ensure)
-* [`user`](#user)
+* [`rustup`](#rustup)
 * [`toolchain`](#toolchain)
-* [`home`](#home)
-* [`rustup_home`](#rustup_home)
-* [`cargo_home`](#cargo_home)
 
 ##### <a name="ensure"></a>`ensure`
 
@@ -626,12 +552,12 @@ Data type: `Enum[present, latest, absent]`
 
 Default value: `present`
 
-##### <a name="user"></a>`user`
+##### <a name="rustup"></a>`rustup`
 
 Data type: `String[1]`
 
-The user to install for. Automatically set if the `$name` of the resource
-follows the rules above.
+The name of the `rustup` installation (normally the username). Automatically
+set if the `$name` of the resource follows the rules above.
 
 Default value: `(': ')[0]`
 
@@ -643,32 +569,6 @@ The name of the toolchain to install, e.g. "stable". Automatically set if
 the `$name` of the resource follows the rules above.
 
 Default value: `(': ')[1]`
-
-##### <a name="home"></a>`home`
-
-Data type: `Stdlib::Absolutepath`
-
-The user’s home directory. This defaults to `/home/$user` on Linux and
-`/Users/$user` on macOS. This is only used to calculate defaults for the
-`$rustup_home` and `$cargo_home` parameters.
-
-Default value: `rustup::home($user)`
-
-##### <a name="rustup_home"></a>`rustup_home`
-
-Data type: `Stdlib::Absolutepath`
-
-Where toolchains are installed. Generally you shouldn’t change this.
-
-Default value: `"${home}/.rustup"`
-
-##### <a name="cargo_home"></a>`cargo_home`
-
-Data type: `Stdlib::Absolutepath`
-
-Where `cargo` installs executables. Generally you shouldn’t change this.
-
-Default value: `"${home}/.cargo"`
 
 ## Resource types
 
@@ -688,6 +588,10 @@ The name should be the username.
 
 The following properties are available in the `rustup_internal` type.
 
+##### `default_toolchain`
+
+Which toolchain should be default.
+
 ##### `ensure`
 
 Valid values: `present`, `latest`, `absent`
@@ -698,6 +602,24 @@ Valid values: `present`, `latest`, `absent`
 
 Default value: `present`
 
+##### `targets`
+
+The targets to install or remove.
+
+Each target must be a Hash with three entries:
+  * `ensure`: one of `present` and `absent`
+  * `target`: the name of the target
+  * `toolchain`: the name of the toolchain or `undef` to indicate the
+    default toolchain
+
+##### `toolchains`
+
+The toolchains to install, update, or remove.
+
+Each toolchain must be a Hash with two entries:
+  * `ensure`: one of `present`, `latest`, and `absent`
+  * `toolchain`: the name of the toolchain
+
 #### Parameters
 
 The following parameters are available in the `rustup_internal` type.
@@ -707,6 +629,8 @@ The following parameters are available in the `rustup_internal` type.
 * [`installer_source`](#installer_source)
 * [`modify_path`](#modify_path)
 * [`provider`](#provider)
+* [`purge_targets`](#purge_targets)
+* [`purge_toolchains`](#purge_toolchains)
 * [`rustup_home`](#rustup_home)
 * [`user`](#user)
 
@@ -744,6 +668,22 @@ Default value: ``true``
 The specific backend to use for this `rustup_internal` resource. You will seldom need to specify this --- Puppet will
 usually discover the appropriate provider for your platform.
 
+##### <a name="purge_targets"></a>`purge_targets`
+
+Valid values: ``true``, ``false``, `yes`, `no`
+
+Whether or not to uninstall targets that aren’t managed by Puppet.
+
+Default value: ``true``
+
+##### <a name="purge_toolchains"></a>`purge_toolchains`
+
+Valid values: ``true``, ``false``, `yes`, `no`
+
+Whether or not to uninstall toolchains that aren’t managed by Puppet.
+
+Default value: ``true``
+
 ##### <a name="rustup_home"></a>`rustup_home`
 
 Where toolchains are installed (autorequired). Generally you shouldn’t
@@ -756,72 +696,6 @@ Default value: `"${home}/.rustup"`
 namevar
 
 The user that owns this instance of `rustup` (autorequired).
-
-### <a name="rustup_toolchain"></a>`rustup_toolchain`
-
-The name should start with the username followed by a colon and a space,
-then the toolchain. For example:
-
-```puppet
-rustup::toolchain { 'daniel: stable': }
-```
-
-**Autorequires:**
-  * The `user`.
-  * The `rustup` resource with a name matching `user`.
-
-#### Properties
-
-The following properties are available in the `rustup_toolchain` type.
-
-##### `ensure`
-
-Valid values: `present`, `latest`, `absent`
-
-* `present` - install toolchain, but don’t update it.
-* `latest` - install toolchain and update it on every puppet run.
-* `absent` - uninstall toolchain.
-
-Default value: `present`
-
-#### Parameters
-
-The following parameters are available in the `rustup_toolchain` type.
-
-* [`cargo_home`](#cargo_home)
-* [`provider`](#provider)
-* [`rustup_home`](#rustup_home)
-* [`toolchain`](#toolchain)
-* [`user`](#user)
-
-##### <a name="cargo_home"></a>`cargo_home`
-
-Where `cargo` installs executables. Generally you shouldn’t change this.
-
-Default value: `.cargo` in `user`’s home directory.
-
-##### <a name="provider"></a>`provider`
-
-The specific backend to use for this `rustup_toolchain` resource. You will seldom need to specify this --- Puppet will
-usually discover the appropriate provider for your platform.
-
-##### <a name="rustup_home"></a>`rustup_home`
-
-Where toolchains are installed. Generally you shouldn’t change this.
-
-Default value: `.rustup` in `user`’s home directory.
-
-##### <a name="toolchain"></a>`toolchain`
-
-namevar
-
-The toolchain
-
-##### <a name="user"></a>`user`
-
-namevar
-
-The user that owns this toolchain (autorequired).
 
 ## Functions
 

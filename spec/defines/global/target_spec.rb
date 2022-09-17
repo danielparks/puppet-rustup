@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 describe 'rustup::global::target' do
+  let(:pre_condition) { 'include rustup::global' }
   let(:title) { 'target toolchain' }
   let(:params) do
     {}

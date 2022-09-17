@@ -8,12 +8,6 @@ class Puppet::Provider::RustupExec < Puppet::Provider
     raise Puppet::Error, 'Cannot query rustup installations.'
   end
 
-  # For whatever reason, the resource expected this. An alternate solution is to
-  # call mk_resource_methods in child classes, but that adds a bunch more
-  # unnecessary methods that modify @property_hash. We don’t use @property_hash
-  # at all, since we can just access the resource itself.
-  def ensure=(value); end
-
   # Determine if the resource exists on the system.
   def exists?
     raise 'Unimplemented.'
