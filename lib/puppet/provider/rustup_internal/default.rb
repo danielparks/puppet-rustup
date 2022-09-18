@@ -435,7 +435,8 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Install or update a toolchain
   def toolchain_install(toolchain)
-    rustup 'toolchain', 'install', '--no-self-update', toolchain
+    rustup 'toolchain', 'install', '--no-self-update', '--force-non-host', \
+      toolchain
   end
 
   # Uninstall a toolchain

@@ -164,6 +164,28 @@ describe 'Per-user rustup management' do
     end
   end
 
+  context 'supports installing non-host toolchain' do
+    target = 'x86_64-pc-windows-gnu'
+    toolchain = "stable-#{target}"
+
+    it do
+      # Note that the quotes here are within the END block.
+      idempotent_apply(<<~END)
+        rustup { 'vagrant': }
+        rustup::toolchain { 'vagrant: #{toolchain}': }
+      END
+    end
+
+    command = "rustup target list --toolchain #{toolchain}"
+    describe command_as_vagrant(command) do
+      its(:stdout) do
+        is_expected.to match(%r{^#{target} \(installed\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+  end
+
   context 'supports multi-resource uninstall for a real user' do
     it do
       idempotent_apply(<<~'END')
