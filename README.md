@@ -45,7 +45,6 @@ rustup::global::target { 'x86_64-unknown-linux-musl nightly': }
 
   * This does not allow management of components.
   * This does not allow management of profiles.
-  * This will not be able to install non-host toolchains in the future.
   * This does not support Windows.
 
 ## Reference
