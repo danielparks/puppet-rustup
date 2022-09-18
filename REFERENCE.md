@@ -50,6 +50,8 @@ The following parameters are available in the `rustup::global` class:
 * [`ensure`](#ensure)
 * [`user`](#user)
 * [`manage_user`](#manage_user)
+* [`purge_toolchains`](#purge_toolchains)
+* [`purge_targets`](#purge_targets)
 * [`home`](#home)
 * [`shell`](#shell)
 * [`env_scripts_append`](#env_scripts_append)
@@ -82,6 +84,22 @@ Data type: `Boolean`
 Whether or not to manage `$user` user.
 
 Default value: ``true``
+
+##### <a name="purge_toolchains"></a>`purge_toolchains`
+
+Data type: `Boolean`
+
+Whether or not to uninstall toolchains that aren’t managed by Puppet.
+
+Default value: ``false``
+
+##### <a name="purge_targets"></a>`purge_targets`
+
+Data type: `Boolean`
+
+Whether or not to uninstall targets that aren’t managed by Puppet.
+
+Default value: ``false``
 
 ##### <a name="home"></a>`home`
 
@@ -196,7 +214,7 @@ Data type: `Boolean`
 
 Whether or not to uninstall toolchains that aren’t managed by Puppet.
 
-Default value: ``true``
+Default value: ``false``
 
 ##### <a name="targets"></a>`targets`
 
@@ -207,6 +225,8 @@ The targets to install. These can take two forms:
   * `"$target $toolchain"`: Install `$target` for `$toolchain`.
   * `"$target"`: Install `$target` for the default toolchain.
 
+You can use `'default'` to indicate the target for the current host.
+
 Default value: `[]`
 
 ##### <a name="purge_targets"></a>`purge_targets`
@@ -215,7 +235,7 @@ Data type: `Boolean`
 
 Whether or not to uninstall targets that aren’t managed by Puppet.
 
-Default value: ``true``
+Default value: ``false``
 
 ##### <a name="home"></a>`home`
 
@@ -478,6 +498,9 @@ You can name this two ways to automatically set the parameters:
   * `"$rustup: $target"`: install `$target` for the default toolchain for
     the `rustup` resource named `$rustup` (normally the username). For
     example: `'daniel: stable'`.
+
+You may use the string `'default'` as the target to indicate the target that
+corresponds to the current host.
 
 #### Parameters
 

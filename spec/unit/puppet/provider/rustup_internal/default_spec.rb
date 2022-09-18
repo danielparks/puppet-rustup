@@ -30,13 +30,13 @@ RSpec.describe Puppet::Type.type(:rustup_internal).provider(:default) do
         provider: :default,
       )
       provider = described_class.new(resource)
-      allow(provider).to receive(:load_default_triple) \
+      allow(provider).to receive(:load_default_target) \
         .and_return('x86_64-apple-darwin')
       provider
     end
 
     it 'parses default toolchain correctly' do
-      expect(provider.parse_default_triple)
+      expect(provider.parse_default_target)
         .to eq(['', 'x86_64', 'apple-darwin', nil])
     end
 

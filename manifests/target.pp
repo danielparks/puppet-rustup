@@ -9,6 +9,9 @@
 #     the `rustup` resource named `$rustup` (normally the username). For
 #     example: `'daniel: stable'`.
 #
+# You may use the string `'default'` as the target to indicate the target that
+# corresponds to the current host.
+#
 # @param ensure
 #   Whether the target should be present or absent.
 # @param rustup

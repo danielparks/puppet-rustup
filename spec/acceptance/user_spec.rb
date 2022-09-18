@@ -99,14 +99,12 @@ describe 'Per-user rustup management' do
     end
   end
 
-  context 'supports multi-resource install' do
+  context 'supports multi-resource install without explicit target' do
     it do
-      # FIXME: need a way to specify that the default target should be installed
       idempotent_apply(<<~'END')
         package { 'gcc': } # Needed for cargo install
         rustup { 'vagrant': }
         rustup::toolchain { 'vagrant: stable': }
-        rustup::target { 'vagrant: x86_64-unknown-linux-gnu stable': }
       END
     end
 

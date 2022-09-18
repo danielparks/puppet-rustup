@@ -22,6 +22,8 @@
 #
 #     * `"$target $toolchain"`: Install `$target` for `$toolchain`.
 #     * `"$target"`: Install `$target` for the default toolchain.
+#
+#   You can use `'default'` to indicate the target for the current host.
 # @param purge_targets
 #   Whether or not to uninstall targets that aren’t managed by Puppet.
 # @param home
@@ -42,9 +44,9 @@ define rustup (
   String[1]                     $user              = $name,
   Optional[String[1]]           $default_toolchain = undef,
   Array[String[1]]              $toolchains        = [],
-  Boolean                       $purge_toolchains  = true,
+  Boolean                       $purge_toolchains  = false,
   Array[String[1]]              $targets           = [],
-  Boolean                       $purge_targets     = true,
+  Boolean                       $purge_targets     = false,
   Stdlib::Absolutepath          $home              = rustup::home($user),
   Stdlib::Absolutepath          $rustup_home       = "${home}/.rustup",
   Stdlib::Absolutepath          $cargo_home        = "${home}/.cargo",

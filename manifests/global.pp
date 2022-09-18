@@ -12,6 +12,10 @@
 #   existing user.
 # @param manage_user
 #   Whether or not to manage `$user` user.
+# @param purge_toolchains
+#   Whether or not to uninstall toolchains that aren’t managed by Puppet.
+# @param purge_targets
+#   Whether or not to uninstall targets that aren’t managed by Puppet.
 # @param home
 #   Where to install rustup and the rust toolchains. Will contain rustup and
 #   cargo directories.
@@ -28,6 +32,8 @@ class rustup::global (
   Enum[present, latest, absent] $ensure             = present,
   String[1]                     $user               = 'rustup',
   Boolean                       $manage_user        = true,
+  Boolean                       $purge_toolchains   = false,
+  Boolean                       $purge_targets      = false,
   Stdlib::Absolutepath          $home               = '/opt/rust',
   Stdlib::Absolutepath          $shell              = '/bin/bash',
   Array[Stdlib::Absolutepath]   $env_scripts_append = ['/etc/bashrc'],
@@ -126,6 +132,8 @@ class rustup::global (
   rustup { $user:
     ensure           => $ensure,
     user             => $user,
+    purge_toolchains => $purge_toolchains,
+    purge_targets    => $purge_targets,
     home             => $home,
     rustup_home      => $rustup_home,
     cargo_home       => $cargo_home,

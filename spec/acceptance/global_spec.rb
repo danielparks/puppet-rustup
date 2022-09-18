@@ -7,7 +7,9 @@ describe 'Global rustup management' do
     it do
       idempotent_apply(<<~'END')
         class { 'rustup::global':
-          shell => '/usr/sbin/nologin',
+          shell            => '/usr/sbin/nologin',
+          purge_toolchains => true,
+          purge_targets    => true,
         }
 
         rustup::global::target { 'wasm32-unknown-unknown stable': }
@@ -54,7 +56,9 @@ describe 'Global rustup management' do
     it do
       idempotent_apply(<<~'END')
         class { 'rustup::global':
-          shell => '/usr/sbin/nologin',
+          shell            => '/usr/sbin/nologin',
+          purge_toolchains => true,
+          purge_targets    => true,
         }
 
         rustup::global::target { 'wasm32-unknown-unknown stable': }
@@ -89,7 +93,9 @@ describe 'Global rustup management' do
     it do
       idempotent_apply(<<~'END')
         class { 'rustup::global':
-          shell => '/usr/sbin/nologin',
+          shell            => '/usr/sbin/nologin',
+          purge_toolchains => true,
+          purge_targets    => true,
         }
 
         rustup::global::target { 'wasm32-unknown-unknown stable': }
@@ -128,13 +134,7 @@ describe 'Global rustup management' do
         class { 'rustup::global':
           ensure => absent,
         }
-        rustup::global::toolchain { 'stable':
-          ensure => absent,
-        }
         rustup::global::toolchain { 'nightly':
-          ensure => absent,
-        }
-        rustup::global::target { 'wasm32-unknown-unknown stable':
           ensure => absent,
         }
         rustup::global::target { 'wasm32-unknown-unknown nightly':

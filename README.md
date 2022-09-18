@@ -16,22 +16,28 @@ use it:
 ### Per user installation
 
 ~~~ puppet
-rustup { 'user': }
+rustup { 'user':
+  purge_toolchains => true,
+  purge_targets    => true,
+}
 rustup::toolchain { 'user: stable': }
-rustup::target { 'user: x86_64-unknown-linux-gnux32': }
+rustup::target { 'user: default': }
 rustup::toolchain { 'user: nightly': }
-rustup::target { 'user: x86_64-unknown-linux-gnux32 nightly': }
+rustup::target { 'user: default nightly': }
 rustup::target { 'user: x86_64-unknown-linux-musl nightly': }
 ~~~
 
 ### Global installation
 
 ~~~ puppet
-include rustup::global
+class { 'rustup::global':
+  purge_toolchains => true,
+  purge_targets    => true,
+}
 rustup::global::toolchain { 'stable': }
-rustup::global::target { 'x86_64-unknown-linux-gnux32': }
+rustup::global::target { 'default': }
 rustup::global::toolchain { 'nightly': }
-rustup::global::target { 'x86_64-unknown-linux-gnux32 nightly': }
+rustup::global::target { 'default nightly': }
 rustup::global::target { 'x86_64-unknown-linux-musl nightly': }
 ~~~
 

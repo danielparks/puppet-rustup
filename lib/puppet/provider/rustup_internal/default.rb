@@ -183,6 +183,15 @@ Puppet::Type.type(:rustup_internal).provide(
     parts.join('-')
   end
 
+  # Normalize target.
+  def normalize_target(target)
+    if target == 'default'
+      default_target
+    else
+      target
+    end
+  end
+
   # Parse a partial toolchain descriptor into its parts.
   #
   # FIXME this will break as soon as Rust adds a new platform for the toolchain
@@ -241,21 +250,18 @@ Puppet::Type.type(:rustup_internal).provide(
     end
   end
 
-  # Memoized version of parse_default_triple.
-  #
-  # This is used in exists?, which gets called at least twice, and we’d prefer
-  # not to call `rustup show` more than we have to.
+  # Memoized version of parse_default_target.
   def default_toolchain_triple
-    @default_toolchain_triple ||= parse_default_triple
+    @default_toolchain_triple ||= parse_default_target
   end
 
-  # Parse default “triple” from `rustup show`.
+  # Parse default target from `rustup show` for use in toolchain name.
   #
   # Returns partial toolchain descriptor as a 4 element array. The first part
   # should always be "" or nil, but might not be true if rust has added a new
   # platform for the toolchain.
-  def parse_default_triple
-    input = load_default_triple
+  def parse_default_target
+    input = default_target
     if input.nil?
       [nil, nil, nil, nil]
     else
@@ -263,15 +269,21 @@ Puppet::Type.type(:rustup_internal).provide(
     end
   end
 
-  # Load default “triple” from `rustup show`.
+  # Memoized version of load_default_target
+  def default_target
+    @default_target || load_default_target
+  end
+
+  # Load default target (called “default host”) from `rustup show`.
   #
   # Returns string.
-  def load_default_triple
+  def load_default_target
+    @default_target = nil
     rustup('show').lines.each do |line|
       if line =~ %r{^Default host:\s+(\S+)$}i
-        triple = Regexp.last_match(1)
-        debug { "Got default host (triple): #{triple.inspect}" }
-        return triple
+        @default_target = Regexp.last_match(1)
+        debug { "Got default target: #{@default_target.inspect}" }
+        return @default_target
       end
     end
 
@@ -440,11 +452,12 @@ Puppet::Type.type(:rustup_internal).provide(
     targets_by_toolchain = {}
     resource[:targets].each do |info|
       toolchain = normalize_toolchain(info['toolchain'])
+      target = normalize_target(info['target'])
 
       targets_by_toolchain[toolchain] ||= []
       targets_by_toolchain[toolchain] << {
         ensure: info['ensure'],
-        target: info['target'],
+        target: target,
       }
     end
 
