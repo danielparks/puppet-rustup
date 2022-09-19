@@ -35,6 +35,9 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Load toolchains from the system
   #
+  # Does not try to set the `profile`, since it’s meaningless after the initial
+  # installation of the toolchain.
+  #
   # Saves the toolchains to @toolchains_cache.
   def load_toolchains
     @toolchains_cache = toolchain_list.map do |full_name|
@@ -367,7 +370,7 @@ Puppet::Type.type(:rustup_internal).provide(
           toolchain_uninstall(info['toolchain'])
         end
       elsif found.nil? || info['ensure'] == 'latest'
-        toolchain_install(info['toolchain'])
+        toolchain_install(info['toolchain'], profile: info['profile'])
       end
     end
 
@@ -434,9 +437,9 @@ Puppet::Type.type(:rustup_internal).provide(
   end
 
   # Install or update a toolchain
-  def toolchain_install(toolchain)
+  def toolchain_install(toolchain, profile: 'default')
     rustup 'toolchain', 'install', '--no-self-update', '--force-non-host', \
-      toolchain
+      '--profile', profile, toolchain
   end
 
   # Uninstall a toolchain

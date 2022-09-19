@@ -67,15 +67,16 @@ Puppet::Type.newtype(:rustup_internal) do
       The toolchains to install, update, or remove.
 
       Each toolchain must be a Hash with two entries:
-        * `ensure`: one of `present`, `latest`, and `absent`
+        * `ensure`: one of `present`, `latest`, or `absent`
         * `toolchain`: the name of the toolchain
+        * `profile`: one of `minimal`, `default`, or `complete`
     END
 
     validate do |entry|
       # WTF: properties validate each element of a passed array.
-      unless entry.is_a?(Hash) && entry.length == 2
+      unless entry.is_a?(Hash) && entry.length == 3
         raise Puppet::Error,
-          'Expected toolchain Hash with two entries, got %s' % entry.inspect
+          'Expected toolchain Hash with 3 entries, got %s' % entry.inspect
       end
 
       unless ['present', 'latest', 'absent'].any? entry['ensure']
@@ -88,6 +89,12 @@ Puppet::Type.newtype(:rustup_internal) do
         raise Puppet::Error, 'Expected toolchain Hash entry "toolchain" to ' \
           'be a non-empty string, got %s' % entry['toolchain'].inspect
       end
+
+      unless ['minimal', 'default', 'complete'].any? entry['profile']
+        raise Puppet::Error, 'Expected toolchain Hash entry "profile" to be ' \
+          'one of ("minimal", "default", "complete"), got %s' \
+          % entry['profile'].inspect
+      end
     end
 
     # Whether or not to ignore toolchains on the system but not in the resource.
@@ -98,6 +105,9 @@ Puppet::Type.newtype(:rustup_internal) do
     # Do any normalization required for an entry in `should`
     def normalize_should_entry!(entry)
       entry['toolchain'] = provider.normalize_toolchain_name(entry['toolchain'])
+      # `rustup` ignores the profile after the initial install. Thus, the
+      # profile key is irrelevant for detecting a change.
+      entry.delete('profile')
     end
   end
 
@@ -112,7 +122,7 @@ Puppet::Type.newtype(:rustup_internal) do
       The targets to install or remove.
 
       Each target must be a Hash with three entries:
-        * `ensure`: one of `present` and `absent`
+        * `ensure`: one of `present` or `absent`
         * `target`: the name of the target
         * `toolchain`: the name of the toolchain or `undef` to indicate the
           default toolchain

@@ -44,7 +44,6 @@ rustup::global::target { 'x86_64-unknown-linux-musl nightly': }
 ## Limitations
 
   * This does not allow management of components.
-  * This does not allow management of profiles.
   * This does not support Windows.
 
 ## Reference
