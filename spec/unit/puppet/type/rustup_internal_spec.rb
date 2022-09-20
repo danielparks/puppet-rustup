@@ -59,28 +59,42 @@ RSpec.describe Puppet::Type.type(:rustup_internal) do
       .not_to be_nil
   end
 
-  it 'fails with a number installer_source' do
-    expect { described_class.new(title: 'user', installer_source: 3) }
-      .to raise_error(Puppet::Error, %r{Installer source must be a valid URL})
+  context 'dist_server' do
+    it 'fails with a number' do
+      expect { described_class.new(title: 'user', dist_server: 3) }
+        .to raise_error(Puppet::Error, %r{dist_server must be a valid URL})
+    end
+
+    it 'fails with a blank' do
+      expect { described_class.new(title: 'user', dist_server: '') }
+        .to raise_error(Puppet::Error, %r{dist_server must be a valid URL})
+    end
+
+    it 'fails with a non-URL' do
+      expect { described_class.new(title: 'user', dist_server: 's a as') }
+        .to raise_error(Puppet::Error, %r{dist_server must be a valid URL})
+    end
+
+    it 'works with a URL' do
+      expect(described_class.new(title: 'user', dist_server: 'http://test'))
+        .not_to be_nil
+    end
   end
 
-  it 'fails with a nil installer_source' do
-    expect { described_class.new(title: 'user', installer_source: nil) }
-      .to raise_error(Puppet::Error, %r{Got nil value for installer_source})
-  end
+  context 'installer_source' do
+    it 'fails with a blank' do
+      expect { described_class.new(title: 'user', installer_source: '') }
+        .to raise_error(Puppet::Error, %r{Installer source must be a valid URL})
+    end
 
-  it 'fails with a blank installer_source' do
-    expect { described_class.new(title: 'user', installer_source: '') }
-      .to raise_error(Puppet::Error, %r{Installer source must be a valid URL})
-  end
+    it 'fails with a non-URL' do
+      expect { described_class.new(title: 'user', installer_source: 's a as') }
+        .to raise_error(Puppet::Error, %r{Installer source must be a valid URL})
+    end
 
-  it 'fails with a non-URL installer_source' do
-    expect { described_class.new(title: 'user', installer_source: 's a as') }
-      .to raise_error(Puppet::Error, %r{Installer source must be a valid URL})
-  end
-
-  it 'works with a URL installer_source' do
-    expect(described_class.new(title: 'user', installer_source: 'http://localhost/foo'))
-      .not_to be_nil
+    it 'works with a URL' do
+      expect(described_class.new(title: 'user', installer_source: 'http://foo'))
+        .not_to be_nil
+    end
   end
 end

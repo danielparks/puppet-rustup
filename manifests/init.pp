@@ -26,6 +26,9 @@
 #   You can use `'default'` to indicate the target for the current host.
 # @param purge_targets
 #   Whether or not to uninstall targets that aren’t managed by Puppet.
+# @param dist_server
+#   Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
+#   to install pre-release toolchains.
 # @param home
 #   The user’s home directory. This defaults to `/home/$user` on Linux and
 #   `/Users/$user` on macOS.
@@ -47,6 +50,7 @@ define rustup (
   Boolean                       $purge_toolchains  = false,
   Array[String[1]]              $targets           = [],
   Boolean                       $purge_targets     = false,
+  Optional[Stdlib::HTTPUrl]     $dist_server       = undef,
   Stdlib::Absolutepath          $home              = rustup::home($user),
   Stdlib::Absolutepath          $rustup_home       = "${home}/.rustup",
   Stdlib::Absolutepath          $cargo_home        = "${home}/.cargo",
@@ -82,6 +86,7 @@ define rustup (
     purge_toolchains  => $purge_toolchains,
     targets           => $_targets,
     purge_targets     => $purge_targets,
+    dist_server       => $dist_server,
     home              => $home,
     rustup_home       => $rustup_home,
     cargo_home        => $cargo_home,

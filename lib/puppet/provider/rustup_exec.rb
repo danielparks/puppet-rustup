@@ -111,7 +111,8 @@ class Puppet::Provider::RustupExec < Puppet::Provider
       'PATH' => path_env,
       'RUSTUP_HOME' => resource[:rustup_home],
       'CARGO_HOME' => resource[:cargo_home],
-    }
+      'RUSTUP_DIST_SERVER' => resource[:dist_server],
+    }.compact
 
     debug do
       stdin_message = stdin_file ? " and stdin_file #{stdin_file.inspect}" : ''

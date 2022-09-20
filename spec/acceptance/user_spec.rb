@@ -100,10 +100,13 @@ describe 'Per-user rustup management' do
   end
 
   context 'supports multi-resource install without explicit target' do
+    # Also tests that dist_server works with an explicit undef.
     it do
       idempotent_apply(<<~'END')
         package { 'gcc': } # Needed for cargo install
-        rustup { 'vagrant': }
+        rustup { 'vagrant':
+          dist_server => undef,
+        }
         rustup::toolchain { 'vagrant: stable': }
       END
     end
@@ -190,6 +193,35 @@ describe 'Per-user rustup management' do
     end
 
     describe command_as_vagrant('rustup +beta target list') do
+      its(:stdout) do
+        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+  end
+
+  context 'supports single-resource pre-release install' do
+    it do
+      idempotent_apply(<<~'END')
+        rustup { 'vagrant':
+          toolchains  => ['stable'],
+          targets     => ['default'],
+          dist_server => 'https://dev-static.rust-lang.org'
+        }
+      END
+    end
+
+    toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_path = "/home/vagrant/.rustup/toolchains/#{toolchain_name}"
+
+    describe file("#{toolchain_path}/bin/rustc") do
+      it { is_expected.to be_file }
+      it { is_expected.to be_executable }
+      it { is_expected.to be_owned_by 'vagrant' }
+    end
+
+    describe command_as_vagrant('rustup +stable target list') do
       its(:stdout) do
         is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
       end

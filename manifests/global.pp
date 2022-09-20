@@ -16,6 +16,9 @@
 #   Whether or not to uninstall toolchains that aren’t managed by Puppet.
 # @param purge_targets
 #   Whether or not to uninstall targets that aren’t managed by Puppet.
+# @param dist_server
+#   Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
+#   to install pre-release toolchains.
 # @param home
 #   Where to install rustup and the rust toolchains. Will contain rustup and
 #   cargo directories.
@@ -34,6 +37,7 @@ class rustup::global (
   Boolean                       $manage_user        = true,
   Boolean                       $purge_toolchains   = false,
   Boolean                       $purge_targets      = false,
+  Optional[Stdlib::HTTPUrl]     $dist_server        = undef,
   Stdlib::Absolutepath          $home               = '/opt/rust',
   Stdlib::Absolutepath          $shell              = '/bin/bash',
   Array[Stdlib::Absolutepath]   $env_scripts_append = ['/etc/bashrc'],
@@ -134,6 +138,7 @@ class rustup::global (
     user             => $user,
     purge_toolchains => $purge_toolchains,
     purge_targets    => $purge_targets,
+    dist_server      => $dist_server,
     home             => $home,
     rustup_home      => $rustup_home,
     cargo_home       => $cargo_home,
