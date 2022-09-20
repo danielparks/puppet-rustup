@@ -61,6 +61,7 @@ define rustup (
       {
         ensure    => present,
         toolchain => $toolchain,
+        profile   => 'default',
       }
     }
 

@@ -12,9 +12,16 @@
 #   * `absent` - uninstall toolchain.
 # @param toolchain
 #   The name of the toolchain to install, e.g. "stable".
+# @param profile
+#   Profile to use for installation. This determines which components will be
+#   installed initially.
+#
+#   Changing this for an existing installation will not have an effect even if
+#   it causes an update, i.e. when `ensure => latest` is set.
 define rustup::global::toolchain (
   Enum[present, latest, absent] $ensure    = present,
   String[1]                     $toolchain = $name,
+  Rustup::Profile               $profile   = 'default',
 ) {
   include rustup::global
 
@@ -22,5 +29,6 @@ define rustup::global::toolchain (
     ensure    => $ensure,
     rustup    => $rustup::global::user,
     toolchain => $toolchain,
+    profile   => $profile,
   }
 }

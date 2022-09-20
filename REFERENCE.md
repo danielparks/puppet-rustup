@@ -28,6 +28,7 @@
 ### Data types
 
 * [`Rustup::OptionalStringOrArray`](#rustupoptionalstringorarray): Convenience type to make params easier to read
+* [`Rustup::Profile`](#rustupprofile): Profile for toolchain installation
 
 ## Classes
 
@@ -469,6 +470,7 @@ The following parameters are available in the `rustup::global::toolchain` define
 
 * [`ensure`](#ensure)
 * [`toolchain`](#toolchain)
+* [`profile`](#profile)
 
 ##### <a name="ensure"></a>`ensure`
 
@@ -487,6 +489,18 @@ Data type: `String[1]`
 The name of the toolchain to install, e.g. "stable".
 
 Default value: `$name`
+
+##### <a name="profile"></a>`profile`
+
+Data type: `Rustup::Profile`
+
+Profile to use for installation. This determines which components will be
+installed initially.
+
+Changing this for an existing installation will not have an effect even if
+it causes an update, i.e. when `ensure => latest` is set.
+
+Default value: `'default'`
 
 ### <a name="rustuptarget"></a>`rustup::target`
 
@@ -564,6 +578,7 @@ The following parameters are available in the `rustup::toolchain` defined type:
 * [`ensure`](#ensure)
 * [`rustup`](#rustup)
 * [`toolchain`](#toolchain)
+* [`profile`](#profile)
 
 ##### <a name="ensure"></a>`ensure`
 
@@ -592,6 +607,18 @@ The name of the toolchain to install, e.g. "stable". Automatically set if
 the `$name` of the resource follows the rules above.
 
 Default value: `(': ')[1]`
+
+##### <a name="profile"></a>`profile`
+
+Data type: `Rustup::Profile`
+
+Profile to use for installation. This determines which components will be
+installed initially.
+
+Changing this for an existing installation will not have an effect even if
+it causes an update, i.e. when `ensure => latest` is set.
+
+Default value: `'default'`
 
 ## Resource types
 
@@ -630,7 +657,7 @@ Default value: `present`
 The targets to install or remove.
 
 Each target must be a Hash with three entries:
-  * `ensure`: one of `present` and `absent`
+  * `ensure`: one of `present` or `absent`
   * `target`: the name of the target
   * `toolchain`: the name of the toolchain or `undef` to indicate the
     default toolchain
@@ -640,8 +667,9 @@ Each target must be a Hash with three entries:
 The toolchains to install, update, or remove.
 
 Each toolchain must be a Hash with two entries:
-  * `ensure`: one of `present`, `latest`, and `absent`
+  * `ensure`: one of `present`, `latest`, or `absent`
   * `toolchain`: the name of the toolchain
+  * `profile`: one of `minimal`, `default`, or `complete`
 
 #### Parameters
 
@@ -750,5 +778,15 @@ Alias of
 
 ```puppet
 Variant[Undef, String[1], Array[String[1]]]
+```
+
+### <a name="rustupprofile"></a>`Rustup::Profile`
+
+`default` is a keyword in Puppet, so it must always be wrapped in quotes.
+
+Alias of
+
+```puppet
+Enum[minimal, 'default', complete]
 ```
 

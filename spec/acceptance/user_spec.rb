@@ -164,6 +164,40 @@ describe 'Per-user rustup management' do
     end
   end
 
+  # Profiles only work on initial install, so the toolchain must be new.
+  context 'supports multi-resource install with profile and explicit target' do
+    it do
+      idempotent_apply(<<~'END')
+        rustup { 'vagrant': }
+        rustup::toolchain { 'vagrant: beta':
+          profile => minimal,
+        }
+        rustup::target { 'vagrant: default beta': }
+      END
+    end
+
+    toolchain_name = "beta-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_path = "/home/vagrant/.rustup/toolchains/#{toolchain_name}"
+
+    describe file("#{toolchain_path}/bin/rustc") do
+      it { is_expected.to be_file }
+      it { is_expected.to be_executable }
+      it { is_expected.to be_owned_by 'vagrant' }
+    end
+
+    describe file("#{toolchain_path}/bin/rustfmt") do
+      it { is_expected.not_to exist }
+    end
+
+    describe command_as_vagrant('rustup +beta target list') do
+      its(:stdout) do
+        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+  end
+
   context 'supports installing non-host toolchain' do
     target = 'x86_64-pc-windows-gnu'
     toolchain = "stable-#{target}"
