@@ -168,6 +168,25 @@ Puppet::Type.newtype(:rustup_internal) do
     defaultto true
   end
 
+  newparam(:dist_server) do
+    desc <<~'END'
+      Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
+      to install pre-release toolchains.
+    END
+
+    validate do |value|
+      # undef is okay, but it doesn’t seem to be passed to this function.
+      unless PuppetX::Rustup::Util.non_empty_string?(value) \
+          && URI.parse(value).absolute?
+        # The message is ignored and recreated in the rescue clause.
+        raise Puppet::Error
+      end
+    rescue
+      raise Puppet::Error, 'dist_server must be a valid URL, not %s.' \
+        % value.inspect
+    end
+  end
+
   newparam(:modify_path, boolean: true, parent: Puppet::Parameter::Boolean) do
     desc <<~'END'
       Whether or not to let `rustup` modify the user’s `PATH` in their shell

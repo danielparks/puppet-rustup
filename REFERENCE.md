@@ -53,6 +53,7 @@ The following parameters are available in the `rustup::global` class:
 * [`manage_user`](#manage_user)
 * [`purge_toolchains`](#purge_toolchains)
 * [`purge_targets`](#purge_targets)
+* [`dist_server`](#dist_server)
 * [`home`](#home)
 * [`shell`](#shell)
 * [`env_scripts_append`](#env_scripts_append)
@@ -101,6 +102,15 @@ Data type: `Boolean`
 Whether or not to uninstall targets that aren’t managed by Puppet.
 
 Default value: ``false``
+
+##### <a name="dist_server"></a>`dist_server`
+
+Data type: `Optional[Stdlib::HTTPUrl]`
+
+Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
+to install pre-release toolchains.
+
+Default value: ``undef``
 
 ##### <a name="home"></a>`home`
 
@@ -169,6 +179,7 @@ The following parameters are available in the `rustup` defined type:
 * [`purge_toolchains`](#purge_toolchains)
 * [`targets`](#targets)
 * [`purge_targets`](#purge_targets)
+* [`dist_server`](#dist_server)
 * [`home`](#home)
 * [`rustup_home`](#rustup_home)
 * [`cargo_home`](#cargo_home)
@@ -237,6 +248,15 @@ Data type: `Boolean`
 Whether or not to uninstall targets that aren’t managed by Puppet.
 
 Default value: ``false``
+
+##### <a name="dist_server"></a>`dist_server`
+
+Data type: `Optional[Stdlib::HTTPUrl]`
+
+Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
+to install pre-release toolchains.
+
+Default value: ``undef``
 
 ##### <a name="home"></a>`home`
 
@@ -676,6 +696,7 @@ Each toolchain must be a Hash with two entries:
 The following parameters are available in the `rustup_internal` type.
 
 * [`cargo_home`](#cargo_home)
+* [`dist_server`](#dist_server)
 * [`home`](#home)
 * [`installer_source`](#installer_source)
 * [`modify_path`](#modify_path)
@@ -691,6 +712,11 @@ Where `cargo` installs executables (autorequired). Generally you shouldn’t
 change this.
 
 Default value: `"${home}/.cargo"`
+
+##### <a name="dist_server"></a>`dist_server`
+
+Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
+to install pre-release toolchains.
 
 ##### <a name="home"></a>`home`
 
