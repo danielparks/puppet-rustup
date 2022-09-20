@@ -83,6 +83,23 @@ rustup::global::target { 'default nightly': }
 rustup::global::target { 'x86_64-unknown-linux-musl nightly': }
 ~~~
 
+### Debugging
+
+To see what the module is doing under the hood, you can set the `RUSTUP_TRACE`
+environment variable and run puppet with verbose mode:
+
+~~~
+$ RUSTUP_TRACE= puppet apply --verbose -e 'rustup { "daniel": }'
+Info: Loading facts
+Notice: Compiled catalog for marlow.local in environment production in 0.05 seconds
+Info: Using environment 'production'
+Info: Applying configuration version '1663673350'
+Info: rustup_internal: as daniel: /Users/daniel/.cargo/bin/rustup toolchain list
+Info: rustup_internal: as daniel: /Users/daniel/.cargo/bin/rustup target list --toolchain stable-x86_64-apple-darwin
+Info: rustup_internal: as daniel: /Users/daniel/.cargo/bin/rustup target list --toolchain nightly-x86_64-apple-darwin
+Notice: Applied catalog in 0.22 seconds
+~~~
+
 ## Limitations
 
   * This does not allow management of components.

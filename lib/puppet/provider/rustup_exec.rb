@@ -120,6 +120,10 @@ class Puppet::Provider::RustupExec < Puppet::Provider
       "environment #{environment.inspect}#{stdin_message}"
     end
 
+    if ENV['RUSTUP_TRACE']
+      info("as #{resource[:user]}: #{command.join(' ')}")
+    end
+
     # FIXME: timeout?
     Puppet::Util::Execution.execute(
       command,
