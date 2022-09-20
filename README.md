@@ -13,7 +13,26 @@ use it:
 
 ## Usage
 
-### Per user installation
+### Per-user installation
+
+You can just use the `rustup` resource, or you can define separate resources for
+toolchains and targets. You can mix and match these approaches if you want.
+
+~~~ puppet
+rustup { 'user':
+  toolchains       => ['stable', 'nightly'],
+  targets          => [
+    'default stable',
+    'default nightly',
+    'x86_64-unknown-linux-musl nightly',
+  ],
+  purge_toolchains => true,
+  purge_targets    => true,
+}
+~~~
+
+This is the multi-resource equivalent of the above, but it always tries to
+install the latest nightly toolchain:
 
 ~~~ puppet
 rustup { 'user':
@@ -22,12 +41,33 @@ rustup { 'user':
 }
 rustup::toolchain { 'user: stable': }
 rustup::target { 'user: default': }
-rustup::toolchain { 'user: nightly': }
+rustup::toolchain { 'user: nightly':
+  ensure => latest,
+}
 rustup::target { 'user: default nightly': }
 rustup::target { 'user: x86_64-unknown-linux-musl nightly': }
 ~~~
 
 ### Global installation
+
+Like the per-user installation this can be configured with one resource or
+multiple. Multiple resources provide more configurability.
+
+~~~ puppet
+class { 'rustup::global':
+  toolchains       => ['stable', 'nightly'],
+  targets          => [
+    'default stable',
+    'default nightly',
+    'x86_64-unknown-linux-musl nightly',
+  ],
+  purge_toolchains => true,
+  purge_targets    => true,
+}
+~~~
+
+Again, the equivalent configuration except that the nightly toolchain is updated
+every run:
 
 ~~~ puppet
 class { 'rustup::global':
@@ -36,7 +76,9 @@ class { 'rustup::global':
 }
 rustup::global::toolchain { 'stable': }
 rustup::global::target { 'default': }
-rustup::global::toolchain { 'nightly': }
+rustup::global::toolchain { 'nightly':
+  ensure => latest,
+}
 rustup::global::target { 'default nightly': }
 rustup::global::target { 'x86_64-unknown-linux-musl nightly': }
 ~~~
