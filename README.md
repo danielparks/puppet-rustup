@@ -1,7 +1,7 @@
 # Manage Rust with `rustup`
 
-This manages Rust installations with the `rustup` tool. There are two ways to
-use it:
+This manages Rust installations with the [`rustup`][] tool. There are two ways
+to use it:
 
   * With standard, per-user installations. Each user has their own installation
     in their home directory that is entirely separate from every other
@@ -17,6 +17,16 @@ use it:
 
 You can just use the `rustup` resource, or you can define separate resources for
 toolchains and targets. You can mix and match these approaches if you want.
+
+To just install the standard, stable toolchain:
+
+~~~ puppet
+rustup { 'user':
+  toolchains => ['stable'],
+}
+~~~
+
+A more complicated example:
 
 ~~~ puppet
 rustup { 'user':
@@ -113,3 +123,6 @@ There is specific documentation for individual parameters in
 ~~~
 pdk bundle exec puppet strings generate --format markdown
 ~~~
+
+
+[`rustup`]: https://rust-lang.github.io/rustup/
