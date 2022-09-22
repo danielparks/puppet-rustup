@@ -336,7 +336,7 @@ Data type: `String[1]`
 The user to run as. Automatically set if the `$name` of the resource follows
 the rules above.
 
-Default value: `(': ')[0]`
+Default value: `split($name, ': ')[0]`
 
 ##### <a name="command"></a>`command`
 
@@ -345,7 +345,7 @@ Data type: `String[1]`
 The command to run, e.g. 'rustup default stable'. Automatically set if the
 `$name` of the resource follows the rules above.
 
-Default value: `(': ')[1]`
+Default value: `split($name, ': ')[1]`
 
 ##### <a name="creates"></a>`creates`
 
@@ -464,7 +464,7 @@ Data type: `String[1]`
 The name of the target to install, e.g. "sparcv9-sun-solaris". Automatically
 set if the `$name` of the resource follows the rules above.
 
-Default value: `(' ')[0]`
+Default value: `split($name, ' ')[0]`
 
 ##### <a name="toolchain"></a>`toolchain`
 
@@ -474,7 +474,7 @@ The name of the toolchain in which to install the target, e.g. "stable".
 `undef` means the default toolchain. Automatically set if the `$name` of the
 resource follows the rules above.
 
-Default value: `(' ')[1]`
+Default value: `split($name, ' ')[1]`
 
 ### <a name="rustupglobaltoolchain"></a>`rustup::global::toolchain`
 
@@ -560,7 +560,7 @@ Data type: `String[1]`
 The name of the `rustup` installation (normally the username). Automatically
 set if the `$name` of the resource follows the rules above.
 
-Default value: `(': ')[0]`
+Default value: `split($name, ': ')[0]`
 
 ##### <a name="target"></a>`target`
 
@@ -569,7 +569,7 @@ Data type: `String[1]`
 The name of the target to install, e.g. "sparcv9-sun-solaris". Automatically
 set if the `$name` of the resource follows the rules above.
 
-Default value: `(' ')[0]`
+Default value: `split(split($name, ': ')[1], ' ')[0]`
 
 ##### <a name="toolchain"></a>`toolchain`
 
@@ -579,7 +579,7 @@ The name of the toolchain in which to install the target, e.g. "stable".
 `undef` means the default toolchain. Automatically set if the `$name` of the
 resource follows the rules above.
 
-Default value: `(' ')[1]`
+Default value: `split(split($name, ': ')[1], ' ')[1]`
 
 ### <a name="rustuptoolchain"></a>`rustup::toolchain`
 
@@ -617,7 +617,7 @@ Data type: `String[1]`
 The name of the `rustup` installation (normally the username). Automatically
 set if the `$name` of the resource follows the rules above.
 
-Default value: `(': ')[0]`
+Default value: `split($name, ': ')[0]`
 
 ##### <a name="toolchain"></a>`toolchain`
 
@@ -626,7 +626,7 @@ Data type: `String[1]`
 The name of the toolchain to install, e.g. "stable". Automatically set if
 the `$name` of the resource follows the rules above.
 
-Default value: `(': ')[1]`
+Default value: `split($name, ': ')[1]`
 
 ##### <a name="profile"></a>`profile`
 
