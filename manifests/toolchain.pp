@@ -26,8 +26,8 @@
 #   it causes an update, i.e. when `ensure => latest` is set.
 define rustup::toolchain (
   Enum[present, latest, absent] $ensure    = present,
-  String[1]                     $rustup    = $name.split(': ')[0],
-  String[1]                     $toolchain = $name.split(': ')[1],
+  String[1]                     $rustup    = split($name, ': ')[0],
+  String[1]                     $toolchain = split($name, ': ')[1],
   Rustup::Profile               $profile   = 'default',
 ) {
   Rustup_internal <| title == $rustup |> {

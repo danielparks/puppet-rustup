@@ -41,8 +41,8 @@
 #
 # [`exec`]: https://puppet.com/docs/puppet/latest/types/exec.html
 define rustup::exec (
-  String[1]                     $user        = $name.split(': ')[0],
-  String[1]                     $command     = $name.split(': ')[1],
+  String[1]                     $user        = split($name, ': ')[0],
+  String[1]                     $command     = split($name, ': ')[1],
   Optional[String[1]]           $creates     = undef,
   Array[String[1]]              $environment = [],
   Rustup::OptionalStringOrArray $onlyif      = undef,

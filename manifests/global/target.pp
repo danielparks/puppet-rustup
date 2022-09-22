@@ -18,8 +18,8 @@
 #   resource follows the rules above.
 define rustup::global::target (
   Enum[present, absent] $ensure    = present,
-  String[1]             $target    = $name.split(' ')[0],
-  Optional[String[1]]   $toolchain = $name.split(' ')[1],
+  String[1]             $target    = split($name, ' ')[0],
+  Optional[String[1]]   $toolchain = split($name, ' ')[1],
 ) {
   include rustup::global
 
