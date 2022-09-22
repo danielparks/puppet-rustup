@@ -6,16 +6,16 @@
 
 ### Classes
 
-* [`rustup::global`](#rustup__global): Manage global Rust installation with `rustup`
+* [`rustup::global`](#rustup--global): Manage global Rust installation with `rustup`
 
 ### Defined types
 
 * [`rustup`](#rustup): Manage a user’s Rust installation with `rustup`
-* [`rustup::exec`](#rustup__exec): Run a `rustup` command
-* [`rustup::global::target`](#rustup__global__target): Install a target for a toolchain for global installation
-* [`rustup::global::toolchain`](#rustup__global__toolchain): Install a toolchain for global installation
-* [`rustup::target`](#rustup__target): Install a target for a toolchain
-* [`rustup::toolchain`](#rustup__toolchain): Install a toolchain
+* [`rustup::exec`](#rustup--exec): Run a `rustup` command
+* [`rustup::global::target`](#rustup--global--target): Install a target for a toolchain for global installation
+* [`rustup::global::toolchain`](#rustup--global--toolchain): Install a toolchain for global installation
+* [`rustup::target`](#rustup--target): Install a target for a toolchain
+* [`rustup::toolchain`](#rustup--toolchain): Install a toolchain
 
 ### Resource types
 
@@ -23,16 +23,16 @@
 
 ### Functions
 
-* [`rustup::home`](#rustup__home): Return the default home directory for a user on this OS
+* [`rustup::home`](#rustup--home): Return the default home directory for a user on this OS
 
 ### Data types
 
-* [`Rustup::OptionalStringOrArray`](#Rustup__OptionalStringOrArray): Convenience type to make params easier to read
-* [`Rustup::Profile`](#Rustup__Profile): Profile for toolchain installation
+* [`Rustup::OptionalStringOrArray`](#Rustup--OptionalStringOrArray): Convenience type to make params easier to read
+* [`Rustup::Profile`](#Rustup--Profile): Profile for toolchain installation
 
 ## Classes
 
-### <a name="rustup__global"></a>`rustup::global`
+### <a name="rustup--global"></a>`rustup::global`
 
 Manage global Rust installation with `rustup`
 
@@ -48,19 +48,19 @@ include rustup::global
 
 The following parameters are available in the `rustup::global` class:
 
-* [`ensure`](#rustup__global___ensure)
-* [`user`](#rustup__global___user)
-* [`manage_user`](#rustup__global___manage_user)
-* [`purge_toolchains`](#rustup__global___purge_toolchains)
-* [`purge_targets`](#rustup__global___purge_targets)
-* [`dist_server`](#rustup__global___dist_server)
-* [`home`](#rustup__global___home)
-* [`shell`](#rustup__global___shell)
-* [`env_scripts_append`](#rustup__global___env_scripts_append)
-* [`env_scripts_create`](#rustup__global___env_scripts_create)
-* [`installer_source`](#rustup__global___installer_source)
+* [`ensure`](#-rustup--global--ensure)
+* [`user`](#-rustup--global--user)
+* [`manage_user`](#-rustup--global--manage_user)
+* [`purge_toolchains`](#-rustup--global--purge_toolchains)
+* [`purge_targets`](#-rustup--global--purge_targets)
+* [`dist_server`](#-rustup--global--dist_server)
+* [`home`](#-rustup--global--home)
+* [`shell`](#-rustup--global--shell)
+* [`env_scripts_append`](#-rustup--global--env_scripts_append)
+* [`env_scripts_create`](#-rustup--global--env_scripts_create)
+* [`installer_source`](#-rustup--global--installer_source)
 
-##### <a name="rustup__global___ensure"></a>`ensure`
+##### <a name="-rustup--global--ensure"></a>`ensure`
 
 Data type: `Enum[present, latest, absent]`
 
@@ -70,7 +70,7 @@ Data type: `Enum[present, latest, absent]`
 
 Default value: `present`
 
-##### <a name="rustup__global___user"></a>`user`
+##### <a name="-rustup--global--user"></a>`user`
 
 Data type: `String[1]`
 
@@ -79,7 +79,7 @@ existing user.
 
 Default value: `'rustup'`
 
-##### <a name="rustup__global___manage_user"></a>`manage_user`
+##### <a name="-rustup--global--manage_user"></a>`manage_user`
 
 Data type: `Boolean`
 
@@ -87,7 +87,7 @@ Whether or not to manage `$user` user.
 
 Default value: ``true``
 
-##### <a name="rustup__global___purge_toolchains"></a>`purge_toolchains`
+##### <a name="-rustup--global--purge_toolchains"></a>`purge_toolchains`
 
 Data type: `Boolean`
 
@@ -95,7 +95,7 @@ Whether or not to uninstall toolchains that aren’t managed by Puppet.
 
 Default value: ``false``
 
-##### <a name="rustup__global___purge_targets"></a>`purge_targets`
+##### <a name="-rustup--global--purge_targets"></a>`purge_targets`
 
 Data type: `Boolean`
 
@@ -103,7 +103,7 @@ Whether or not to uninstall targets that aren’t managed by Puppet.
 
 Default value: ``false``
 
-##### <a name="rustup__global___dist_server"></a>`dist_server`
+##### <a name="-rustup--global--dist_server"></a>`dist_server`
 
 Data type: `Optional[Stdlib::HTTPUrl]`
 
@@ -112,7 +112,7 @@ to install pre-release toolchains.
 
 Default value: ``undef``
 
-##### <a name="rustup__global___home"></a>`home`
+##### <a name="-rustup--global--home"></a>`home`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -121,7 +121,7 @@ cargo directories.
 
 Default value: `'/opt/rust'`
 
-##### <a name="rustup__global___shell"></a>`shell`
+##### <a name="-rustup--global--shell"></a>`shell`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -129,7 +129,7 @@ Shell for the rustup user. This can be a nologin shell.
 
 Default value: `'/bin/bash'`
 
-##### <a name="rustup__global___env_scripts_append"></a>`env_scripts_append`
+##### <a name="-rustup--global--env_scripts_append"></a>`env_scripts_append`
 
 Data type: `Array[Stdlib::Absolutepath]`
 
@@ -137,7 +137,7 @@ Scripts to append with line that sources the cargo environment script.
 
 Default value: `['/etc/bashrc']`
 
-##### <a name="rustup__global___env_scripts_create"></a>`env_scripts_create`
+##### <a name="-rustup--global--env_scripts_create"></a>`env_scripts_create`
 
 Data type: `Array[Stdlib::Absolutepath]`
 
@@ -145,7 +145,7 @@ Paths that will get links to the cargo environment script.
 
 Default value: `['/etc/profile.d/99-cargo.sh']`
 
-##### <a name="rustup__global___installer_source"></a>`installer_source`
+##### <a name="-rustup--global--installer_source"></a>`installer_source`
 
 Data type: `Stdlib::HTTPUrl`
 
@@ -172,21 +172,21 @@ rustup { 'daniel': }
 
 The following parameters are available in the `rustup` defined type:
 
-* [`ensure`](#rustup___ensure)
-* [`user`](#rustup___user)
-* [`default_toolchain`](#rustup___default_toolchain)
-* [`toolchains`](#rustup___toolchains)
-* [`purge_toolchains`](#rustup___purge_toolchains)
-* [`targets`](#rustup___targets)
-* [`purge_targets`](#rustup___purge_targets)
-* [`dist_server`](#rustup___dist_server)
-* [`home`](#rustup___home)
-* [`rustup_home`](#rustup___rustup_home)
-* [`cargo_home`](#rustup___cargo_home)
-* [`modify_path`](#rustup___modify_path)
-* [`installer_source`](#rustup___installer_source)
+* [`ensure`](#-rustup--ensure)
+* [`user`](#-rustup--user)
+* [`default_toolchain`](#-rustup--default_toolchain)
+* [`toolchains`](#-rustup--toolchains)
+* [`purge_toolchains`](#-rustup--purge_toolchains)
+* [`targets`](#-rustup--targets)
+* [`purge_targets`](#-rustup--purge_targets)
+* [`dist_server`](#-rustup--dist_server)
+* [`home`](#-rustup--home)
+* [`rustup_home`](#-rustup--rustup_home)
+* [`cargo_home`](#-rustup--cargo_home)
+* [`modify_path`](#-rustup--modify_path)
+* [`installer_source`](#-rustup--installer_source)
 
-##### <a name="rustup___ensure"></a>`ensure`
+##### <a name="-rustup--ensure"></a>`ensure`
 
 Data type: `Enum[present, latest, absent]`
 
@@ -196,7 +196,7 @@ Data type: `Enum[present, latest, absent]`
 
 Default value: `present`
 
-##### <a name="rustup___user"></a>`user`
+##### <a name="-rustup--user"></a>`user`
 
 Data type: `String[1]`
 
@@ -204,7 +204,7 @@ The user to own and manage rustup.
 
 Default value: `$name`
 
-##### <a name="rustup___default_toolchain"></a>`default_toolchain`
+##### <a name="-rustup--default_toolchain"></a>`default_toolchain`
 
 Data type: `Optional[String[1]]`
 
@@ -212,7 +212,7 @@ Which toolchain should be the default.
 
 Default value: ``undef``
 
-##### <a name="rustup___toolchains"></a>`toolchains`
+##### <a name="-rustup--toolchains"></a>`toolchains`
 
 Data type: `Array[String[1]]`
 
@@ -220,7 +220,7 @@ The toolchains to install.
 
 Default value: `[]`
 
-##### <a name="rustup___purge_toolchains"></a>`purge_toolchains`
+##### <a name="-rustup--purge_toolchains"></a>`purge_toolchains`
 
 Data type: `Boolean`
 
@@ -228,7 +228,7 @@ Whether or not to uninstall toolchains that aren’t managed by Puppet.
 
 Default value: ``false``
 
-##### <a name="rustup___targets"></a>`targets`
+##### <a name="-rustup--targets"></a>`targets`
 
 Data type: `Array[String[1]]`
 
@@ -241,7 +241,7 @@ You can use `'default'` to indicate the target for the current host.
 
 Default value: `[]`
 
-##### <a name="rustup___purge_targets"></a>`purge_targets`
+##### <a name="-rustup--purge_targets"></a>`purge_targets`
 
 Data type: `Boolean`
 
@@ -249,7 +249,7 @@ Whether or not to uninstall targets that aren’t managed by Puppet.
 
 Default value: ``false``
 
-##### <a name="rustup___dist_server"></a>`dist_server`
+##### <a name="-rustup--dist_server"></a>`dist_server`
 
 Data type: `Optional[Stdlib::HTTPUrl]`
 
@@ -258,7 +258,7 @@ to install pre-release toolchains.
 
 Default value: ``undef``
 
-##### <a name="rustup___home"></a>`home`
+##### <a name="-rustup--home"></a>`home`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -267,7 +267,7 @@ The user’s home directory. This defaults to `/home/$user` on Linux and
 
 Default value: `rustup::home($user)`
 
-##### <a name="rustup___rustup_home"></a>`rustup_home`
+##### <a name="-rustup--rustup_home"></a>`rustup_home`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -275,7 +275,7 @@ Where toolchains are installed. Generally you shouldn’t change this.
 
 Default value: `"${home}/.rustup"`
 
-##### <a name="rustup___cargo_home"></a>`cargo_home`
+##### <a name="-rustup--cargo_home"></a>`cargo_home`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -283,7 +283,7 @@ Where `cargo` installs executables. Generally you shouldn’t change this.
 
 Default value: `"${home}/.cargo"`
 
-##### <a name="rustup___modify_path"></a>`modify_path`
+##### <a name="-rustup--modify_path"></a>`modify_path`
 
 Data type: `Boolean`
 
@@ -292,7 +292,7 @@ scripts. This only affects the initial installation and removal.
 
 Default value: ``true``
 
-##### <a name="rustup___installer_source"></a>`installer_source`
+##### <a name="-rustup--installer_source"></a>`installer_source`
 
 Data type: `Stdlib::HTTPUrl`
 
@@ -301,7 +301,7 @@ after the initial installation.
 
 Default value: `'https://sh.rustup.rs'`
 
-### <a name="rustup__exec"></a>`rustup::exec`
+### <a name="rustup--exec"></a>`rustup::exec`
 
 The name should start with the username followed by a colon and a space, then
 the command. For example:
@@ -316,20 +316,20 @@ rustup::exec { 'daniel: rustup default nightly': }
 
 The following parameters are available in the `rustup::exec` defined type:
 
-* [`user`](#rustup__exec___user)
-* [`command`](#rustup__exec___command)
-* [`creates`](#rustup__exec___creates)
-* [`environment`](#rustup__exec___environment)
-* [`onlyif`](#rustup__exec___onlyif)
-* [`refreshonly`](#rustup__exec___refreshonly)
-* [`unless`](#rustup__exec___unless)
-* [`home`](#rustup__exec___home)
-* [`rustup_home`](#rustup__exec___rustup_home)
-* [`cargo_home`](#rustup__exec___cargo_home)
-* [`bin`](#rustup__exec___bin)
-* [`more`](#rustup__exec___more)
+* [`user`](#-rustup--exec--user)
+* [`command`](#-rustup--exec--command)
+* [`creates`](#-rustup--exec--creates)
+* [`environment`](#-rustup--exec--environment)
+* [`onlyif`](#-rustup--exec--onlyif)
+* [`refreshonly`](#-rustup--exec--refreshonly)
+* [`unless`](#-rustup--exec--unless)
+* [`home`](#-rustup--exec--home)
+* [`rustup_home`](#-rustup--exec--rustup_home)
+* [`cargo_home`](#-rustup--exec--cargo_home)
+* [`bin`](#-rustup--exec--bin)
+* [`more`](#-rustup--exec--more)
 
-##### <a name="rustup__exec___user"></a>`user`
+##### <a name="-rustup--exec--user"></a>`user`
 
 Data type: `String[1]`
 
@@ -338,7 +338,7 @@ the rules above.
 
 Default value: `split($name, ': ')[0]`
 
-##### <a name="rustup__exec___command"></a>`command`
+##### <a name="-rustup--exec--command"></a>`command`
 
 Data type: `String[1]`
 
@@ -347,7 +347,7 @@ The command to run, e.g. 'rustup default stable'. Automatically set if the
 
 Default value: `split($name, ': ')[1]`
 
-##### <a name="rustup__exec___creates"></a>`creates`
+##### <a name="-rustup--exec--creates"></a>`creates`
 
 Data type: `Optional[String[1]]`
 
@@ -355,7 +355,7 @@ Only run when if this path does not exist. (See [`exec`] documentation.)
 
 Default value: ``undef``
 
-##### <a name="rustup__exec___environment"></a>`environment`
+##### <a name="-rustup--exec--environment"></a>`environment`
 
 Data type: `Array[String[1]]`
 
@@ -364,7 +364,7 @@ and `PATH`.
 
 Default value: `[]`
 
-##### <a name="rustup__exec___onlyif"></a>`onlyif`
+##### <a name="-rustup--exec--onlyif"></a>`onlyif`
 
 Data type: `Rustup::OptionalStringOrArray`
 
@@ -372,7 +372,7 @@ Only run when `$onlyif` returns success. (See [`exec`] documentation.)
 
 Default value: ``undef``
 
-##### <a name="rustup__exec___refreshonly"></a>`refreshonly`
+##### <a name="-rustup--exec--refreshonly"></a>`refreshonly`
 
 Data type: `Boolean`
 
@@ -380,7 +380,7 @@ Only run this when it receives an event. (See [`exec`] documentation.)
 
 Default value: ``false``
 
-##### <a name="rustup__exec___unless"></a>`unless`
+##### <a name="-rustup--exec--unless"></a>`unless`
 
 Data type: `Rustup::OptionalStringOrArray`
 
@@ -388,7 +388,7 @@ Only run when `$unless` returns failure. (See [`exec`] documentation.)
 
 Default value: ``undef``
 
-##### <a name="rustup__exec___home"></a>`home`
+##### <a name="-rustup--exec--home"></a>`home`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -398,7 +398,7 @@ The user’s home directory. This defaults to `/home/$user` on Linux and
 
 Default value: `rustup::home($user)`
 
-##### <a name="rustup__exec___rustup_home"></a>`rustup_home`
+##### <a name="-rustup--exec--rustup_home"></a>`rustup_home`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -406,7 +406,7 @@ Where toolchains are installed. Generally you shouldn’t change this.
 
 Default value: `"${home}/.rustup"`
 
-##### <a name="rustup__exec___cargo_home"></a>`cargo_home`
+##### <a name="-rustup--exec--cargo_home"></a>`cargo_home`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -414,7 +414,7 @@ Where `cargo` installs executables. Generally you shouldn’t change this.
 
 Default value: `"${home}/.cargo"`
 
-##### <a name="rustup__exec___bin"></a>`bin`
+##### <a name="-rustup--exec--bin"></a>`bin`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -423,7 +423,7 @@ this.
 
 Default value: `"${cargo_home}/bin"`
 
-##### <a name="rustup__exec___more"></a>`more`
+##### <a name="-rustup--exec--more"></a>`more`
 
 Data type: `Hash[String[1], Any]`
 
@@ -432,7 +432,7 @@ parameters.
 
 Default value: `{}`
 
-### <a name="rustup__global__target"></a>`rustup::global::target`
+### <a name="rustup--global--target"></a>`rustup::global::target`
 
 You can name this two ways to automatically set the parameters:
 
@@ -445,11 +445,11 @@ You can name this two ways to automatically set the parameters:
 
 The following parameters are available in the `rustup::global::target` defined type:
 
-* [`ensure`](#rustup__global__target___ensure)
-* [`target`](#rustup__global__target___target)
-* [`toolchain`](#rustup__global__target___toolchain)
+* [`ensure`](#-rustup--global--target--ensure)
+* [`target`](#-rustup--global--target--target)
+* [`toolchain`](#-rustup--global--target--toolchain)
 
-##### <a name="rustup__global__target___ensure"></a>`ensure`
+##### <a name="-rustup--global--target--ensure"></a>`ensure`
 
 Data type: `Enum[present, absent]`
 
@@ -457,7 +457,7 @@ Whether the target should be present or absent.
 
 Default value: `present`
 
-##### <a name="rustup__global__target___target"></a>`target`
+##### <a name="-rustup--global--target--target"></a>`target`
 
 Data type: `String[1]`
 
@@ -466,7 +466,7 @@ set if the `$name` of the resource follows the rules above.
 
 Default value: `split($name, ' ')[0]`
 
-##### <a name="rustup__global__target___toolchain"></a>`toolchain`
+##### <a name="-rustup--global--target--toolchain"></a>`toolchain`
 
 Data type: `Optional[String[1]]`
 
@@ -476,7 +476,7 @@ resource follows the rules above.
 
 Default value: `split($name, ' ')[1]`
 
-### <a name="rustup__global__toolchain"></a>`rustup::global::toolchain`
+### <a name="rustup--global--toolchain"></a>`rustup::global::toolchain`
 
 The name should just be the toolchain. For example:
 
@@ -488,11 +488,11 @@ rustup::global::toolchain { 'stable': }
 
 The following parameters are available in the `rustup::global::toolchain` defined type:
 
-* [`ensure`](#rustup__global__toolchain___ensure)
-* [`toolchain`](#rustup__global__toolchain___toolchain)
-* [`profile`](#rustup__global__toolchain___profile)
+* [`ensure`](#-rustup--global--toolchain--ensure)
+* [`toolchain`](#-rustup--global--toolchain--toolchain)
+* [`profile`](#-rustup--global--toolchain--profile)
 
-##### <a name="rustup__global__toolchain___ensure"></a>`ensure`
+##### <a name="-rustup--global--toolchain--ensure"></a>`ensure`
 
 Data type: `Enum[present, latest, absent]`
 
@@ -502,7 +502,7 @@ Data type: `Enum[present, latest, absent]`
 
 Default value: `present`
 
-##### <a name="rustup__global__toolchain___toolchain"></a>`toolchain`
+##### <a name="-rustup--global--toolchain--toolchain"></a>`toolchain`
 
 Data type: `String[1]`
 
@@ -510,7 +510,7 @@ The name of the toolchain to install, e.g. "stable".
 
 Default value: `$name`
 
-##### <a name="rustup__global__toolchain___profile"></a>`profile`
+##### <a name="-rustup--global--toolchain--profile"></a>`profile`
 
 Data type: `Rustup::Profile`
 
@@ -522,7 +522,7 @@ it causes an update, i.e. when `ensure => latest` is set.
 
 Default value: `'default'`
 
-### <a name="rustup__target"></a>`rustup::target`
+### <a name="rustup--target"></a>`rustup::target`
 
 You can name this two ways to automatically set the parameters:
 
@@ -540,12 +540,12 @@ corresponds to the current host.
 
 The following parameters are available in the `rustup::target` defined type:
 
-* [`ensure`](#rustup__target___ensure)
-* [`rustup`](#rustup__target___rustup)
-* [`target`](#rustup__target___target)
-* [`toolchain`](#rustup__target___toolchain)
+* [`ensure`](#-rustup--target--ensure)
+* [`rustup`](#-rustup--target--rustup)
+* [`target`](#-rustup--target--target)
+* [`toolchain`](#-rustup--target--toolchain)
 
-##### <a name="rustup__target___ensure"></a>`ensure`
+##### <a name="-rustup--target--ensure"></a>`ensure`
 
 Data type: `Enum[present, absent]`
 
@@ -553,7 +553,7 @@ Whether the target should be present or absent.
 
 Default value: `present`
 
-##### <a name="rustup__target___rustup"></a>`rustup`
+##### <a name="-rustup--target--rustup"></a>`rustup`
 
 Data type: `String[1]`
 
@@ -562,7 +562,7 @@ set if the `$name` of the resource follows the rules above.
 
 Default value: `split($name, ': ')[0]`
 
-##### <a name="rustup__target___target"></a>`target`
+##### <a name="-rustup--target--target"></a>`target`
 
 Data type: `String[1]`
 
@@ -571,7 +571,7 @@ set if the `$name` of the resource follows the rules above.
 
 Default value: `split(split($name, ': ')[1], ' ')[0]`
 
-##### <a name="rustup__target___toolchain"></a>`toolchain`
+##### <a name="-rustup--target--toolchain"></a>`toolchain`
 
 Data type: `Optional[String[1]]`
 
@@ -581,7 +581,7 @@ resource follows the rules above.
 
 Default value: `split(split($name, ': ')[1], ' ')[1]`
 
-### <a name="rustup__toolchain"></a>`rustup::toolchain`
+### <a name="rustup--toolchain"></a>`rustup::toolchain`
 
 The name should start with the name of the `rustup` resource (normally the
 name of the user) followed by a colon and a space, then the toolchain. For
@@ -595,12 +595,12 @@ rustup::toolchain { 'daniel: stable': }
 
 The following parameters are available in the `rustup::toolchain` defined type:
 
-* [`ensure`](#rustup__toolchain___ensure)
-* [`rustup`](#rustup__toolchain___rustup)
-* [`toolchain`](#rustup__toolchain___toolchain)
-* [`profile`](#rustup__toolchain___profile)
+* [`ensure`](#-rustup--toolchain--ensure)
+* [`rustup`](#-rustup--toolchain--rustup)
+* [`toolchain`](#-rustup--toolchain--toolchain)
+* [`profile`](#-rustup--toolchain--profile)
 
-##### <a name="rustup__toolchain___ensure"></a>`ensure`
+##### <a name="-rustup--toolchain--ensure"></a>`ensure`
 
 Data type: `Enum[present, latest, absent]`
 
@@ -610,7 +610,7 @@ Data type: `Enum[present, latest, absent]`
 
 Default value: `present`
 
-##### <a name="rustup__toolchain___rustup"></a>`rustup`
+##### <a name="-rustup--toolchain--rustup"></a>`rustup`
 
 Data type: `String[1]`
 
@@ -619,7 +619,7 @@ set if the `$name` of the resource follows the rules above.
 
 Default value: `split($name, ': ')[0]`
 
-##### <a name="rustup__toolchain___toolchain"></a>`toolchain`
+##### <a name="-rustup--toolchain--toolchain"></a>`toolchain`
 
 Data type: `String[1]`
 
@@ -628,7 +628,7 @@ the `$name` of the resource follows the rules above.
 
 Default value: `split($name, ': ')[1]`
 
-##### <a name="rustup__toolchain___profile"></a>`profile`
+##### <a name="-rustup--toolchain--profile"></a>`profile`
 
 Data type: `Rustup::Profile`
 
@@ -695,43 +695,43 @@ Each toolchain must be a Hash with two entries:
 
 The following parameters are available in the `rustup_internal` type.
 
-* [`cargo_home`](#rustup_internal___cargo_home)
-* [`dist_server`](#rustup_internal___dist_server)
-* [`home`](#rustup_internal___home)
-* [`installer_source`](#rustup_internal___installer_source)
-* [`modify_path`](#rustup_internal___modify_path)
-* [`provider`](#rustup_internal___provider)
-* [`purge_targets`](#rustup_internal___purge_targets)
-* [`purge_toolchains`](#rustup_internal___purge_toolchains)
-* [`rustup_home`](#rustup_internal___rustup_home)
-* [`user`](#rustup_internal___user)
+* [`cargo_home`](#-rustup_internal--cargo_home)
+* [`dist_server`](#-rustup_internal--dist_server)
+* [`home`](#-rustup_internal--home)
+* [`installer_source`](#-rustup_internal--installer_source)
+* [`modify_path`](#-rustup_internal--modify_path)
+* [`provider`](#-rustup_internal--provider)
+* [`purge_targets`](#-rustup_internal--purge_targets)
+* [`purge_toolchains`](#-rustup_internal--purge_toolchains)
+* [`rustup_home`](#-rustup_internal--rustup_home)
+* [`user`](#-rustup_internal--user)
 
-##### <a name="rustup_internal___cargo_home"></a>`cargo_home`
+##### <a name="-rustup_internal--cargo_home"></a>`cargo_home`
 
 Where `cargo` installs executables (autorequired). Generally you shouldn’t
 change this.
 
 Default value: `"${home}/.cargo"`
 
-##### <a name="rustup_internal___dist_server"></a>`dist_server`
+##### <a name="-rustup_internal--dist_server"></a>`dist_server`
 
 Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
 to install pre-release toolchains.
 
-##### <a name="rustup_internal___home"></a>`home`
+##### <a name="-rustup_internal--home"></a>`home`
 
 The user’s home directory (autorequired).
 
 Default value: `"/home/${user}"`
 
-##### <a name="rustup_internal___installer_source"></a>`installer_source`
+##### <a name="-rustup_internal--installer_source"></a>`installer_source`
 
 URL of the rustup installation script. Changing this will have no effect
 after the initial installation.
 
 Default value: `https://sh.rustup.rs`
 
-##### <a name="rustup_internal___modify_path"></a>`modify_path`
+##### <a name="-rustup_internal--modify_path"></a>`modify_path`
 
 Valid values: ``true``, ``false``, `yes`, `no`
 
@@ -740,12 +740,12 @@ init scripts. This only affects the initial installation and removal.
 
 Default value: ``true``
 
-##### <a name="rustup_internal___provider"></a>`provider`
+##### <a name="-rustup_internal--provider"></a>`provider`
 
 The specific backend to use for this `rustup_internal` resource. You will seldom need to specify this --- Puppet will
 usually discover the appropriate provider for your platform.
 
-##### <a name="rustup_internal___purge_targets"></a>`purge_targets`
+##### <a name="-rustup_internal--purge_targets"></a>`purge_targets`
 
 Valid values: ``true``, ``false``, `yes`, `no`
 
@@ -753,7 +753,7 @@ Whether or not to uninstall targets that aren’t managed by Puppet.
 
 Default value: ``true``
 
-##### <a name="rustup_internal___purge_toolchains"></a>`purge_toolchains`
+##### <a name="-rustup_internal--purge_toolchains"></a>`purge_toolchains`
 
 Valid values: ``true``, ``false``, `yes`, `no`
 
@@ -761,14 +761,14 @@ Whether or not to uninstall toolchains that aren’t managed by Puppet.
 
 Default value: ``true``
 
-##### <a name="rustup_internal___rustup_home"></a>`rustup_home`
+##### <a name="-rustup_internal--rustup_home"></a>`rustup_home`
 
 Where toolchains are installed (autorequired). Generally you shouldn’t
 change this.
 
 Default value: `"${home}/.rustup"`
 
-##### <a name="rustup_internal___user"></a>`user`
+##### <a name="-rustup_internal--user"></a>`user`
 
 namevar
 
@@ -776,7 +776,7 @@ The user that owns this instance of `rustup` (autorequired).
 
 ## Functions
 
-### <a name="rustup__home"></a>`rustup::home`
+### <a name="rustup--home"></a>`rustup::home`
 
 Type: Puppet Language
 
@@ -796,7 +796,7 @@ The name of the user.
 
 ## Data types
 
-### <a name="Rustup__OptionalStringOrArray"></a>`Rustup::OptionalStringOrArray`
+### <a name="Rustup--OptionalStringOrArray"></a>`Rustup::OptionalStringOrArray`
 
 Convenience type to make params easier to read
 
@@ -806,7 +806,7 @@ Alias of
 Variant[Undef, String[1], Array[String[1]]]
 ```
 
-### <a name="Rustup__Profile"></a>`Rustup::Profile`
+### <a name="Rustup--Profile"></a>`Rustup::Profile`
 
 `default` is a keyword in Puppet, so it must always be wrapped in quotes.
 
