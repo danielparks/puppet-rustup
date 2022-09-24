@@ -17,6 +17,8 @@ Puppet::Type.newtype(:rustup_internal) do
       * The directory specified by `home`.
       * The directory specified by `cargo_home` and its parent.
       * The directory specified by `rustup_home` and its parent.
+
+    @api private
   END
 
   # This will consult provider.exists? and determine whether or not to a change

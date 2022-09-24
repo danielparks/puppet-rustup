@@ -19,11 +19,21 @@
 
 ### Resource types
 
-* [`rustup_internal`](#rustup_internal): Manage a user’s Rust installation with `rustup`
+#### Public Resource types
+
+
+#### Private Resource types
+
+* `rustup_internal`: Manage a user’s Rust installation with `rustup`
 
 ### Functions
 
-* [`rustup::home`](#rustup--home): Return the default home directory for a user on this OS
+#### Public Functions
+
+
+#### Private Functions
+
+* `rustup::home`: Return the default home directory for a user on this OS
 
 ### Data types
 
@@ -642,157 +652,7 @@ Default value: `'default'`
 
 ## Resource types
 
-### <a name="rustup_internal"></a>`rustup_internal`
-
-Use the [`rustup`](#rustup) defined type instead of this.
-
-The name should be the username.
-
-**Autorequires:**
-  * The `user`.
-  * The directory specified by `home`.
-  * The directory specified by `cargo_home` and its parent.
-  * The directory specified by `rustup_home` and its parent.
-
-#### Properties
-
-The following properties are available in the `rustup_internal` type.
-
-##### `default_toolchain`
-
-Which toolchain should be default.
-
-##### `ensure`
-
-Valid values: `present`, `latest`, `absent`
-
-* `present` - install `rustup`, but don’t update it.
-* `latest` - install `rustup` and update it on every puppet run.
-* `absent` - uninstall `rustup` and the tools it manages.
-
-Default value: `present`
-
-##### `targets`
-
-The targets to install or remove.
-
-Each target must be a Hash with three entries:
-  * `ensure`: one of `present` or `absent`
-  * `target`: the name of the target
-  * `toolchain`: the name of the toolchain or `undef` to indicate the
-    default toolchain
-
-##### `toolchains`
-
-The toolchains to install, update, or remove.
-
-Each toolchain must be a Hash with two entries:
-  * `ensure`: one of `present`, `latest`, or `absent`
-  * `toolchain`: the name of the toolchain
-  * `profile`: one of `minimal`, `default`, or `complete`
-
-#### Parameters
-
-The following parameters are available in the `rustup_internal` type.
-
-* [`cargo_home`](#-rustup_internal--cargo_home)
-* [`dist_server`](#-rustup_internal--dist_server)
-* [`home`](#-rustup_internal--home)
-* [`installer_source`](#-rustup_internal--installer_source)
-* [`modify_path`](#-rustup_internal--modify_path)
-* [`provider`](#-rustup_internal--provider)
-* [`purge_targets`](#-rustup_internal--purge_targets)
-* [`purge_toolchains`](#-rustup_internal--purge_toolchains)
-* [`rustup_home`](#-rustup_internal--rustup_home)
-* [`user`](#-rustup_internal--user)
-
-##### <a name="-rustup_internal--cargo_home"></a>`cargo_home`
-
-Where `cargo` installs executables (autorequired). Generally you shouldn’t
-change this.
-
-Default value: `"${home}/.cargo"`
-
-##### <a name="-rustup_internal--dist_server"></a>`dist_server`
-
-Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
-to install pre-release toolchains.
-
-##### <a name="-rustup_internal--home"></a>`home`
-
-The user’s home directory (autorequired).
-
-Default value: `"/home/${user}"`
-
-##### <a name="-rustup_internal--installer_source"></a>`installer_source`
-
-URL of the rustup installation script. Changing this will have no effect
-after the initial installation.
-
-Default value: `https://sh.rustup.rs`
-
-##### <a name="-rustup_internal--modify_path"></a>`modify_path`
-
-Valid values: ``true``, ``false``, `yes`, `no`
-
-Whether or not to let `rustup` modify the user’s `PATH` in their shell
-init scripts. This only affects the initial installation and removal.
-
-Default value: ``true``
-
-##### <a name="-rustup_internal--provider"></a>`provider`
-
-The specific backend to use for this `rustup_internal` resource. You will seldom need to specify this --- Puppet will
-usually discover the appropriate provider for your platform.
-
-##### <a name="-rustup_internal--purge_targets"></a>`purge_targets`
-
-Valid values: ``true``, ``false``, `yes`, `no`
-
-Whether or not to uninstall targets that aren’t managed by Puppet.
-
-Default value: ``true``
-
-##### <a name="-rustup_internal--purge_toolchains"></a>`purge_toolchains`
-
-Valid values: ``true``, ``false``, `yes`, `no`
-
-Whether or not to uninstall toolchains that aren’t managed by Puppet.
-
-Default value: ``true``
-
-##### <a name="-rustup_internal--rustup_home"></a>`rustup_home`
-
-Where toolchains are installed (autorequired). Generally you shouldn’t
-change this.
-
-Default value: `"${home}/.rustup"`
-
-##### <a name="-rustup_internal--user"></a>`user`
-
-namevar
-
-The user that owns this instance of `rustup` (autorequired).
-
 ## Functions
-
-### <a name="rustup--home"></a>`rustup::home`
-
-Type: Puppet Language
-
-Return the default home directory for a user on this OS
-
-#### `rustup::home(String[1] $user)`
-
-Return the default home directory for a user on this OS
-
-Returns: `Stdlib::Absolutepath` The path to the home directory.
-
-##### `user`
-
-Data type: `String[1]`
-
-The name of the user.
 
 ## Data types
 
