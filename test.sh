@@ -6,13 +6,16 @@ export UTIL_TRACE=1
 source util.sh
 
 usage () {
-  echo "Usage: $0 COMMAND"
+  echo "Usage: $0 COMMAND [COMMAND...]"
   echo ""
   echo "COMMAND may be one of:"
-  echo "  init     initialize test set up"
-  echo "  update   reinstall module"
-  echo "  run      run tests"
-  echo "  destroy  destroy virtual machines"
+  echo "  init       initialize test set up"
+  echo "  snapshot   save a snapshot called 'general'"
+  echo "  restore    restore a snapshot called 'general'"
+  echo "  fast-init  restore to post-init state and reinstall the module"
+  echo "  update     reinstall module"
+  echo "  run        run tests"
+  echo "  destroy    destroy virtual machines"
 }
 
 init () {
