@@ -21,7 +21,7 @@ usage () {
 init () {
   # FIXME sometimes we just want to ensure that things are set up, and not
   # actually recreate everything
-  rake litmus:tear_down
+  destroy
   rake 'litmus:provision_list[default]'
 
   bolt_task_run puppet_agent::install collection=puppet6 version=latest
@@ -64,7 +64,10 @@ run () {
 }
 
 destroy () {
-  rake litmus:tear_down
+  if [ -f spec/fixtures/litmus_inventory.yaml ] ; then
+    # If there’s no inventory, there’s nothing to tear down.
+    rake litmus:tear_down
+  fi
 }
 
 if [[ -z "$*" ]] ; then
