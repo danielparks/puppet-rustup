@@ -340,7 +340,7 @@ Data type: `String[1]`
 The user to run as. Automatically set if the `$name` of the resource follows
 the rules above.
 
-Default value: `split($name, ': ')[0]`
+Default value: `$name.split(': ')[0]`
 
 ##### <a name="-rustup--exec--command"></a>`command`
 
@@ -349,7 +349,7 @@ Data type: `String[1]`
 The command to run, e.g. 'rustup default stable'. Automatically set if the
 `$name` of the resource follows the rules above.
 
-Default value: `split($name, ': ')[1]`
+Default value: `$name.split(': ')[1]`
 
 ##### <a name="-rustup--exec--creates"></a>`creates`
 
@@ -468,7 +468,7 @@ Data type: `String[1]`
 The name of the target to install, e.g. "sparcv9-sun-solaris". Automatically
 set if the `$name` of the resource follows the rules above.
 
-Default value: `split($name, ' ')[0]`
+Default value: `$name.split(' ')[0]`
 
 ##### <a name="-rustup--global--target--toolchain"></a>`toolchain`
 
@@ -478,7 +478,7 @@ The name of the toolchain in which to install the target, e.g. "stable".
 `undef` means the default toolchain. Automatically set if the `$name` of the
 resource follows the rules above.
 
-Default value: `split($name, ' ')[1]`
+Default value: `$name.split(' ')[1]`
 
 ### <a name="rustup--global--toolchain"></a>`rustup::global::toolchain`
 
@@ -564,7 +564,7 @@ Data type: `String[1]`
 The name of the `rustup` installation (normally the username). Automatically
 set if the `$name` of the resource follows the rules above.
 
-Default value: `split($name, ': ')[0]`
+Default value: `$name.split(': ')[0]`
 
 ##### <a name="-rustup--target--target"></a>`target`
 
@@ -573,7 +573,7 @@ Data type: `String[1]`
 The name of the target to install, e.g. "sparcv9-sun-solaris". Automatically
 set if the `$name` of the resource follows the rules above.
 
-Default value: `split(split($name, ': ')[1], ' ')[0]`
+Default value: `$name.split(': ')[1].split(' ')[0]`
 
 ##### <a name="-rustup--target--toolchain"></a>`toolchain`
 
@@ -583,7 +583,7 @@ The name of the toolchain in which to install the target, e.g. "stable".
 `undef` means the default toolchain. Automatically set if the `$name` of the
 resource follows the rules above.
 
-Default value: `split(split($name, ': ')[1], ' ')[1]`
+Default value: `$name.split(': ')[1].split(' ')[1]`
 
 ### <a name="rustup--toolchain"></a>`rustup::toolchain`
 
@@ -621,7 +621,7 @@ Data type: `String[1]`
 The name of the `rustup` installation (normally the username). Automatically
 set if the `$name` of the resource follows the rules above.
 
-Default value: `split($name, ': ')[0]`
+Default value: `$name.split(': ')[0]`
 
 ##### <a name="-rustup--toolchain--toolchain"></a>`toolchain`
 
@@ -630,7 +630,7 @@ Data type: `String[1]`
 The name of the toolchain to install, e.g. "stable". Automatically set if
 the `$name` of the resource follows the rules above.
 
-Default value: `split($name, ': ')[1]`
+Default value: `$name.split(': ')[1]`
 
 ##### <a name="-rustup--toolchain--profile"></a>`profile`
 

@@ -26,9 +26,9 @@
 #   resource follows the rules above.
 define rustup::target (
   Enum[present, absent] $ensure    = present,
-  String[1]             $rustup    = split($name, ': ')[0],
-  String[1]             $target    = split(split($name, ': ')[1], ' ')[0],
-  Optional[String[1]]   $toolchain = split(split($name, ': ')[1], ' ')[1],
+  String[1]             $rustup    = $name.split(': ')[0],
+  String[1]             $target    = $name.split(': ')[1].split(' ')[0],
+  Optional[String[1]]   $toolchain = $name.split(': ')[1].split(' ')[1],
 ) {
   Rustup_internal <| title == $rustup |> {
     targets +> [{
