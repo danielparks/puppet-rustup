@@ -12,6 +12,8 @@ common:
 # Files not to include in the release package
 .pdkignore:
   paths:
+    - /.github
+    - /provision.yaml
     - /test.sh
     - /util.sh
     - /fix-reference.rb
