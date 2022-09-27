@@ -10,6 +10,15 @@
   paths:
     - /test.sh
     - /util.sh
+
+# Delete CI configuration we don’t use
+appveyor.yml:
+  delete: true
+.gitlab-ci.yml:
+  delete: true
+.travis.yml:
+  delete: true
+
 Gemfile:
   optional:
     ':development':
@@ -17,6 +26,7 @@ Gemfile:
       - gem: 'puppet_litmus'
         git: 'https://github.com/puppetlabs/puppet_litmus'
         ref: 'main'
+
 spec/spec_helper.rb:
   mock_with: ':rspec'
 .rubocop.yml:
