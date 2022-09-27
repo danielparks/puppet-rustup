@@ -26,13 +26,13 @@ def munge(path)
           param = Regexp.last_match(1)
           anchor = anchorify("$#{section}::#{param}")
           output.write("##### <a name=\"#{anchor}\"></a>`#{param}`\n")
-        elsif section and line =~ %r{^\* \[`(.*?)`\]\(#.*\)$}
+        elsif section && line =~ %r{^\* \[`(.*?)`\]\(#.*\)$}
           # * [`name`](#name)
           # within a section
           param = Regexp.last_match(1)
           anchor = anchorify("$#{section}::#{param}")
           output.write("* [`#{param}`](##{anchor})\n")
-        elsif section.nil? and line =~ %r{^\* \[`(.*?)`\]\(#.*\)(.*)$}
+        elsif section.nil? && line =~ %r{^\* \[`(.*?)`\]\(#.*\)(.*)$}
           # * [`name`](#name): description
           name = Regexp.last_match(1)
           anchor = anchorify(name)
