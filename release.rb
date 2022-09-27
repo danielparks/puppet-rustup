@@ -243,6 +243,11 @@ end
 
 run('git', 'add', 'CHANGELOG.md', 'metadata.json')
 
+puts 'Confirming that REFERENCE.md is up-to-date'
+run('pdk', 'bundle', 'exec', 'puppet', 'strings', 'generate',
+  '--format', 'markdown')
+run('git', 'diff', '--color', '--exit-code')
+
 puts 'Confirming that pdk update does nothing'
 run('pdk', 'update', '--force')
 confirm_no_changes
