@@ -19,7 +19,7 @@ common:
     - /fix-reference.rb
 
 .editorconfig:
-  unmanaged: false
+  unmanaged: true
 
 # Delete CI configuration we don’t use
 appveyor.yml:
