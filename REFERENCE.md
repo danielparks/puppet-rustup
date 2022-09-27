@@ -19,17 +19,11 @@
 
 ### Resource types
 
-#### Public Resource types
-
-
 #### Private Resource types
 
 * `rustup_internal`: Manage a user’s Rust installation with `rustup`
 
 ### Functions
-
-#### Public Functions
-
 
 #### Private Functions
 
@@ -95,7 +89,7 @@ Data type: `Boolean`
 
 Whether or not to manage `$user` user.
 
-Default value: ``true``
+Default value: `true`
 
 ##### <a name="-rustup--global--purge_toolchains"></a>`purge_toolchains`
 
@@ -103,7 +97,7 @@ Data type: `Boolean`
 
 Whether or not to uninstall toolchains that aren’t managed by Puppet.
 
-Default value: ``false``
+Default value: `false`
 
 ##### <a name="-rustup--global--purge_targets"></a>`purge_targets`
 
@@ -111,7 +105,7 @@ Data type: `Boolean`
 
 Whether or not to uninstall targets that aren’t managed by Puppet.
 
-Default value: ``false``
+Default value: `false`
 
 ##### <a name="-rustup--global--dist_server"></a>`dist_server`
 
@@ -120,7 +114,7 @@ Data type: `Optional[Stdlib::HTTPUrl]`
 Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
 to install pre-release toolchains.
 
-Default value: ``undef``
+Default value: `undef`
 
 ##### <a name="-rustup--global--home"></a>`home`
 
@@ -220,7 +214,7 @@ Data type: `Optional[String[1]]`
 
 Which toolchain should be the default.
 
-Default value: ``undef``
+Default value: `undef`
 
 ##### <a name="-rustup--toolchains"></a>`toolchains`
 
@@ -236,7 +230,7 @@ Data type: `Boolean`
 
 Whether or not to uninstall toolchains that aren’t managed by Puppet.
 
-Default value: ``false``
+Default value: `false`
 
 ##### <a name="-rustup--targets"></a>`targets`
 
@@ -257,7 +251,7 @@ Data type: `Boolean`
 
 Whether or not to uninstall targets that aren’t managed by Puppet.
 
-Default value: ``false``
+Default value: `false`
 
 ##### <a name="-rustup--dist_server"></a>`dist_server`
 
@@ -266,7 +260,7 @@ Data type: `Optional[Stdlib::HTTPUrl]`
 Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
 to install pre-release toolchains.
 
-Default value: ``undef``
+Default value: `undef`
 
 ##### <a name="-rustup--home"></a>`home`
 
@@ -300,7 +294,7 @@ Data type: `Boolean`
 Whether or not to let `rustup` modify the user’s `PATH` in their shell init
 scripts. This only affects the initial installation and removal.
 
-Default value: ``true``
+Default value: `true`
 
 ##### <a name="-rustup--installer_source"></a>`installer_source`
 
@@ -363,7 +357,7 @@ Data type: `Optional[String[1]]`
 
 Only run when if this path does not exist. (See [`exec`] documentation.)
 
-Default value: ``undef``
+Default value: `undef`
 
 ##### <a name="-rustup--exec--environment"></a>`environment`
 
@@ -380,7 +374,7 @@ Data type: `Rustup::OptionalStringOrArray`
 
 Only run when `$onlyif` returns success. (See [`exec`] documentation.)
 
-Default value: ``undef``
+Default value: `undef`
 
 ##### <a name="-rustup--exec--refreshonly"></a>`refreshonly`
 
@@ -388,7 +382,7 @@ Data type: `Boolean`
 
 Only run this when it receives an event. (See [`exec`] documentation.)
 
-Default value: ``false``
+Default value: `false`
 
 ##### <a name="-rustup--exec--unless"></a>`unless`
 
@@ -396,7 +390,7 @@ Data type: `Rustup::OptionalStringOrArray`
 
 Only run when `$unless` returns failure. (See [`exec`] documentation.)
 
-Default value: ``undef``
+Default value: `undef`
 
 ##### <a name="-rustup--exec--home"></a>`home`
 
@@ -650,29 +644,17 @@ it causes an update, i.e. when `ensure => latest` is set.
 
 Default value: `'default'`
 
-## Resource types
-
-## Functions
-
 ## Data types
 
 ### <a name="Rustup--OptionalStringOrArray"></a>`Rustup::OptionalStringOrArray`
 
 Convenience type to make params easier to read
 
-Alias of
-
-```puppet
-Variant[Undef, String[1], Array[String[1]]]
-```
+Alias of `Variant[Undef, String[1], Array[String[1]]]`
 
 ### <a name="Rustup--Profile"></a>`Rustup::Profile`
 
 `default` is a keyword in Puppet, so it must always be wrapped in quotes.
 
-Alias of
-
-```puppet
-Enum[minimal, 'default', complete]
-```
+Alias of `Enum[minimal, 'default', complete]`
 
