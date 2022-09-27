@@ -29,7 +29,7 @@
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
-        "8"
+        "7"
       ]
     },
     {
@@ -47,7 +47,7 @@
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "18.04"
+        "16.04"
       ]
     },
     {
