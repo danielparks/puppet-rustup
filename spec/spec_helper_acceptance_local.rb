@@ -6,6 +6,6 @@ def command_global_rustup(params)
     "/opt/rust/cargo/bin/rustup #{params}")
 end
 
-def command_as_vagrant(cmd)
-  command("sudo -iu vagrant #{cmd}")
+def command_as_user(cmd)
+  command("sudo -iu user #{cmd}")
 end

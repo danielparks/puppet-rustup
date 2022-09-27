@@ -6,54 +6,59 @@ describe 'Per-user rustup management' do
   context 'supports installing without toolchain' do
     it do
       idempotent_apply(<<~'END')
-        rustup { 'vagrant': }
+        user { 'user':
+          ensure     => present,
+          managehome => true,
+          shell      => '/bin/bash',
+        }
+        rustup { 'user': }
       END
     end
 
-    describe file('/home/vagrant/.rustup') do
+    describe file('/home/user/.rustup') do
       it { is_expected.to be_directory }
-      it { is_expected.to be_owned_by 'vagrant' }
+      it { is_expected.to be_owned_by 'user' }
     end
 
-    describe file('/home/vagrant/.cargo/bin/rustup') do
+    describe file('/home/user/.cargo/bin/rustup') do
       it { is_expected.to be_file }
       it { is_expected.to be_executable }
-      it { is_expected.to be_owned_by 'vagrant' }
+      it { is_expected.to be_owned_by 'user' }
     end
 
-    describe file('/home/vagrant/.bashrc') do
+    describe file('/home/user/.bashrc') do
       it { is_expected.to be_file }
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe file('/home/vagrant/.profile') do
+    describe file('/home/user/.profile') do
       it { is_expected.to be_file }
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe command_as_vagrant("echo '$PATH'") do
+    describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.to match %r{(\A|:)/home/vagrant/\.cargo/bin:}
+        is_expected.to match %r{(\A|:)/home/user/\.cargo/bin:}
         is_expected.not_to match %r{/opt/rust/cargo/bin}
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command_as_vagrant('rustup toolchain list') do
+    describe command_as_user('rustup toolchain list') do
       its(:stdout) { is_expected.to match %r{^no installed toolchains$} }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command_as_vagrant('rm -rf hello-world') do
+    describe command_as_user('rm -rf hello-world') do
       its(:exit_status) { is_expected.to eq 0 }
     end
 
     # FIXME: this test will fail if there is any present rustup installation. As
     # long as the tests are run in order (sigh), they should clean themselves
     # up. Unfortunately, there doesn’t seem to be a way to just reset the VM.
-    describe command_as_vagrant('cargo init hello-world --bin --quiet') do
+    describe command_as_user('cargo init hello-world --bin --quiet') do
       its(:stderr) do
         is_expected.to match(
           %r{error: rustup could not choose a version of cargo to run},
@@ -66,33 +71,33 @@ describe 'Per-user rustup management' do
   context 'supports trivial uninstall for a real user' do
     it do
       idempotent_apply(<<~'END')
-        rustup { 'vagrant':
+        rustup { 'user':
           ensure => absent,
         }
       END
     end
 
-    describe file('/home/vagrant/.rustup') do
+    describe file('/home/user/.rustup') do
       it { is_expected.not_to exist }
     end
 
-    describe file('/home/vagrant/.cargo') do
+    describe file('/home/user/.cargo') do
       it { is_expected.not_to exist }
     end
 
-    describe file('/home/vagrant/.bashrc') do
+    describe file('/home/user/.bashrc') do
       it { is_expected.to be_file }
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe file('/home/vagrant/.profile') do
+    describe file('/home/user/.profile') do
       it { is_expected.to be_file }
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe command_as_vagrant("echo '$PATH'") do
+    describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.not_to match %r{(\A|:)/home/vagrant/\.cargo/bin(:|\Z)}
+        is_expected.not_to match %r{(\A|:)/home/user/\.cargo/bin(:|\Z)}
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -104,61 +109,61 @@ describe 'Per-user rustup management' do
     it do
       idempotent_apply(<<~'END')
         package { 'gcc': } # Needed for cargo install
-        rustup { 'vagrant':
+        rustup { 'user':
           dist_server => undef,
         }
-        rustup::toolchain { 'vagrant: stable': }
+        rustup::toolchain { 'user: stable': }
       END
     end
 
-    describe file('/home/vagrant/.rustup') do
+    describe file('/home/user/.rustup') do
       it { is_expected.to be_directory }
-      it { is_expected.to be_owned_by 'vagrant' }
+      it { is_expected.to be_owned_by 'user' }
     end
 
-    describe file('/home/vagrant/.cargo/bin/rustup') do
+    describe file('/home/user/.cargo/bin/rustup') do
       it { is_expected.to be_file }
       it { is_expected.to be_executable }
-      it { is_expected.to be_owned_by 'vagrant' }
+      it { is_expected.to be_owned_by 'user' }
     end
 
-    describe file('/home/vagrant/.bashrc') do
+    describe file('/home/user/.bashrc') do
       it { is_expected.to be_file }
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe file('/home/vagrant/.profile') do
+    describe file('/home/user/.profile') do
       it { is_expected.to be_file }
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe command_as_vagrant("echo '$PATH'") do
-      its(:stdout) { is_expected.to match %r{(\A|:)/home/vagrant/\.cargo/bin:} }
+    describe command_as_user("echo '$PATH'") do
+      its(:stdout) { is_expected.to match %r{(\A|:)/home/user/\.cargo/bin:} }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command_as_vagrant('rm -rf hello-world') do
+    describe command_as_user('rm -rf hello-world') do
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command_as_vagrant('cargo init hello-world --bin --quiet') do
+    describe command_as_user('cargo init hello-world --bin --quiet') do
       its(:stdout) { is_expected.to eq '' }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe command_as_vagrant('cargo install --quiet --path hello-world') do
+    describe command_as_user('cargo install --quiet --path hello-world') do
       its(:stdout) { is_expected.to eq '' }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe file('/home/vagrant/.cargo/bin/hello-world') do
+    describe file('/home/user/.cargo/bin/hello-world') do
       it { is_expected.to be_executable }
     end
 
-    describe command_as_vagrant('rustup +stable target list') do
+    describe command_as_user('rustup +stable target list') do
       its(:stdout) do
         is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
       end
@@ -171,28 +176,28 @@ describe 'Per-user rustup management' do
   context 'supports multi-resource install with profile and explicit target' do
     it do
       idempotent_apply(<<~'END')
-        rustup { 'vagrant': }
-        rustup::toolchain { 'vagrant: beta':
+        rustup { 'user': }
+        rustup::toolchain { 'user: beta':
           profile => minimal,
         }
-        rustup::target { 'vagrant: default beta': }
+        rustup::target { 'user: default beta': }
       END
     end
 
     toolchain_name = "beta-#{os[:arch]}-unknown-linux-gnu"
-    toolchain_path = "/home/vagrant/.rustup/toolchains/#{toolchain_name}"
+    toolchain_path = "/home/user/.rustup/toolchains/#{toolchain_name}"
 
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
       it { is_expected.to be_executable }
-      it { is_expected.to be_owned_by 'vagrant' }
+      it { is_expected.to be_owned_by 'user' }
     end
 
     describe file("#{toolchain_path}/bin/rustfmt") do
       it { is_expected.not_to exist }
     end
 
-    describe command_as_vagrant('rustup +beta target list') do
+    describe command_as_user('rustup +beta target list') do
       its(:stdout) do
         is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
       end
@@ -204,7 +209,7 @@ describe 'Per-user rustup management' do
   context 'supports single-resource pre-release install' do
     it do
       idempotent_apply(<<~'END')
-        rustup { 'vagrant':
+        rustup { 'user':
           toolchains  => ['stable'],
           targets     => ['default'],
           dist_server => 'https://dev-static.rust-lang.org'
@@ -213,15 +218,15 @@ describe 'Per-user rustup management' do
     end
 
     toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
-    toolchain_path = "/home/vagrant/.rustup/toolchains/#{toolchain_name}"
+    toolchain_path = "/home/user/.rustup/toolchains/#{toolchain_name}"
 
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
       it { is_expected.to be_executable }
-      it { is_expected.to be_owned_by 'vagrant' }
+      it { is_expected.to be_owned_by 'user' }
     end
 
-    describe command_as_vagrant('rustup +stable target list') do
+    describe command_as_user('rustup +stable target list') do
       its(:stdout) do
         is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
       end
@@ -237,13 +242,13 @@ describe 'Per-user rustup management' do
     it do
       # Note that the quotes here are within the END block.
       idempotent_apply(<<~END)
-        rustup { 'vagrant': }
-        rustup::toolchain { 'vagrant: #{toolchain}': }
+        rustup { 'user': }
+        rustup::toolchain { 'user: #{toolchain}': }
       END
     end
 
     command = "rustup target list --toolchain #{toolchain}"
-    describe command_as_vagrant(command) do
+    describe command_as_user(command) do
       its(:stdout) do
         is_expected.to match(%r{^#{target} \(installed\)$})
       end
@@ -255,39 +260,39 @@ describe 'Per-user rustup management' do
   context 'supports multi-resource uninstall for a real user' do
     it do
       idempotent_apply(<<~'END')
-        rustup { 'vagrant':
+        rustup { 'user':
           ensure => absent,
         }
-        rustup::toolchain { 'vagrant: stable':
+        rustup::toolchain { 'user: stable':
           ensure => absent,
         }
-        rustup::target { 'vagrant: wasm32-unknown-unknown stable':
+        rustup::target { 'user: wasm32-unknown-unknown stable':
           ensure => absent,
         }
       END
     end
 
-    describe file('/home/vagrant/.rustup') do
+    describe file('/home/user/.rustup') do
       it { is_expected.not_to exist }
     end
 
-    describe file('/home/vagrant/.cargo') do
+    describe file('/home/user/.cargo') do
       it { is_expected.not_to exist }
     end
 
-    describe file('/home/vagrant/.bashrc') do
+    describe file('/home/user/.bashrc') do
       it { is_expected.to be_file }
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe file('/home/vagrant/.profile') do
+    describe file('/home/user/.profile') do
       it { is_expected.to be_file }
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe command_as_vagrant("echo '$PATH'") do
+    describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.not_to match %r{(\A|:)/home/vagrant/\.cargo/bin(:|\Z)}
+        is_expected.not_to match %r{(\A|:)/home/user/\.cargo/bin(:|\Z)}
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
