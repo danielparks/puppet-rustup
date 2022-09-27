@@ -47,3 +47,4 @@
 /.devcontainer/
 /test.sh
 /util.sh
+/fix-reference.rb
