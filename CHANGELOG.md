@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
   example, it is now possible to install the `x86_64-pc-windows-gnu` toolchain
   on a Linux host without warnings. ([PR #9][])
 * Fixed default values and anchor links in [REFERENCE.md](REFERENCE.md).
-  ([PR #14][], [PR #15][])
+  ([PR #14][], [PR #15][], [PR #20][])
 
 [PR #9]: https://github.com/danielparks/puppet-rustup/pull/9
 [PR #10]: https://github.com/danielparks/puppet-rustup/pull/10
@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file.
 [PR #13]: https://github.com/danielparks/puppet-rustup/pull/13
 [PR #14]: https://github.com/danielparks/puppet-rustup/pull/14
 [PR #15]: https://github.com/danielparks/puppet-rustup/pull/15
+[PR #20]: https://github.com/danielparks/puppet-rustup/pull/20
 
 
 ## Release 0.1.0
