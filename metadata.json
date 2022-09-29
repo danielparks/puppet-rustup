@@ -7,7 +7,6 @@
   "source": "https://github.com/danielparks/puppet-rustup",
   "project_page": "https://github.com/danielparks/puppet-rustup",
   "issues_url": "https://github.com/danielparks/puppet-rustup/issues",
-  "tags": ["rust", "rustlang", "rustup"],
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
@@ -75,6 +74,11 @@
       "name": "puppet",
       "version_requirement": ">= 6.21.0 < 8.0.0"
     }
+  ],
+  "tags": [
+    "rust",
+    "rustlang",
+    "rustup"
   ],
   "pdk-version": "2.5.0",
   "template-url": "pdk-default#2.5.0",
