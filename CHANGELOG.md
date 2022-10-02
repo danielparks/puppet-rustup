@@ -16,9 +16,10 @@ All notable changes to this project will be documented in this file.
 * Now supports installing non-host toolchains for use with emulators. For
   example, it is now possible to install the `x86_64-pc-windows-gnu` toolchain
   on a Linux host without warnings. ([PR #9][])
-* Fixed default values and anchor links in [REFERENCE.md](REFERENCE.md).
+* Fixed default values and anchor links in [REFERENCE.md][].
   ([PR #14][], [PR #15][], [PR #20][])
 
+[REFERENCE.md]: REFERENCE.md
 [PR #9]: https://github.com/danielparks/puppet-rustup/pull/9
 [PR #10]: https://github.com/danielparks/puppet-rustup/pull/10
 [PR #11]: https://github.com/danielparks/puppet-rustup/pull/11
