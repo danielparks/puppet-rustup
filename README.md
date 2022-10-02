@@ -117,19 +117,42 @@ pdk bundle exec puppet strings generate --format markdown && ./fix-reference.rb
 
 ## Development
 
-### Testing
+### Unit tests
 
-There are unit tests, which can be run with `pdk test unit`, but the most useful
-tests are the acceptance tests. They use [Puppet Litmus][] and [Vagrant][] to
-spin up a couple of VMs and actually exercise the module and `rustup`.
+Just run:
 
-Note that the acceptance tests are not independent. Unfortunately, it is slow
-to reset the VM (even using snapshots), so for practicality the tests must be
-run in order. This also helps with performance a bit since it’s slow to install
-toolchains.
+```
+pdk test unit
+```
 
-Testing is easiest to manage with `test.sh`. You can run `./test.sh --help` to
-see all the commands, but the most important ones are:
+### Acceptance tests
+
+We use [Puppet Litmus][] with [Docker][] to actually exercise the module.
+
+Note that the acceptance tests are not independent. Installing toolchains is
+slow, so it’s practical to have the tests build on each other rather than take
+the time to tear them down and rebuild after each individual test.
+
+Testing is easiest to manage with `test.sh`:
+
+```
+./test.sh docker-run
+```
+
+#### Vagrant
+
+It is also possible to run tests under [Vagrant][], though it it slower. To run
+tests under Vagrant for the first time:
+
+```
+./test.sh init run
+```
+
+To repeat the tests after updating the module:
+
+```
+./test.sh fast-init run
+```
 
   * `./test.sh init` — initializes the VMs, installs the module, and creates
     a snapshot called “fresh”.
@@ -142,13 +165,9 @@ see all the commands, but the most important ones are:
   * `./test.sh destroy` — destroy the VMs. You will need to run `init` again to
     recreate them before doing any further testing.
 
-Note the you can run multiple commands with one call to `./test.sh`, e.g.
-
-```
-./test.sh fast-init run
-```
 
 [Puppet Litmus]: https://github.com/puppetlabs/puppet_litmus
+[Docker]: https://www.docker.com
 [Vagrant]: https://www.vagrantup.com
 
 ### Debugging
