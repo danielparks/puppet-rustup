@@ -50,3 +50,4 @@
 /test.sh
 /util.sh
 /fix-reference.rb
+/release.rb

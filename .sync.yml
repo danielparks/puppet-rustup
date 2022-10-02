@@ -17,6 +17,7 @@ common:
     - /test.sh
     - /util.sh
     - /fix-reference.rb
+    - /release.rb
 
 .editorconfig:
   unmanaged: true
