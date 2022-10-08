@@ -33,6 +33,14 @@ Puppet::Type.type(:rustup_internal).provide(
     @toolchains_cache || load_toolchains
   end
 
+  # Is the passed toolchain already installed?
+  #
+  # @param [String] normalized toolchain name
+  # @return [Boolean]
+  def toolchain_installed?(toolchain)
+    toolchains_real.any? { |info| info['toolchain'] == toolchain }
+  end
+
   # Load toolchains from the system
   #
   # Does not try to set the `profile`, since it’s meaningless after the initial
@@ -354,8 +362,8 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Install and uninstall toolchains as appropriate
   def manage_toolchains
-    unmanaged = toolchain_list
-    requested_default = check_default_toolchain(unmanaged)
+    requested_default = normalize_default_toolchain
+    unmanaged = toolchains_real.map { |info| info['toolchain'] }
 
     resource[:toolchains].each do |info|
       full_name = normalize_toolchain_name(info['toolchain'])
@@ -410,7 +418,7 @@ Puppet::Type.type(:rustup_internal).provide(
   end
 
   # Normalize the default_toolchain property and check that it’s valid.
-  def check_default_toolchain(unmanaged)
+  def normalize_default_toolchain
     if @property_hash[:default_toolchain].nil?
       return nil
     end
@@ -428,7 +436,7 @@ Puppet::Type.type(:rustup_internal).provide(
       end
     end
 
-    if resource[:purge_toolchains] || unmanaged.index(default).nil?
+    if resource[:purge_toolchains] || !toolchain_installed?(default)
       raise Puppet::Error, "Requested #{default} as default toolchain, but " \
         'it is not installed'
     end
@@ -451,7 +459,7 @@ Puppet::Type.type(:rustup_internal).provide(
   def manage_targets
     # Re-query the installed toolchains after managing them. This is simpler
     # than keeping track. This also sets @default_toolchain.
-    installed_toolchains = toolchain_list
+    installed_toolchains = load_toolchains
 
     targets_by_toolchain = {}
     resource[:targets].each do |info|
@@ -465,10 +473,10 @@ Puppet::Type.type(:rustup_internal).provide(
       }
     end
 
-    installed_toolchains.each do |toolchain|
+    installed_toolchains.each do |info|
       manage_toolchain_targets(
-        toolchain,
-        targets_by_toolchain.delete(toolchain) || [],
+        info['toolchain'],
+        targets_by_toolchain.delete(info['toolchain']) || [],
       )
     end
 
