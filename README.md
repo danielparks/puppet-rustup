@@ -1,15 +1,16 @@
-# Manage Rust with `rustup`
+# Puppet module to manage Rust with `rustup`
 
-This manages Rust installations with the [`rustup` tool][]. There are two ways
-to use it:
+This manages [Rust][] installations with the [`rustup` tool][]. There are two
+ways to use it:
 
-  * With standard, per-user installations. Each user has their own installation
-    in their home directory that is entirely separate from every other
-    installation.
-  * With a global installation. Users are able to access shared toolchains and
+  * **Per-user installations.** Each user has their own installation in their
+    home directory that is entirely separate from every other installation. This
+    is how the `rustup` tool expects to be used.
+  * **Global installation.** Users are able to access shared toolchains and
     targets, but will not be able to change any of them. Users can still use
     `cargo install`, but the installed tools will only be accessible to
-    themselves.
+    themselves. The `rustup` tool is not designed to be used this way, but it
+    seems to work fine.
 
 ## Usage
 
@@ -114,6 +115,7 @@ See [REFERENCE.md][].
 
 See [DEVELOPMENT.md][].
 
+[Rust]: https://www.rust-lang.org
 [`rustup` tool]: https://rust-lang.github.io/rustup/
 [`rustup`]: REFERENCE.md#rustup
 [`rustup::toolchain`]: REFERENCE.md#rustup--toolchain
