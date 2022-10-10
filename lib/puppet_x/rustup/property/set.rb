@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../rustup'
+require 'puppet_x/rustup'
 
 # Property classes for rustup
 module PuppetX::Rustup::Property
