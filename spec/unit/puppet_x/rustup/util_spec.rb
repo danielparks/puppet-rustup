@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative '../../../../lib/puppet_x/rustup/util'
+require 'puppet_x/rustup/util'
 
 RSpec.describe PuppetX::Rustup::Util do
   context 'remove_file_line' do

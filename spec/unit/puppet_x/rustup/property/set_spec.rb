@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative '../../../../../lib/puppet_x/rustup/property/set'
+require 'puppet_x/rustup/property/set'
 
 RSpec.describe PuppetX::Rustup::Property::Set do
   before(:each) do
