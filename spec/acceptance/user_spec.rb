@@ -235,6 +235,55 @@ describe 'Per-user rustup management' do
     end
   end
 
+  context 'supports single-resource with multiple toolchains' do
+    it do
+      idempotent_apply(<<~'END')
+        rustup { 'user':
+          toolchains        => ['nightly', 'stable'],
+          targets           => ['default nightly', 'default stable'],
+          default_toolchain => 'nightly',
+        }
+      END
+    end
+
+    toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_path = "/home/user/.rustup/toolchains/#{toolchain_name}"
+    describe file("#{toolchain_path}/bin/rustc") do
+      it { is_expected.to be_file }
+      it { is_expected.to be_executable }
+      it { is_expected.to be_owned_by 'user' }
+    end
+
+    toolchain_name = "nightly-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_path = "/home/user/.rustup/toolchains/#{toolchain_name}"
+    describe file("#{toolchain_path}/bin/rustc") do
+      it { is_expected.to be_file }
+      it { is_expected.to be_executable }
+      it { is_expected.to be_owned_by 'user' }
+    end
+
+    describe command_as_user('rustup toolchain list') do
+      its(:stdout) do
+        is_expected.to match(%r{^nightly.*-unknown-linux-gnu \(default\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+  end
+
+  context 'fails with uninstalled default_toolchain' do
+    it do
+      apply_manifest(<<~'PUPPET', expect_failures: true)
+        rustup { 'user':
+          purge_toolchains  => true,
+          toolchains        => ['nightly', 'stable'],
+          targets           => ['default nightly', 'default stable'],
+          default_toolchain => 'beta',
+        }
+      PUPPET
+    end
+  end
+
   context 'supports installing non-host toolchain' do
     target = 'x86_64-pc-windows-gnu'
     toolchain = "stable-#{target}"

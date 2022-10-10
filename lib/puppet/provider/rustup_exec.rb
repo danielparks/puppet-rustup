@@ -8,6 +8,48 @@ class Puppet::Provider::RustupExec < Puppet::Provider
     raise Puppet::Error, 'Cannot query rustup installations.'
   end
 
+  # Add a subresource that gets managed somewhat separately
+  def self.add_subresource(name, &load_block)
+    name = name.to_sym
+
+    # Get current subresource(s)
+    define_method(name) do
+      @property_hash[name] || send("#{name}_real")
+    end
+
+    # Get subresource(s) on the system
+    define_method("#{name}_real") do
+      if @subresource_real[name] == :unset
+        send("load_#{name}")
+      else
+        @subresource_real[name]
+      end
+    end
+
+    # Set current subresource(s)
+    #
+    # probably redundant with mk_resource_methods
+    define_method("#{name}=") do |value|
+      @property_hash[name] = value
+    end
+
+    # Set subresource(s) on the system (does not change system)
+    define_method("#{name}_real=") do |value|
+      @subresource_real[name] = value
+    end
+
+    # Load subresource(s) from the system
+    define_method("load_#{name}") do
+      @subresource_real[name] = instance_exec(&load_block)
+    end
+  end
+
+  def initialize(*)
+    super
+    @subresource_real = {}
+    @subresource_real.default = :unset
+  end
+
   # Determine if the resource exists on the system.
   def exists?
     raise 'Unimplemented.'

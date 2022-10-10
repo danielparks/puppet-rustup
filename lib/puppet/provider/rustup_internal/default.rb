@@ -10,15 +10,33 @@ Puppet::Type.type(:rustup_internal).provide(
 
   mk_resource_methods
 
-  def initialize(*)
-    super
-    @default_toolchain = :unset
+  add_subresource :toolchains do
+    toolchain_list.map do |full_name|
+      {
+        'ensure' => 'present',
+        'toolchain' => full_name,
+      }
+    end
   end
 
-  # Either the actual toolchains that exist on the system (see toolchains_real),
-  # or the toolchains set with toolchains=
-  def toolchains
-    @property_hash[:toolchains] || toolchains_real
+  add_subresource :targets do
+    toolchains_real.reduce([]) do |combined, info|
+      toolchain = info['toolchain']
+      combined + target_list(toolchain).map do |target|
+        {
+          'ensure' => 'present',
+          'target' => target,
+          'toolchain' => toolchain,
+        }
+      end
+    end
+  end
+
+  add_subresource :default_toolchain do
+    load_toolchains
+    # This is sort of ridiculous, but this function is supposed to return the
+    # new value, and load_toolchains sets default_toolchain_real internally.
+    default_toolchain_real
   end
 
   # The toolchain list, sorted
@@ -26,11 +44,6 @@ Puppet::Type.type(:rustup_internal).provide(
   # Used for testing.
   def toolchains_sorted
     toolchains.sort_by { |t| [t['toolchain'], t['ensure']] }
-  end
-
-  # Toolchains as they exist on the system (memoized)
-  def toolchains_real
-    @toolchains_cache || load_toolchains
   end
 
   # Is the passed toolchain already installed?
@@ -41,76 +54,11 @@ Puppet::Type.type(:rustup_internal).provide(
     toolchains_real.any? { |info| info['toolchain'] == toolchain }
   end
 
-  # Load toolchains from the system
-  #
-  # Does not try to set the `profile`, since it’s meaningless after the initial
-  # installation of the toolchain.
-  #
-  # Saves the toolchains to @toolchains_cache.
-  def load_toolchains
-    @toolchains_cache = toolchain_list.map do |full_name|
-      {
-        'ensure' => 'present',
-        'toolchain' => full_name,
-      }
-    end
-  end
-
-  # Either the default toolchain on the system (see default_toolchain_real), or
-  # whatever was set by default_toolchain=
-  def default_toolchain
-    @property_hash[:default_toolchain] || default_toolchain_real
-  end
-
-  # Default toolchain on the system (memoized)
-  def default_toolchain_real
-    if @default_toolchain == :unset
-      load_default_toolchain
-    end
-    @default_toolchain
-  end
-
-  # Load default toolchain from system
-  #
-  # Uses load_toolchains, which saves the default toolchain to
-  # @default_toolchain.
-  def load_default_toolchain
-    load_toolchains
-    @default_toolchain
-  end
-
-  # Either the targets on the system (see all_targets_real), or the targets set
-  # by targets=
-  def targets
-    @property_hash[:targets] || all_targets_real
-  end
-
   # The target list, sorted
   #
   # Used for testing.
   def targets_sorted
     targets.sort_by { |t| [t['toolchain'], t['target'], t['ensure']] }
-  end
-
-  # Targets for all toolchains as they exist on the system (memoized)
-  def all_targets_real
-    @targets_cache || load_all_targets
-  end
-
-  # Load targets from the system for all toolchains
-  #
-  # Saves the targets to @targets_cache.
-  def load_all_targets
-    @targets_cache = toolchains_real.reduce([]) do |combined, info|
-      toolchain = info['toolchain']
-      combined + target_list(toolchain).map do |target|
-        {
-          'ensure' => 'present',
-          'target' => target,
-          'toolchain' => toolchain,
-        }
-      end
-    end
   end
 
   # Determine if `rustup` has been installed on the system for this user.
@@ -363,8 +311,16 @@ Puppet::Type.type(:rustup_internal).provide(
   # Install and uninstall toolchains as appropriate
   def manage_toolchains
     requested_default = normalize_default_toolchain
+    if requested_default
+      validate_default_toolchain(requested_default)
+    end
+
     unmanaged = toolchains_real.map { |info| info['toolchain'] }
 
+    # Use `resource[:toolchains]` instead of the `toolchains` method because the
+    # result of the `toolchains` method can change if the resource requested
+    # the same toolchains as existed on the system, and then the toolchains on
+    # the system changed.
     resource[:toolchains].each do |info|
       full_name = normalize_toolchain_name(info['toolchain'])
 
@@ -382,10 +338,10 @@ Puppet::Type.type(:rustup_internal).provide(
       end
     end
 
-    if requested_default && requested_default != @default_toolchain
+    if requested_default && requested_default != default_toolchain_real
       rustup 'default', requested_default
       # Probably don’t need to do this
-      @default_toolchain = requested_default
+      self.default_toolchain_real = requested_default
     end
 
     if resource[:purge_toolchains]
@@ -397,9 +353,9 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Load toolchains from system as an array of strings
   #
-  # This also sets @default_toolchain.
+  # This also sets default_toolchain_real.
   def toolchain_list
-    @default_toolchain = nil
+    self.default_toolchain_real = nil
     unless exists? && user_exists?
       # If rustup isn’t installed, then no toolchains can exist. If the user
       # doesn’t exist then either this resource is ensure => absent and
@@ -410,38 +366,48 @@ Puppet::Type.type(:rustup_internal).provide(
 
     lines = rustup('toolchain', 'list').lines(chomp: true).map do |line|
       # delete_suffix! returns nil if there was no suffix.
-      @default_toolchain ||= line.delete_suffix!(' (default)')
+      if line.delete_suffix!(' (default)')
+        self.default_toolchain_real = line
+      end
       line
     end
     lines.delete('no installed toolchains')
     lines
   end
 
-  # Normalize the default_toolchain property and check that it’s valid.
+  # Normalize the default_toolchain and check that it’s valid.
+  #
+  # This uses `resource[:default_toolchain]` because we want to check what was
+  # requested by the resource. `@property_hash[:default_toolchain]` doesn’t work
+  # because it’s not set if the resource doesn’t detect a change, and using the
+  # `default_toolchain` method doesn’t work if it’s not set on resource AND the
+  # old default_toolchain is being deleted.
   def normalize_default_toolchain
-    if @property_hash[:default_toolchain].nil?
+    if resource[:default_toolchain].nil?
       return nil
     end
 
-    default = normalize_toolchain_name(@property_hash[:default_toolchain])
+    normalize_toolchain_name(default_toolchain)
+  end
 
-    resource[:toolchains].each do |info|
-      if info['toolchain'] == default
-        if info['ensure'] == 'absent'
-          raise Puppet::Error, "Requested #{default} as default toolchain, " \
-            'but also set it to ensure => absent'
-        end
+  # Validate that the default toolchain is or will be installed
+  def validate_default_toolchain(normalized_default)
+    found = resource[:toolchains].find do |info|
+      normalize_toolchain_name(info['toolchain']) == normalized_default
+    end
 
-        return default
+    if found
+      if found['ensure'] == 'absent'
+        raise Puppet::Error, "Requested #{normalized_default.inspect} as " \
+          'default toolchain, but also set it to ensure => absent'
       end
+    elsif !toolchain_installed?(normalized_default)
+      raise Puppet::Error, "Requested #{normalized_default.inspect} as " \
+        'default toolchain, but it is not installed'
+    elsif resource[:purge_toolchains]
+      raise Puppet::Error, "Requested #{normalized_default.inspect} as " \
+        'default toolchain, but it is being purged'
     end
-
-    if resource[:purge_toolchains] || !toolchain_installed?(default)
-      raise Puppet::Error, "Requested #{default} as default toolchain, but " \
-        'it is not installed'
-    end
-
-    default
   end
 
   # Install or update a toolchain
@@ -458,7 +424,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # Install and uninstall targets as appropriate
   def manage_targets
     # Re-query the installed toolchains after managing them. This is simpler
-    # than keeping track. This also sets @default_toolchain.
+    # than keeping track. This also sets default_toolchain_real.
     installed_toolchains = load_toolchains
 
     targets_by_toolchain = {}
