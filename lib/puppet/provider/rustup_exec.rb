@@ -9,7 +9,7 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   end
 
   # Add a subresource that gets managed somewhat separately
-  def self.add_subresource(name, &load_block)
+  def self.subresource_collection(name, &load_block)
     name = name.to_sym
 
     # Get current subresource(s)

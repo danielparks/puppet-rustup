@@ -10,7 +10,7 @@ Puppet::Type.type(:rustup_internal).provide(
 
   mk_resource_methods
 
-  add_subresource :toolchains do
+  subresource_collection :toolchains do
     toolchain_list.map do |full_name|
       {
         'ensure' => 'present',
@@ -19,7 +19,7 @@ Puppet::Type.type(:rustup_internal).provide(
     end
   end
 
-  add_subresource :targets do
+  subresource_collection :targets do
     toolchains_real.reduce([]) do |combined, info|
       toolchain = info['toolchain']
       combined + target_list(toolchain).map do |target|
