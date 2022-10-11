@@ -52,26 +52,12 @@ Puppet::Type.type(:rustup_internal).provide(
     @property_hash[:default_toolchain] || system_default_toolchain
   end
 
-  # The toolchain list, sorted
-  #
-  # Used for testing.
-  def toolchains_sorted
-    toolchains.sort_by { |t| [t['toolchain'], t['ensure']] }
-  end
-
   # Is the passed toolchain already installed?
   #
   # @param [String] normalized toolchain name
   # @return [Boolean]
   def toolchain_installed?(toolchain)
     system_toolchains.any? { |info| info['toolchain'] == toolchain }
-  end
-
-  # The target list, sorted
-  #
-  # Used for testing.
-  def targets_sorted
-    targets.sort_by { |t| [t['toolchain'], t['target'], t['ensure']] }
   end
 
   # Determine if `rustup` has been installed on the system for this user.
