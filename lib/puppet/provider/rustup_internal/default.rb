@@ -32,11 +32,24 @@ Puppet::Type.type(:rustup_internal).provide(
     end
   end
 
-  add_subresource :default_toolchain do
-    load_toolchains
-    # This is sort of ridiculous, but this function is supposed to return the
-    # new value, and load_toolchains sets default_toolchain_real internally.
-    default_toolchain_real
+  def initialize(*)
+    super
+    @default_toolchain_real = :unset
+  end
+
+  # Get the real default toolchain on the system
+  def default_toolchain_real
+    if @default_toolchain_real == :unset
+      load_toolchains
+    end
+    @default_toolchain_real
+  end
+
+  # Get the default toolchain, possibly as requested by the resource.
+  #
+  # This is necessary for the resource to function properly.
+  def default_toolchain
+    @property_hash[:default_toolchain] || default_toolchain_real
   end
 
   # The toolchain list, sorted
@@ -114,7 +127,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # out what to do.
   def normalize_toolchain(toolchain)
     if toolchain.nil?
-      default_toolchain
+      normalize_default_toolchain_requested || default_toolchain_real
     else
       normalize_toolchain_name(toolchain)
     end
@@ -310,7 +323,7 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Install and uninstall toolchains as appropriate
   def manage_toolchains
-    requested_default = normalize_default_toolchain
+    requested_default = normalize_default_toolchain_requested
     if requested_default
       validate_default_toolchain(requested_default)
     end
@@ -341,7 +354,7 @@ Puppet::Type.type(:rustup_internal).provide(
     if requested_default && requested_default != default_toolchain_real
       rustup 'default', requested_default
       # Probably don’t need to do this
-      self.default_toolchain_real = requested_default
+      @default_toolchain_real = requested_default
     end
 
     if resource[:purge_toolchains]
@@ -355,7 +368,7 @@ Puppet::Type.type(:rustup_internal).provide(
   #
   # This also sets default_toolchain_real.
   def toolchain_list
-    self.default_toolchain_real = nil
+    @default_toolchain_real = nil
     unless exists? && user_exists?
       # If rustup isn’t installed, then no toolchains can exist. If the user
       # doesn’t exist then either this resource is ensure => absent and
@@ -367,7 +380,7 @@ Puppet::Type.type(:rustup_internal).provide(
     lines = rustup('toolchain', 'list').lines(chomp: true).map do |line|
       # delete_suffix! returns nil if there was no suffix.
       if line.delete_suffix!(' (default)')
-        self.default_toolchain_real = line
+        @default_toolchain_real = line
       end
       line
     end
@@ -375,19 +388,19 @@ Puppet::Type.type(:rustup_internal).provide(
     lines
   end
 
-  # Normalize the default_toolchain and check that it’s valid.
+  # Normalize the requested default_toolchain and check that it’s valid.
   #
   # This uses `resource[:default_toolchain]` because we want to check what was
   # requested by the resource. `@property_hash[:default_toolchain]` doesn’t work
   # because it’s not set if the resource doesn’t detect a change, and using the
   # `default_toolchain` method doesn’t work if it’s not set on resource AND the
   # old default_toolchain is being deleted.
-  def normalize_default_toolchain
+  def normalize_default_toolchain_requested
     if resource[:default_toolchain].nil?
       return nil
     end
 
-    normalize_toolchain_name(default_toolchain)
+    normalize_toolchain_name(resource[:default_toolchain])
   end
 
   # Validate that the default toolchain is or will be installed
