@@ -9,20 +9,20 @@ class Puppet::Provider::RustupExec < Puppet::Provider
   end
 
   # Add a subresource that gets managed somewhat separately
-  def self.add_subresource(name, &load_block)
+  def self.subresource_collection(name, &load_block)
     name = name.to_sym
 
     # Get current subresource(s)
     define_method(name) do
-      @property_hash[name] || send("#{name}_real")
+      @property_hash[name] || send("system_#{name}")
     end
 
     # Get subresource(s) on the system
-    define_method("#{name}_real") do
-      if @subresource_real[name] == :unset
+    define_method("system_#{name}") do
+      if @system_subresource[name] == :unset
         send("load_#{name}")
       else
-        @subresource_real[name]
+        @system_subresource[name]
       end
     end
 
@@ -34,20 +34,20 @@ class Puppet::Provider::RustupExec < Puppet::Provider
     end
 
     # Set subresource(s) on the system (does not change system)
-    define_method("#{name}_real=") do |value|
-      @subresource_real[name] = value
+    define_method("system_#{name}=") do |value|
+      @system_subresource[name] = value
     end
 
     # Load subresource(s) from the system
     define_method("load_#{name}") do
-      @subresource_real[name] = instance_exec(&load_block)
+      @system_subresource[name] = instance_exec(&load_block)
     end
   end
 
   def initialize(*)
     super
-    @subresource_real = {}
-    @subresource_real.default = :unset
+    @system_subresource = {}
+    @system_subresource.default = :unset
   end
 
   # Determine if the resource exists on the system.

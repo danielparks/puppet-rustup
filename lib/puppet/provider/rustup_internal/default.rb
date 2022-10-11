@@ -10,7 +10,7 @@ Puppet::Type.type(:rustup_internal).provide(
 
   mk_resource_methods
 
-  add_subresource :toolchains do
+  subresource_collection :toolchains do
     toolchain_list.map do |full_name|
       {
         'ensure' => 'present',
@@ -19,8 +19,8 @@ Puppet::Type.type(:rustup_internal).provide(
     end
   end
 
-  add_subresource :targets do
-    toolchains_real.reduce([]) do |combined, info|
+  subresource_collection :targets do
+    system_toolchains.reduce([]) do |combined, info|
       toolchain = info['toolchain']
       combined + target_list(toolchain).map do |target|
         {
@@ -34,29 +34,22 @@ Puppet::Type.type(:rustup_internal).provide(
 
   def initialize(*)
     super
-    @default_toolchain_real = :unset
+    @system_default_toolchain = :unset
   end
 
   # Get the real default toolchain on the system
-  def default_toolchain_real
-    if @default_toolchain_real == :unset
+  def system_default_toolchain
+    if @system_default_toolchain == :unset
       load_toolchains
     end
-    @default_toolchain_real
+    @system_default_toolchain
   end
 
   # Get the default toolchain, possibly as requested by the resource.
   #
   # This is necessary for the resource to function properly.
   def default_toolchain
-    @property_hash[:default_toolchain] || default_toolchain_real
-  end
-
-  # The toolchain list, sorted
-  #
-  # Used for testing.
-  def toolchains_sorted
-    toolchains.sort_by { |t| [t['toolchain'], t['ensure']] }
+    @property_hash[:default_toolchain] || system_default_toolchain
   end
 
   # Is the passed toolchain already installed?
@@ -64,14 +57,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # @param [String] normalized toolchain name
   # @return [Boolean]
   def toolchain_installed?(toolchain)
-    toolchains_real.any? { |info| info['toolchain'] == toolchain }
-  end
-
-  # The target list, sorted
-  #
-  # Used for testing.
-  def targets_sorted
-    targets.sort_by { |t| [t['toolchain'], t['target'], t['ensure']] }
+    system_toolchains.any? { |info| info['toolchain'] == toolchain }
   end
 
   # Determine if `rustup` has been installed on the system for this user.
@@ -127,7 +113,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # out what to do.
   def normalize_toolchain(toolchain)
     if toolchain.nil?
-      normalize_default_toolchain_requested || default_toolchain_real
+      normalize_default_toolchain_requested || system_default_toolchain
     else
       normalize_toolchain_name(toolchain)
     end
@@ -328,7 +314,7 @@ Puppet::Type.type(:rustup_internal).provide(
       validate_default_toolchain(requested_default)
     end
 
-    unmanaged = toolchains_real.map { |info| info['toolchain'] }
+    unmanaged = system_toolchains.map { |info| info['toolchain'] }
 
     # Use `resource[:toolchains]` instead of the `toolchains` method because the
     # result of the `toolchains` method can change if the resource requested
@@ -351,10 +337,10 @@ Puppet::Type.type(:rustup_internal).provide(
       end
     end
 
-    if requested_default && requested_default != default_toolchain_real
+    if requested_default && requested_default != system_default_toolchain
       rustup 'default', requested_default
       # Probably don’t need to do this
-      @default_toolchain_real = requested_default
+      @system_default_toolchain = requested_default
     end
 
     if resource[:purge_toolchains]
@@ -366,9 +352,9 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Load toolchains from system as an array of strings
   #
-  # This also sets default_toolchain_real.
+  # This also sets @system_default_toolchain.
   def toolchain_list
-    @default_toolchain_real = nil
+    @system_default_toolchain = nil
     unless exists? && user_exists?
       # If rustup isn’t installed, then no toolchains can exist. If the user
       # doesn’t exist then either this resource is ensure => absent and
@@ -380,7 +366,7 @@ Puppet::Type.type(:rustup_internal).provide(
     lines = rustup('toolchain', 'list').lines(chomp: true).map do |line|
       # delete_suffix! returns nil if there was no suffix.
       if line.delete_suffix!(' (default)')
-        @default_toolchain_real = line
+        @system_default_toolchain = line
       end
       line
     end
@@ -437,7 +423,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # Install and uninstall targets as appropriate
   def manage_targets
     # Re-query the installed toolchains after managing them. This is simpler
-    # than keeping track. This also sets default_toolchain_real.
+    # than keeping track. This also sets @system_default_toolchain.
     installed_toolchains = load_toolchains
 
     targets_by_toolchain = {}
