@@ -160,7 +160,9 @@ Puppet::Type.newtype(:rustup_internal) do
 
     # Do any normalization required for an entry in `should`
     def normalize_should_entry!(entry)
-      entry['toolchain'] = provider.normalize_toolchain(entry['toolchain'])
+      entry['toolchain'] = provider.normalize_target_toolchain(
+        entry['toolchain'],
+      )
       entry['target'] = provider.normalize_target(entry['target'])
     end
   end
