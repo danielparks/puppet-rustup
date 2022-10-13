@@ -116,7 +116,7 @@ Puppet::Type.type(:rustup_internal).provide(
     if toolchain.nil?
       normalize_default_toolchain_requested || system_default_toolchain
     else
-      normalize_toolchain_name(toolchain)
+      normalize_toolchain(toolchain)
     end
   end
 
@@ -130,9 +130,9 @@ Puppet::Type.type(:rustup_internal).provide(
   #   * It will break as soon as rust adds a new triple to run toolchains on.
   #
   # public for testing
-  def normalize_toolchain_name(input)
+  def normalize_toolchain(input)
     if input.nil?
-      raise ArgumentError, 'normalize_toolchain_name expects a string, not nil'
+      raise ArgumentError, 'normalize_toolchain expects a string, not nil'
     end
 
     parse_partial_toolchain(input)
@@ -321,7 +321,7 @@ Puppet::Type.type(:rustup_internal).provide(
     # the same toolchains as existed on the system, and then the toolchains on
     # the system changed.
     resource[:toolchains].each do |info|
-      full_name = normalize_toolchain_name(info['toolchain'])
+      full_name = normalize_toolchain(info['toolchain'])
 
       # Look for toolchain in list of installed, unmanaged toolchains. Note
       # that this could be a problem if we specify a toolchain twice (e.g.
@@ -386,13 +386,13 @@ Puppet::Type.type(:rustup_internal).provide(
       return nil
     end
 
-    normalize_toolchain_name(resource[:default_toolchain])
+    normalize_toolchain(resource[:default_toolchain])
   end
 
   # Validate that the default toolchain is or will be installed
   def validate_default_toolchain(normalized_default)
     found = resource[:toolchains].find do |info|
-      normalize_toolchain_name(info['toolchain']) == normalized_default
+      normalize_toolchain(info['toolchain']) == normalized_default
     end
 
     if found
