@@ -134,11 +134,10 @@ Puppet::Type.type(:rustup_internal).provide(
       raise ArgumentError, 'normalize_toolchain_name expects a string, not nil'
     end
 
-    parts = parse_partial_toolchain(input).map.with_index do |part, i|
-      part || default_toolchain_triple[i]
-    end
-    parts.reject! { |part| part.nil? }
-    parts.join('-')
+    parse_partial_toolchain(input)
+      .map.with_index { |part, i| part || default_toolchain_triple[i] }
+      .compact
+      .join('-')
   end
 
   # Normalize target.
