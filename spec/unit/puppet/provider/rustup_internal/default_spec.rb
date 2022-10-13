@@ -42,22 +42,22 @@ RSpec.describe Puppet::Type.type(:rustup_internal).provider(:default) do
 
     context 'correctly normalizes toolchain' do
       it '"stable"' do
-        expect(provider.normalize_toolchain_name('stable'))
+        expect(provider.normalize_toolchain('stable'))
           .to eq('stable-x86_64-apple-darwin')
       end
 
       it '"custom-toolchain"' do
-        expect(provider.normalize_toolchain_name('custom-toolchain'))
+        expect(provider.normalize_toolchain('custom-toolchain'))
           .to eq('custom-toolchain-x86_64-apple-darwin')
       end
 
       it '"custom-toolchain-mscv"' do
-        expect(provider.normalize_toolchain_name('custom-toolchain-msvc'))
+        expect(provider.normalize_toolchain('custom-toolchain-msvc'))
           .to eq('custom-toolchain-x86_64-apple-darwin-msvc')
       end
 
       it '"custom-toolchain-pc-windows"' do
-        expect(provider.normalize_toolchain_name('custom-toolchain-pc-windows'))
+        expect(provider.normalize_toolchain('custom-toolchain-pc-windows'))
           .to eq('custom-toolchain-x86_64-pc-windows')
       end
     end
