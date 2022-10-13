@@ -114,7 +114,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # out what to do.
   def normalize_target_toolchain(toolchain)
     if toolchain.nil?
-      normalize_default_toolchain_requested || system_default_toolchain
+      normalize_requested_default_toolchain || system_default_toolchain
     else
       normalize_toolchain(toolchain)
     end
@@ -309,7 +309,7 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Install and uninstall toolchains as appropriate
   def manage_toolchains
-    requested_default = normalize_default_toolchain_requested
+    requested_default = normalize_requested_default_toolchain
     if requested_default
       validate_default_toolchain(requested_default)
     end
@@ -381,7 +381,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # because it’s not set if the resource doesn’t detect a change, and using the
   # `default_toolchain` method doesn’t work if it’s not set on resource AND the
   # old default_toolchain is being deleted.
-  def normalize_default_toolchain_requested
+  def normalize_requested_default_toolchain
     if resource[:default_toolchain].nil?
       return nil
     end
