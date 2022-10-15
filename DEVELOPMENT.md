@@ -10,43 +10,21 @@ pdk test unit
 
 ### Acceptance tests
 
-We use [Puppet Litmus][] with [Docker][] to actually exercise the module.
+We use [Puppet Litmus][] with [Docker][] to actually exercise the module:
+
+```
+./test.sh init run destroy
+```
+
+Docker must be installed and running for the above to work. If you prefer, you
+can use [Vagrant][] instead by specifying `--vagrant`, though I’ve found that
+it’s poorly supported with Puppet Litmus.
+
+See `./test.sh --help` for more information.
 
 Note that the acceptance tests are not independent. Installing toolchains is
 slow, so it’s practical to have the tests build on each other rather than take
 the time to tear them down and rebuild after each individual test.
-
-Testing is easiest to manage with `test.sh`:
-
-```
-./test.sh docker-run
-```
-
-#### Vagrant
-
-It is also possible to run tests under [Vagrant][], though it is slower. To run
-tests under Vagrant for the first time:
-
-```
-./test.sh init run
-```
-
-To repeat the tests after updating the module:
-
-```
-./test.sh fast-init run
-```
-
-  * `./test.sh init` — initializes the VMs, installs the module, and creates
-    a snapshot called “fresh”.
-  * `./test.sh fast-init` — restores the “fresh” snapshot on existing VMs and
-    reinstalls the module.
-  * `./test.sh run` — run acceptance tests with the _installed_ module. Note
-    that if you make changes you will need to reinstall the module with
-    `fast-init` or `update`.
-  * `./test.sh update` — reinstall the module on the running VMs.
-  * `./test.sh destroy` — destroy the VMs. You will need to run `init` again to
-    recreate them before doing any further testing.
 
 ## Debugging
 
