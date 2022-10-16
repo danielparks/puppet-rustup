@@ -155,7 +155,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # FIXME this will break as soon as Rust adds a new platform for the toolchain
   # to run on.
   def parse_partial_toolchain(input)
-    # From https://github.com/rust-lang/rustup/blob/6bc5d2c340e1dd9880b68564a19f0dea384c849c/src/dist/triple.rs
+    # From https://github.com/rust-lang/rustup/blob/732feb8a733a6ad5c56cd9b637b501e8fa54491e/src/dist/triple.rs
     # rubocop:disable Style/StringLiterals
     archs = [
       "i386",
@@ -175,6 +175,7 @@ Puppet::Type.type(:rustup_internal).provide(
       "powerpc64le",
       "riscv64gc",
       "s390x",
+      "loongarch64",
     ].join('|')
     oses = [
       "pc-windows",
