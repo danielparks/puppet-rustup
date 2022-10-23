@@ -148,7 +148,7 @@ Puppet::Type.newtype(:rustup_internal) do
       end
 
       unless PuppetX::Rustup::Util.nil_or_non_empty_string? entry['toolchain']
-        raise Puppet::Error, 'Expected toolchain Hash entry "toolchain" to ' \
+        raise Puppet::Error, 'Expected target Hash entry "toolchain" to ' \
           'be nil or a non-empty string, got %s' % entry['toolchain'].inspect
       end
     end
