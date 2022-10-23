@@ -148,6 +148,53 @@ Puppet::Type.newtype(:rustup_internal) do
     defaultto false
   end
 
+  newproperty(:components, parent: PuppetX::Rustup::Property::Subresources) do
+    desc <<~'END'
+      The components to install or remove.
+
+      Each component must be a Hash with three entries:
+        * `ensure`: one of `present` or `absent`
+        * `name`: the name of the component, which may include the target, e.g.
+          `rust-std-wasm32-unknown-unknown` or `rust-std`.
+        * `toolchain`: the name of the toolchain or `undef` to indicate the
+          default toolchain
+    END
+
+    # NOTE: validates each entry in the array, not the array itself.
+    validate do |entry|
+      unless entry.is_a?(Hash) && entry.length == 3
+        raise Puppet::Error,
+          'Expected component Hash with three entries, got %s' % entry.inspect
+      end
+
+      validate_in(entry, 'ensure', ['present', 'absent'])
+      validate_non_empty_string(entry, 'name')
+      validate_nil_or_non_empty_string(entry, 'toolchain')
+    end
+
+    # Whether or not to ignore components on the system but not in the resource.
+    def ignore_removed_entries
+      !resource[:purge_components]
+    end
+
+    # Do any normalization required for an entry in `should`
+    def normalize_should_entry!(entry)
+      entry['toolchain'] = provider.normalize_toolchain_or_default(
+        entry['toolchain'],
+      )
+      entry['name'] = provider.normalize_component(
+        entry['name'],
+        entry['toolchain'],
+      )
+    end
+  end
+
+  newparam(:purge_components, boolean: true,
+      parent: Puppet::Parameter::Boolean) do
+    desc 'Whether or not to uninstall components that aren’t managed by Puppet.'
+    defaultto false
+  end
+
   newparam(:dist_server) do
     desc <<~'END'
       Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`

@@ -26,6 +26,22 @@
 #   You can use `'default'` to indicate the target for the current host.
 # @param purge_targets
 #   Whether or not to uninstall targets that aren’t managed by Puppet.
+# @param components
+#   The components to install. These can take a few forms:
+#
+#     * `"$component-$target $toolchain"`: Install `$component` for `$toolchain`
+#       and `$target`.
+#     * `"$component $toolchain"`: Install `$component` for `$toolchain` on the
+#       default target.
+#     * `"$component-$target"`: Install `$component` for the default toolchain
+#       on `$target`.
+#     * `"$component"`: Install `$component` for the default toolchain on the
+#       default target.
+#
+#   You can use `'default'` to indicate the target for the current host or just
+#   leave it off.
+# @param purge_components
+#   Whether or not to uninstall components that aren’t managed by Puppet.
 # @param dist_server
 #   Override `RUSTUP_DIST_SERVER`. Set to `'https://dev-static.rust-lang.org'`
 #   to install pre-release toolchains.
@@ -50,6 +66,8 @@ define rustup (
   Boolean                       $purge_toolchains  = false,
   Array[String[1]]              $targets           = [],
   Boolean                       $purge_targets     = false,
+  Array[String[1]]              $components        = [],
+  Boolean                       $purge_components  = false,
   Optional[Stdlib::HTTPUrl]     $dist_server       = undef,
   Stdlib::Absolutepath          $home              = rustup::home($user),
   Stdlib::Absolutepath          $rustup_home       = "${home}/.rustup",
@@ -60,6 +78,7 @@ define rustup (
   if $ensure == absent {
     $_toolchains = []
     $_targets = []
+    $_components = []
   } else {
     $_toolchains = $toolchains.map |$toolchain| {
       {
@@ -76,6 +95,14 @@ define rustup (
         toolchain => $target.split(' ')[1],
       }
     }
+
+    $_components = $components.map |$component| {
+      {
+        ensure    => present,
+        name      => $component.split(' ')[0],
+        toolchain => $component.split(' ')[1],
+      }
+    }
   }
 
   rustup_internal { $name:
@@ -86,6 +113,8 @@ define rustup (
     purge_toolchains  => $purge_toolchains,
     targets           => $_targets,
     purge_targets     => $purge_targets,
+    components        => $_components,
+    purge_components  => $purge_components,
     dist_server       => $dist_server,
     home              => $home,
     rustup_home       => $rustup_home,

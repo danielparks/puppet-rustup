@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../../../puppet_x/rustup/provider/collection/components'
 require_relative '../../../puppet_x/rustup/provider/collection/targets'
 require_relative '../../../puppet_x/rustup/provider/collection/toolchains'
 require_relative '../../../puppet_x/rustup/util'
@@ -16,6 +17,8 @@ Puppet::Type.type(:rustup_internal).provide(
     PuppetX::Rustup::Provider::Collection::Toolchains
   subresource_collection :targets,
     PuppetX::Rustup::Provider::Collection::Targets
+  subresource_collection :components,
+    PuppetX::Rustup::Provider::Collection::Components
 
   # Get the default toolchain, possibly as requested by the resource.
   #
@@ -159,6 +162,7 @@ Puppet::Type.type(:rustup_internal).provide(
     [
       [:toolchains, 'toolchain'],
       [:targets, 'target'],
+      [:components, 'component'],
     ].each do |symbol, noun|
       resource[symbol].each do |info|
         if info['ensure'] != 'absent'
@@ -185,6 +189,7 @@ Puppet::Type.type(:rustup_internal).provide(
     )
     toolchains.load # Update internal state
     targets.manage(resource[:targets], resource[:purge_targets])
+    components.manage(resource[:components], resource[:purge_components])
   end
 
   # Get cargo_home for use in shell init scripts.
