@@ -116,7 +116,7 @@ Puppet::Type.newtype(:rustup_internal) do
   newparam(:purge_toolchains, boolean: true,
       parent: Puppet::Parameter::Boolean) do
     desc 'Whether or not to uninstall toolchains that aren’t managed by Puppet.'
-    defaultto true
+    defaultto false
   end
 
   newproperty(:targets, parent: PuppetX::Rustup::Property::Subresources) do
@@ -169,7 +169,7 @@ Puppet::Type.newtype(:rustup_internal) do
 
   newparam(:purge_targets, boolean: true, parent: Puppet::Parameter::Boolean) do
     desc 'Whether or not to uninstall targets that aren’t managed by Puppet.'
-    defaultto true
+    defaultto false
   end
 
   newparam(:dist_server) do
