@@ -81,22 +81,9 @@ Puppet::Type.newtype(:rustup_internal) do
           'Expected toolchain Hash with 3 entries, got %s' % entry.inspect
       end
 
-      unless ['present', 'latest', 'absent'].any? entry['ensure']
-        raise Puppet::Error, 'Expected toolchain Hash entry "ensure" to be ' \
-          'one of ("present", "latest", "absent"), got %s' \
-          % entry['ensure'].inspect
-      end
-
-      unless PuppetX::Rustup::Util.non_empty_string? entry['toolchain']
-        raise Puppet::Error, 'Expected toolchain Hash entry "toolchain" to ' \
-          'be a non-empty string, got %s' % entry['toolchain'].inspect
-      end
-
-      unless ['minimal', 'default', 'complete'].any? entry['profile']
-        raise Puppet::Error, 'Expected toolchain Hash entry "profile" to be ' \
-          'one of ("minimal", "default", "complete"), got %s' \
-          % entry['profile'].inspect
-      end
+      validate_in(entry, 'ensure', ['present', 'latest', 'absent'])
+      validate_non_empty_string(entry, 'toolchain')
+      validate_in(entry, 'profile', ['minimal', 'default', 'complete'])
     end
 
     # Whether or not to ignore toolchains on the system but not in the resource.
@@ -134,23 +121,12 @@ Puppet::Type.newtype(:rustup_internal) do
       # WTF: properties validate each element of a passed array.
       unless entry.is_a?(Hash) && entry.length == 3
         raise Puppet::Error,
-          'Expected toolchain Hash with three entries, got %s' % entry.inspect
+          'Expected target Hash with three entries, got %s' % entry.inspect
       end
 
-      unless ['present', 'absent'].any? entry['ensure']
-        raise Puppet::Error, 'Expected target Hash entry "ensure" to be one ' \
-          'of ("present", "absent"), got %s' % entry['ensure'].inspect
-      end
-
-      unless PuppetX::Rustup::Util.non_empty_string? entry['target']
-        raise Puppet::Error, 'Expected target Hash entry "target" to be a ' \
-          'non-empty string, got %s' % entry['target'].inspect
-      end
-
-      unless PuppetX::Rustup::Util.nil_or_non_empty_string? entry['toolchain']
-        raise Puppet::Error, 'Expected target Hash entry "toolchain" to ' \
-          'be nil or a non-empty string, got %s' % entry['toolchain'].inspect
-      end
+      validate_in(entry, 'ensure', ['present', 'absent'])
+      validate_non_empty_string(entry, 'target')
+      validate_nil_or_non_empty_string(entry, 'toolchain')
     end
 
     # Whether or not to ignore targets on the system but not in the resource.

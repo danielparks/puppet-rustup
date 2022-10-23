@@ -63,5 +63,42 @@ module PuppetX::Rustup::Property
     #
     # This should modify the parameter.
     def normalize_is_entry!(_entry); end
+
+    # Raise a friendly error if a hash entry is not in valid_set.
+    def validate_in(entry, attr, valid_set)
+      unless valid_set.any? entry[attr]
+        raise Puppet::Error, 'Expected %{name} Hash entry %{attr} to be one ' \
+          'of %{valid}, got %{value}' % {
+            name: name,
+            attr: attr.inspect,
+            valid: valid_set.inspect,
+            value: entry[attr].inspect,
+          }
+      end
+    end
+
+    # Raise a friendly error if a hash entry is not a non-empty string.
+    def validate_non_empty_string(entry, attr)
+      unless PuppetX::Rustup::Util.non_empty_string? entry[attr]
+        raise Puppet::Error, 'Expected %{name} Hash entry %{attr} to be a ' \
+          'non-empty string, got %{value}' % {
+            name: name,
+            attr: attr.inspect,
+            value: entry[attr].inspect,
+          }
+      end
+    end
+
+    # Raise a friendly error if a hash entry is not nil or a non-empty string.
+    def validate_nil_or_non_empty_string(entry, attr)
+      unless PuppetX::Rustup::Util.nil_or_non_empty_string? entry[attr]
+        raise Puppet::Error, 'Expected %{name} Hash entry %{attr} to be nil ' \
+          'or a non-empty string, got %{value}' % {
+            name: name,
+            attr: attr.inspect,
+            value: entry[attr].inspect,
+          }
+      end
+    end
   end
 end
