@@ -11,7 +11,7 @@ Puppet::Type.type(:rustup_internal).provide(
   mk_resource_methods
 
   subresource_collection :toolchains do
-    toolchain_list.map do |full_name|
+    toolchain_list_installed.map do |full_name|
       {
         'ensure' => 'present',
         'toolchain' => full_name,
@@ -22,7 +22,7 @@ Puppet::Type.type(:rustup_internal).provide(
   subresource_collection :targets do
     system_toolchains.reduce([]) do |combined, info|
       toolchain = info['toolchain']
-      combined + target_list(toolchain).map do |target|
+      combined + target_list_installed(toolchain).map do |target|
         {
           'ensure' => 'present',
           'target' => target,
@@ -106,7 +106,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # Normalize toolchain specified for a target, or return the default toolchain
   # for nil.
   #
-  # toolchain_list must be run first in to determine the default toolchain.
+  # toolchain_list_installed must be run first to get the default toolchain.
   #
   # This *might* return nil if there is somehow no default toolchain. In that
   # case, the nil gets passed along and the toolchain ends up not specified on
@@ -351,10 +351,10 @@ Puppet::Type.type(:rustup_internal).provide(
     end
   end
 
-  # Load toolchains from system as an array of strings
+  # Load installed toolchains from system as an array of strings
   #
   # This also sets @system_default_toolchain.
-  def toolchain_list
+  def toolchain_list_installed
     @system_default_toolchain = nil
     unless exists? && user_exists?
       # If rustup isn’t installed, then no toolchains can exist. If the user
@@ -464,7 +464,7 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Manage targets for a particular toolchain
   def manage_toolchain_targets(toolchain, targets)
-    unmanaged = target_list(toolchain)
+    unmanaged = target_list_installed(toolchain)
 
     targets.each do |info|
       found = unmanaged.delete(info[:target])
@@ -486,12 +486,10 @@ Puppet::Type.type(:rustup_internal).provide(
   end
 
   # Get list of installed targets for a toolchain
-  def target_list(toolchain)
-    rustup('target', 'list', *toolchain_option(toolchain))
-      .lines(chomp: true) \
-      # delete_suffix! returns nil if there was no suffix
-      .map { |line| line.delete_suffix!(' (installed)') }
-      .compact
+  def target_list_installed(toolchain)
+    rustup('target', 'list', '--installed', *toolchain_option(toolchain))
+      .lines(chomp: true)
+      .reject { |line| line.start_with? 'error: ' }
   end
 
   # Install a target
