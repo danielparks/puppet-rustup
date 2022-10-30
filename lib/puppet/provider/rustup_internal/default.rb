@@ -103,8 +103,7 @@ Puppet::Type.type(:rustup_internal).provide(
     rustup 'self', 'uninstall', '-y'
   end
 
-  # Normalize toolchain specified for a target, or return the default toolchain
-  # for nil.
+  # Normalize toolchain or return the default toolchain for nil.
   #
   # toolchain_list_installed must be run first to get the default toolchain.
   #
@@ -112,7 +111,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # case, the nil gets passed along and the toolchain ends up not specified on
   # the command line (see toolchain_option), which means that rustup will figure
   # out what to do.
-  def normalize_target_toolchain(toolchain)
+  def normalize_toolchain_or_default(toolchain)
     if toolchain.nil?
       normalize_requested_default_toolchain || system_default_toolchain
     else
@@ -120,7 +119,7 @@ Puppet::Type.type(:rustup_internal).provide(
     end
   end
 
-  # Normalize a toolchain name (not nil).
+  # Normalize a toolchain (not nil).
   #
   # There are some flaws in this.
   #
@@ -429,7 +428,7 @@ Puppet::Type.type(:rustup_internal).provide(
 
     targets_by_toolchain = {}
     resource[:targets].each do |info|
-      toolchain = normalize_target_toolchain(info['toolchain'])
+      toolchain = normalize_toolchain_or_default(info['toolchain'])
       target = normalize_target(info['target'])
 
       targets_by_toolchain[toolchain] ||= []
