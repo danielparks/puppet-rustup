@@ -277,23 +277,19 @@ Puppet::Type.type(:rustup_internal).provide(
       end
     end
 
-    resource[:toolchains].each do |toolchain|
-      if toolchain['ensure'] != 'absent'
-        raise Puppet::Error, 'Cannot install toolchain %{toolchain} for ' \
-          'absent rustup installation %{rustup}' % {
-            toolchain: toolchain['toolchain'].inspect,
-            rustup: resource[:title].inspect,
-          }
-      end
-    end
-
-    resource[:targets].each do |target|
-      if target['ensure'] != 'absent'
-        raise Puppet::Error, 'Cannot install target %{target} for absent ' \
-          'rustup installation %{rustup}' % {
-            target: target['target'].inspect,
-            rustup: resource[:title].inspect,
-          }
+    [
+      [:toolchains, 'toolchain'],
+      [:targets, 'target'],
+    ].each do |symbol, noun|
+      resource[symbol].each do |info|
+        if info['ensure'] != 'absent'
+          raise Puppet::Error, 'Cannot install %{noun} %{name} for absent ' \
+            'rustup installation %{rustup}' % {
+              noun: noun,
+              name: info[noun].inspect,
+              rustup: resource[:title].inspect,
+            }
+        end
       end
     end
   end
