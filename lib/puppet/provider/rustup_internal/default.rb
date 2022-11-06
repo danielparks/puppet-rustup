@@ -300,10 +300,15 @@ Puppet::Type.type(:rustup_internal).provide(
   # is called even if `exist? == true`.
   def ensure_not_absent
     manage_toolchains
+    load_toolchains # Update internal state
     manage_targets
   end
 
   # Install and uninstall toolchains as appropriate
+  #
+  # Note that this does not update the internal state after changing the system.
+  # You must call load_toolchains after this function if you need the toolchain
+  # state to be correct.
   def manage_toolchains
     requested_default = normalize_requested_default_toolchain
     if requested_default
@@ -417,11 +422,11 @@ Puppet::Type.type(:rustup_internal).provide(
   end
 
   # Install and uninstall targets as appropriate
+  #
+  # Note that this does not update the internal state after changing the system.
+  # You must call load_targets after this function if you need the target state
+  # to be correct.
   def manage_targets
-    # Re-query the installed toolchains after managing them. This is simpler
-    # than keeping track. This also sets @system_default_toolchain.
-    installed_toolchains = load_toolchains
-
     targets_by_toolchain = {}
     resource[:targets].each do |info|
       toolchain = normalize_toolchain_or_default(info['toolchain'])
@@ -434,7 +439,7 @@ Puppet::Type.type(:rustup_internal).provide(
       }
     end
 
-    installed_toolchains.each do |info|
+    system_toolchains.each do |info|
       manage_toolchain_targets(
         info['toolchain'],
         targets_by_toolchain.delete(info['toolchain']) || [],
