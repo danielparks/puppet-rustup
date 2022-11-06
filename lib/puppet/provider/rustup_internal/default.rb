@@ -427,59 +427,55 @@ Puppet::Type.type(:rustup_internal).provide(
   # You must call load_targets after this function if you need the target state
   # to be correct.
   def manage_targets
-    targets_by_toolchain = {}
-    resource[:targets].each do |info|
-      toolchain = normalize_toolchain_or_default(info['toolchain'])
-      target = normalize_target(info['target'])
+    manage_subresource_by_toolchain('Targets', :targets) do |toolchain, targets|
+      unmanaged = target_list_installed(toolchain)
 
-      targets_by_toolchain[toolchain] ||= []
-      targets_by_toolchain[toolchain] << {
-        ensure: info['ensure'],
-        target: target,
-      }
+      targets.each do |info|
+        target = normalize_target(info['target'])
+
+        found = unmanaged.delete(target)
+        if info['ensure'] == 'absent'
+          if found
+            target_uninstall(target, toolchain: toolchain)
+          end
+        elsif found.nil?
+          # ensure == 'present' implied
+          target_install(target, toolchain: toolchain)
+        end
+      end
+
+      if resource[:purge_targets]
+        unmanaged.each do |target|
+          target_uninstall(target, toolchain: toolchain)
+        end
+      end
+    end
+  end
+
+  # Split subresource up by toolchain for management
+  #
+  # This also verifies that none of the subresources were requested for
+  # toolchains with ensure => absent.
+  def manage_subresource_by_toolchain(plural_name, symbol)
+    by_toolchain = resource[symbol].group_by do |info|
+      normalize_toolchain_or_default(info['toolchain'])
     end
 
     system_toolchains.each do |info|
-      manage_toolchain_targets(
-        info['toolchain'],
-        targets_by_toolchain.delete(info['toolchain']) || [],
-      )
+      yield info['toolchain'], by_toolchain.delete(info['toolchain']) || []
     end
 
-    # Find targets that were requested for uninstalled toolchains.
+    # Find subresources that were requested for uninstalled toolchains.
     missing_toolchains = []
-    targets_by_toolchain.each do |toolchain, subresources|
-      if subresources.any? { |info| info[:ensure] != 'absent' }
+    by_toolchain.each do |toolchain, subresources|
+      if subresources.any? { |info| info['ensure'] != 'absent' }
         missing_toolchains << toolchain
       end
     end
 
     unless missing_toolchains.empty?
-      raise Puppet::Error, 'Targets were requested for toolchains that are ' \
-        "not installed: #{missing_toolchains.join(', ')}"
-    end
-  end
-
-  # Manage targets for a particular toolchain
-  def manage_toolchain_targets(toolchain, targets)
-    unmanaged = target_list_installed(toolchain)
-
-    targets.each do |info|
-      found = unmanaged.delete(info[:target])
-      if info[:ensure] == 'absent'
-        if found
-          target_uninstall(info[:target], toolchain: toolchain)
-        end
-      elsif found.nil?
-        # ensure == 'present' implied
-        target_install(info[:target], toolchain: toolchain)
-      end
-    end
-
-    if resource[:purge_targets]
-      unmanaged.each do |target|
-        target_uninstall(target, toolchain: toolchain)
-      end
+      raise Puppet::Error, "#{plural_name} were requested for toolchains " \
+        "that are not installed: #{missing_toolchains.join(', ')}"
     end
   end
 
