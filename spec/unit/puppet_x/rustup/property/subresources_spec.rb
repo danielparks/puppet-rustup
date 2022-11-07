@@ -35,8 +35,12 @@ RSpec.describe PuppetX::Rustup::Property::Subresources do
       end
 
       it 'considers changing ensure to latest a change' do
-        skip 'broken until next commit'
         property.should = [example('a', ensure_: 'latest')]
+        expect(property.insync?([example('a', ensure_: 'present')])).to eq false
+      end
+
+      it 'considers changing ensure to absent a change' do
+        property.should = [example('a', ensure_: 'absent')]
         expect(property.insync?([example('a', ensure_: 'present')])).to eq false
       end
 
