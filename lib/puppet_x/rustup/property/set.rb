@@ -103,11 +103,12 @@ module PuppetX::Rustup::Property
 
       begin
         clean_is = clean_set(is) { |e| normalize_is_entry(e) }
-      rescue Puppet::Error
+      rescue Puppet::Error => error
         # `clean_is` represents what actually exists, so if there are duplicates
         # it should not fail (though it should be considered a bug). Since we
         # don’t allow `should` to contain duplicates, a duplicate in `is` will
         # always indicate a change.
+        warn "Error in existing #{name}: #{error}"
         return false
       end
 

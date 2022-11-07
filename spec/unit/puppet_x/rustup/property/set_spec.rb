@@ -48,6 +48,8 @@ RSpec.describe PuppetX::Rustup::Property::Set do
 
       it 'considers duplicate old entries to be a change' do
         property.should = ['a', 'b']
+        expect(property).to receive(:warn)
+          .with('Error in existing : Duplicate entry in set: "b"')
         expect(property.insync?(['a', 'b', 'b'])).to eq false
       end
     end

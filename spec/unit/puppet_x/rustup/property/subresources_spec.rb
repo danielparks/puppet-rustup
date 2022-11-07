@@ -61,6 +61,8 @@ RSpec.describe PuppetX::Rustup::Property::Subresources do
 
       it 'considers duplicate old entries to be a change' do
         property.should = [example('a')]
+        expect(property).to receive(:warn)
+          .with(%r{\AError in existing : Duplicate entry in set: })
         expect(property.insync?([example('a'), example('a')])).to eq false
       end
 
