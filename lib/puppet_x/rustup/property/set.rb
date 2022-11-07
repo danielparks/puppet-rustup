@@ -90,6 +90,11 @@ module PuppetX::Rustup::Property
       hash
     end
 
+    # Check if entries with the same identity are different.
+    def entry_changed?(is_entry, should_entry)
+      is_entry != should_entry
+    end
+
     # Check if the values are in sync.
     #
     # You should not need to override this.
@@ -98,22 +103,27 @@ module PuppetX::Rustup::Property
 
       begin
         clean_is = clean_set(is) { |e| normalize_is_entry(e) }
-      rescue Puppet::Error
+      rescue Puppet::Error => error
         # `clean_is` represents what actually exists, so if there are duplicates
         # it should not fail (though it should be considered a bug). Since we
         # don’t allow `should` to contain duplicates, a duplicate in `is` will
         # always indicate a change.
+        warn "Error in existing #{name}: #{error}"
         return false
       end
 
       # Remove entries in clean_should from clean_is.
       clean_should.each do |identity, should_entry|
-        if clean_is.delete(identity).nil?
+        is_entry = clean_is.delete(identity)
+        if is_entry.nil?
           # Found an entry in `should`, but not in `is`. If the entry has the
           # equivalent of `ensure => absent`, then it doesn’t matter.
           unless should_entry_absent? should_entry
             return false
           end
+        elsif entry_changed?(is_entry, should_entry)
+          # Found entries with the same identity, but different details.
+          return false
         end
       end
 

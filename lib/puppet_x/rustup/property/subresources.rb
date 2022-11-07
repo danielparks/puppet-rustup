@@ -17,7 +17,7 @@ module PuppetX::Rustup::Property
     # entry within in the set. If two entries have the same identity, then it
     # is an error.
     def entry_identity(entry)
-      entry.reject { |k| k == 'absent' }.hash
+      entry.reject { |k| k == 'ensure' }.hash
     end
 
     # Does this entry in `should` have the equivalent of `ensure => absent`?
