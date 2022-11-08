@@ -447,18 +447,16 @@ Puppet::Type.type(:rustup_internal).provide(
     end
 
     # Find targets that were requested for uninstalled toolchains.
-    errors = targets_by_toolchain.map do |toolchain, targets|
-      if targets.any? { |target| target[:ensure] != 'absent' }
-        toolchain
-      else
-        nil
+    missing_toolchains = []
+    targets_by_toolchain.each do |toolchain, subresources|
+      if subresources.any? { |info| info[:ensure] != 'absent' }
+        missing_toolchains << toolchain
       end
     end
 
-    errors.compact!
-    unless errors.empty?
+    unless missing_toolchains.empty?
       raise Puppet::Error, 'Targets were requested for toolchains that are ' \
-        "not installed: #{errors.join(', ')}"
+        "not installed: #{missing_toolchains.join(', ')}"
     end
   end
 
