@@ -419,6 +419,18 @@ describe 'Per-user rustup management' do
     expect(file('/home/rustup_test')).to exist
     expect(file('/home/rustup_test/.cargo')).not_to exist
     expect(file('/home/rustup_test/.bashrc').content).to eq %(# .bashrc\n)
+
+    # Clean up
+    apply_manifest(<<~'END')
+      user { 'rustup_test':
+        ensure => absent,
+      }
+
+      file { '/home/rustup_test':
+        ensure => absent,
+        force  => true,
+      }
+    END
   end
 
   it 'can remove itself after the user was deleted (with custom cargo_home)' do
@@ -485,5 +497,17 @@ describe 'Per-user rustup management' do
     expect(file('/home/rustup_test')).to exist
     expect(file('/home/rustup_test/a/b/.cargo')).not_to exist
     expect(file('/home/rustup_test/.bashrc').content).to eq %(# .bashrc\n)
+
+    # Clean up
+    apply_manifest(<<~'END')
+      user { 'rustup_test':
+        ensure => absent,
+      }
+
+      file { '/home/rustup_test':
+        ensure => absent,
+        force  => true,
+      }
+    END
   end
 end
