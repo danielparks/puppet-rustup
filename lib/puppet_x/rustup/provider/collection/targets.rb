@@ -7,13 +7,12 @@ class PuppetX::Rustup::Provider::Collection::Targets <
     PuppetX::Rustup::Provider::Collection::Subresources
   # Get targets installed on the system.
   def load
-    @system = @provider.toolchains.system.reduce([]) do |combined, info|
-      toolchain_name = info['name']
-      combined + list_installed(toolchain_name).map do |target_name|
+    @system = @provider.toolchains.system.reduce([]) do |combined, toolchain|
+      combined + list_installed(toolchain.name).map do |target_name|
         {
           'ensure' => 'present',
           'name' => target_name,
-          'toolchain' => toolchain_name,
+          'toolchain' => toolchain.name,
         }
       end
     end

@@ -2,6 +2,7 @@
 
 require 'puppet/parameter/boolean'
 require_relative '../../puppet_x/rustup/property/subresources'
+require_relative '../../puppet_x/rustup/provider/toolchain'
 require_relative '../../puppet_x/rustup/util'
 
 Puppet::Type.newtype(:rustup_internal) do
@@ -92,11 +93,13 @@ Puppet::Type.newtype(:rustup_internal) do
     end
 
     # Do any normalization required for an entry in `should`.
-    def normalize_should_entry!(entry)
-      entry['name'] = provider.toolchains.normalize(entry['name'])
+    def normalize_should_entry(entry)
       # `rustup` ignores the profile after the initial install. Thus, the
       # profile key is irrelevant for detecting a change.
-      entry.delete('profile')
+      PuppetX::Rustup::Provider::Toolchain.new(
+        name: provider.toolchains.normalize(entry['name']),
+        ensure: entry['ensure'],
+      )
     end
   end
 
