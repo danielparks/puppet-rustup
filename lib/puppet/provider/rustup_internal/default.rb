@@ -364,15 +364,15 @@ Puppet::Type.type(:rustup_internal).provide(
       return []
     end
 
-    lines = rustup('toolchain', 'list').lines(chomp: true).map do |line|
-      # delete_suffix! returns nil if there was no suffix.
-      if line.delete_suffix!(' (default)')
-        @system_default_toolchain = line
+    rustup('toolchain', 'list')
+      .lines(chomp: true)
+      .reject { |line| line == 'no installed toolchains' }
+      .each do |line|
+        # delete_suffix! returns nil if there was no suffix.
+        if line.delete_suffix!(' (default)')
+          @system_default_toolchain = line
+        end
       end
-      line
-    end
-    lines.delete('no installed toolchains')
-    lines
   end
 
   # Normalize the requested default_toolchain and check that it’s valid.
