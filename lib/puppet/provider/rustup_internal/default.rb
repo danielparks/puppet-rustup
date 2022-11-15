@@ -113,7 +113,11 @@ Puppet::Type.type(:rustup_internal).provide(
   # out what to do.
   def normalize_toolchain_or_default(toolchain)
     if toolchain.nil?
-      normalize_requested_default_toolchain || system_default_toolchain
+      if resource[:default_toolchain]
+        normalize_toolchain(resource[:default_toolchain])
+      else
+        system_default_toolchain
+      end
     else
       normalize_toolchain(toolchain)
     end
@@ -310,8 +314,9 @@ Puppet::Type.type(:rustup_internal).provide(
   # You must call load_toolchains after this function if you need the toolchain
   # state to be correct.
   def manage_toolchains
-    requested_default = normalize_requested_default_toolchain
-    if requested_default
+    requested_default = nil
+    if resource[:default_toolchain]
+      requested_default = normalize_toolchain(resource[:default_toolchain])
       validate_default_toolchain(requested_default)
     end
 
@@ -373,21 +378,6 @@ Puppet::Type.type(:rustup_internal).provide(
           @system_default_toolchain = line
         end
       end
-  end
-
-  # Normalize the requested default_toolchain and check that it’s valid.
-  #
-  # This uses `resource[:default_toolchain]` because we want to check what was
-  # requested by the resource. `@property_hash[:default_toolchain]` doesn’t work
-  # because it’s not set if the resource doesn’t detect a change, and using the
-  # `default_toolchain` method doesn’t work if it’s not set on resource AND the
-  # old default_toolchain is being deleted.
-  def normalize_requested_default_toolchain
-    if resource[:default_toolchain].nil?
-      return nil
-    end
-
-    normalize_toolchain(resource[:default_toolchain])
   end
 
   # Validate that the default toolchain is or will be installed
