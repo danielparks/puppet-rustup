@@ -36,7 +36,7 @@ RSpec.describe Puppet::Type.type(:rustup_internal).provider(:default) do
     end
 
     it 'parses default toolchain correctly' do
-      expect(provider.parse_default_target)
+      expect(provider.parse_default_toolchain_triple)
         .to eq(['', 'x86_64', 'apple-darwin', nil])
     end
 
