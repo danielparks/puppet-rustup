@@ -212,9 +212,9 @@ Puppet::Type.type(:rustup_internal).provide(
     end
   end
 
-  # Memoized version of parse_default_target.
+  # Memoized version of parse_default_toolchain_triple.
   def default_toolchain_triple
-    @default_toolchain_triple ||= parse_default_target
+    @default_toolchain_triple ||= parse_default_toolchain_triple
   end
 
   # Parse default target from `rustup show` for use in toolchain name.
@@ -222,7 +222,7 @@ Puppet::Type.type(:rustup_internal).provide(
   # Returns partial toolchain descriptor as a 4 element array. The first part
   # should always be "" or nil, but might not be true if rust has added a new
   # platform for the toolchain.
-  def parse_default_target
+  def parse_default_toolchain_triple
     input = default_target
     if input.nil?
       [nil, nil, nil, nil]
