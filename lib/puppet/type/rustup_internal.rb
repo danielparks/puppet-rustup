@@ -60,7 +60,7 @@ Puppet::Type.newtype(:rustup_internal) do
     end
 
     def insync?(is)
-      is == provider.normalize_toolchain(should)
+      is == provider.toolchains.normalize(should)
     end
   end
 
@@ -93,7 +93,7 @@ Puppet::Type.newtype(:rustup_internal) do
 
     # Do any normalization required for an entry in `should`
     def normalize_should_entry!(entry)
-      entry['toolchain'] = provider.normalize_toolchain(entry['toolchain'])
+      entry['toolchain'] = provider.toolchains.normalize(entry['toolchain'])
       # `rustup` ignores the profile after the initial install. Thus, the
       # profile key is irrelevant for detecting a change.
       entry.delete('profile')
@@ -139,7 +139,7 @@ Puppet::Type.newtype(:rustup_internal) do
       entry['toolchain'] = provider.normalize_toolchain_or_default(
         entry['toolchain'],
       )
-      entry['target'] = provider.normalize_target(entry['target'])
+      entry['target'] = provider.targets.normalize(entry['target'])
     end
   end
 

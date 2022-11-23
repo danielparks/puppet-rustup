@@ -2,6 +2,8 @@
 
 require_relative '../rustup_exec'
 require_relative '../../../puppet_x/rustup/util'
+require_relative '../../../puppet_x/rustup/provider/targets'
+require_relative '../../../puppet_x/rustup/provider/toolchains'
 
 Puppet::Type.type(:rustup_internal).provide(
   :default, parent: Puppet::Provider::RustupExec
@@ -10,54 +12,14 @@ Puppet::Type.type(:rustup_internal).provide(
 
   mk_resource_methods
 
-  subresource_collection :toolchains do
-    toolchain_list_installed.map do |full_name|
-      {
-        'ensure' => 'present',
-        'toolchain' => full_name,
-      }
-    end
-  end
-
-  subresource_collection :targets do
-    system_toolchains.reduce([]) do |combined, info|
-      toolchain = info['toolchain']
-      combined + target_list_installed(toolchain).map do |target|
-        {
-          'ensure' => 'present',
-          'target' => target,
-          'toolchain' => toolchain,
-        }
-      end
-    end
-  end
-
-  def initialize(*)
-    super
-    @system_default_toolchain = :unset
-  end
-
-  # Get the real default toolchain on the system
-  def system_default_toolchain
-    if @system_default_toolchain == :unset
-      load_toolchains
-    end
-    @system_default_toolchain
-  end
+  subresource_collection :toolchains, PuppetX::Rustup::Provider::Toolchains
+  subresource_collection :targets, PuppetX::Rustup::Provider::Targets
 
   # Get the default toolchain, possibly as requested by the resource.
   #
   # This is necessary for the resource to function properly.
   def default_toolchain
-    @property_hash[:default_toolchain] || system_default_toolchain
-  end
-
-  # Is the passed toolchain already installed?
-  #
-  # @param [String] normalized toolchain name
-  # @return [Boolean]
-  def toolchain_installed?(toolchain)
-    system_toolchains.any? { |info| info['toolchain'] == toolchain }
+    @property_hash[:default_toolchain] || toolchains.system_default
   end
 
   # Determine if `rustup` has been installed on the system for this user.
@@ -105,7 +67,7 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # Normalize toolchain or return the default toolchain for nil.
   #
-  # toolchain_list_installed must be run first to get the default toolchain.
+  # toolchains.list_installed must be run first to get the default toolchain.
   #
   # This *might* return nil if there is somehow no default toolchain. In that
   # case, the nil gets passed along and the toolchain ends up not specified on
@@ -114,101 +76,12 @@ Puppet::Type.type(:rustup_internal).provide(
   def normalize_toolchain_or_default(toolchain)
     if toolchain.nil?
       if resource[:default_toolchain]
-        normalize_toolchain(resource[:default_toolchain])
+        toolchains.normalize(resource[:default_toolchain])
       else
-        system_default_toolchain
+        toolchains.system_default
       end
     else
-      normalize_toolchain(toolchain)
-    end
-  end
-
-  # Normalize a toolchain (not nil).
-  #
-  # There are some flaws in this.
-  #
-  #   * This is kludged together. I didn’t take the time to figure out all the
-  #     edge cases that rustup deals with.
-  #
-  #   * It will break as soon as rust adds a new triple to run toolchains on.
-  #
-  # public for testing
-  def normalize_toolchain(input)
-    if input.nil?
-      raise ArgumentError, 'normalize_toolchain expects a string, not nil'
-    end
-
-    parse_partial_toolchain(input)
-      .map.with_index { |part, i| part || default_toolchain_triple[i] }
-      .compact
-      .join('-')
-  end
-
-  # Normalize target.
-  def normalize_target(target)
-    if target == 'default'
-      default_target
-    else
-      target
-    end
-  end
-
-  # Parse a partial toolchain descriptor into its parts.
-  #
-  # FIXME this will break as soon as Rust adds a new platform for the toolchain
-  # to run on.
-  def parse_partial_toolchain(input)
-    # From https://github.com/rust-lang/rustup/blob/732feb8a733a6ad5c56cd9b637b501e8fa54491e/src/dist/triple.rs
-    # rubocop:disable Style/StringLiterals
-    archs = [
-      "i386",
-      "i586",
-      "i686",
-      "x86_64",
-      "arm",
-      "armv7",
-      "armv7s",
-      "aarch64",
-      "mips",
-      "mipsel",
-      "mips64",
-      "mips64el",
-      "powerpc",
-      "powerpc64",
-      "powerpc64le",
-      "riscv64gc",
-      "s390x",
-      "loongarch64",
-    ].join('|')
-    oses = [
-      "pc-windows",
-      "unknown-linux",
-      "apple-darwin",
-      "unknown-netbsd",
-      "apple-ios",
-      "linux",
-      "rumprun-netbsd",
-      "unknown-freebsd",
-      "unknown-illumos",
-    ].join('|')
-    envs = [
-      "gnu",
-      "gnux32",
-      "msvc",
-      "gnueabi",
-      "gnueabihf",
-      "gnuabi64",
-      "androideabi",
-      "android",
-      "musl",
-    ].join('|')
-    # rubocop:enable Style/StringLiterals
-    re = %r{\A(.*?)(?:-(#{archs}))?(?:-(#{oses}))?(?:-(#{envs}))?\Z}
-    match = re.match(input)
-    if match.nil?
-      [nil, nil, nil, nil]
-    else
-      match[1, 4]
+      toolchains.normalize(toolchain)
     end
   end
 
@@ -227,7 +100,7 @@ Puppet::Type.type(:rustup_internal).provide(
     if input.nil?
       [nil, nil, nil, nil]
     else
-      parse_partial_toolchain("-#{input}")
+      toolchains.parse_partial("-#{input}")
     end
   end
 
@@ -303,196 +176,13 @@ Puppet::Type.type(:rustup_internal).provide(
   # This is called when `ensure` is not `absent`, i.e. `present` or `latest`. It
   # is called even if `exist? == true`.
   def ensure_not_absent
-    manage_toolchains
-    load_toolchains # Update internal state
-    manage_targets
-  end
-
-  # Install and uninstall toolchains as appropriate
-  #
-  # Note that this does not update the internal state after changing the system.
-  # You must call load_toolchains after this function if you need the toolchain
-  # state to be correct.
-  def manage_toolchains
-    requested_default = nil
-    if resource[:default_toolchain]
-      requested_default = normalize_toolchain(resource[:default_toolchain])
-      validate_default_toolchain(requested_default)
-    end
-
-    unmanaged = system_toolchains.map { |info| info['toolchain'] }
-
-    # Use `resource[:toolchains]` instead of the `toolchains` method because the
-    # result of the `toolchains` method can change if the resource requested
-    # the same toolchains as existed on the system, and then the toolchains on
-    # the system changed.
-    resource[:toolchains].each do |info|
-      full_name = normalize_toolchain(info['toolchain'])
-
-      # Look for toolchain in list of installed, unmanaged toolchains. Note
-      # that this could be a problem if we specify a toolchain twice (e.g.
-      # "stable" and "stable-x86_64-apple-darwin").
-      found = unmanaged.delete(full_name)
-
-      if info['ensure'] == 'absent'
-        if found
-          toolchain_uninstall(info['toolchain'])
-        end
-      elsif found.nil? || info['ensure'] == 'latest'
-        toolchain_install(info['toolchain'], profile: info['profile'])
-      end
-    end
-
-    if requested_default && requested_default != system_default_toolchain
-      rustup 'default', requested_default
-      # Probably don’t need to do this
-      @system_default_toolchain = requested_default
-    end
-
-    if resource[:purge_toolchains]
-      unmanaged.each do |name|
-        toolchain_uninstall(name)
-      end
-    end
-  end
-
-  # Load installed toolchains from system as an array of strings
-  #
-  # This also sets @system_default_toolchain.
-  def toolchain_list_installed
-    @system_default_toolchain = nil
-    unless exists? && user_exists?
-      # If rustup isn’t installed, then no toolchains can exist. If the user
-      # doesn’t exist then either this resource is ensure => absent and
-      # everything will be deleted, or an error will be raised when it tries to
-      # install rustup for a non-existent user.
-      return []
-    end
-
-    rustup('toolchain', 'list')
-      .lines(chomp: true)
-      .reject { |line| line == 'no installed toolchains' }
-      .each do |line|
-        # delete_suffix! returns nil if there was no suffix.
-        if line.delete_suffix!(' (default)')
-          @system_default_toolchain = line
-        end
-      end
-  end
-
-  # Validate that the default toolchain is or will be installed
-  def validate_default_toolchain(normalized_default)
-    found = resource[:toolchains].find do |info|
-      normalize_toolchain(info['toolchain']) == normalized_default
-    end
-
-    if found
-      if found['ensure'] == 'absent'
-        raise Puppet::Error, "Requested #{normalized_default.inspect} as " \
-          'default toolchain, but also set it to ensure => absent'
-      end
-    elsif !toolchain_installed?(normalized_default)
-      raise Puppet::Error, "Requested #{normalized_default.inspect} as " \
-        'default toolchain, but it is not installed'
-    elsif resource[:purge_toolchains]
-      raise Puppet::Error, "Requested #{normalized_default.inspect} as " \
-        'default toolchain, but it is being purged'
-    end
-  end
-
-  # Install or update a toolchain
-  def toolchain_install(toolchain, profile: 'default')
-    rustup 'toolchain', 'install', '--no-self-update', '--force-non-host', \
-      '--profile', profile, toolchain
-  end
-
-  # Uninstall a toolchain
-  def toolchain_uninstall(toolchain)
-    rustup 'toolchain', 'uninstall', toolchain
-  end
-
-  # Install and uninstall targets as appropriate
-  #
-  # Note that this does not update the internal state after changing the system.
-  # You must call load_targets after this function if you need the target state
-  # to be correct.
-  def manage_targets
-    manage_subresource_by_toolchain('Targets', :targets) do |toolchain, targets|
-      unmanaged = target_list_installed(toolchain)
-
-      targets.each do |info|
-        target = normalize_target(info['target'])
-
-        found = unmanaged.delete(target)
-        if info['ensure'] == 'absent'
-          if found
-            target_uninstall(target, toolchain: toolchain)
-          end
-        elsif found.nil?
-          # ensure == 'present' implied
-          target_install(target, toolchain: toolchain)
-        end
-      end
-
-      if resource[:purge_targets]
-        unmanaged.each do |target|
-          target_uninstall(target, toolchain: toolchain)
-        end
-      end
-    end
-  end
-
-  # Split subresource up by toolchain for management
-  #
-  # This also verifies that none of the subresources were requested for
-  # toolchains with ensure => absent.
-  def manage_subresource_by_toolchain(plural_name, symbol)
-    by_toolchain = resource[symbol].group_by do |info|
-      normalize_toolchain_or_default(info['toolchain'])
-    end
-
-    system_toolchains.each do |info|
-      yield info['toolchain'], by_toolchain.delete(info['toolchain']) || []
-    end
-
-    # Find subresources that were requested for uninstalled toolchains.
-    missing_toolchains = []
-    by_toolchain.each do |toolchain, subresources|
-      if subresources.any? { |info| info['ensure'] != 'absent' }
-        missing_toolchains << toolchain
-      end
-    end
-
-    unless missing_toolchains.empty?
-      raise Puppet::Error, "#{plural_name} were requested for toolchains " \
-        "that are not installed: #{missing_toolchains.join(', ')}"
-    end
-  end
-
-  # Get list of installed targets for a toolchain
-  def target_list_installed(toolchain)
-    rustup('target', 'list', '--installed', *toolchain_option(toolchain))
-      .lines(chomp: true)
-      .reject { |line| line.start_with? 'error: ' }
-  end
-
-  # Install a target
-  def target_install(target, toolchain: nil)
-    rustup 'target', 'install', *toolchain_option(toolchain), target
-  end
-
-  # Uninstall a target
-  def target_uninstall(target, toolchain: nil)
-    rustup 'target', 'uninstall', *toolchain_option(toolchain), target
-  end
-
-  # Generate --toolchain option to pass to rustup function
-  def toolchain_option(toolchain)
-    if toolchain.nil?
-      []
-    else
-      ['--toolchain', toolchain]
-    end
+    toolchains.manage(
+      resource[:toolchains],
+      resource[:purge_toolchains],
+      resource[:default_toolchain],
+    )
+    toolchains.load # Update internal state
+    targets.manage(resource[:targets], resource[:purge_targets])
   end
 
   # Get cargo_home for use in shell init scripts.
