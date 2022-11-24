@@ -7,7 +7,7 @@ class PuppetX::Rustup::Provider::Targets <
     PuppetX::Rustup::Provider::Subresources
   plural_name 'Targets'
 
-  # Get toolchains installed on the system.
+  # Get targets installed on the system.
   def load
     @system = @provider.toolchains.system.reduce([]) do |combined, info|
       toolchain = info['toolchain']
