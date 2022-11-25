@@ -100,5 +100,21 @@ module PuppetX::Rustup::Property
           }
       end
     end
+
+    # Format given value for display.
+    #
+    # Often we use a subresource class to handle subresource collections in the
+    # provider, which interferes with the display of changed values.
+    #
+    # @param value [Object] the value to format as a string
+    # @return [String] a pretty printing string
+    # rubocop:disable Naming/PredicateName
+    def is_to_s(value)
+      if value.is_a? PuppetX::Rustup::Provider::Subresources
+        value = value.values
+      end
+      super(value)
+    end
+    # rubocop:enable Naming/PredicateName
   end
 end
