@@ -27,8 +27,11 @@ class PuppetX::Rustup::Provider::Targets <
   # You must call targets.load after this function if you need the target state
   # to be correct.
   def manage(requested, purge)
+    system_grouped = system.group_by { |info| info['toolchain'] }
     group_subresources_by_toolchain(requested) do |toolchain, infos|
-      unmanaged = list_installed(toolchain)
+      unmanaged = (system_grouped[toolchain] || []).map do |info|
+        info['target']
+      end
 
       infos.each do |info|
         target = normalize(info['target'])
