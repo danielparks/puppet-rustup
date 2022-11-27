@@ -3,8 +3,8 @@
 require_relative 'subresources'
 
 # A toolchain subresource collection
-class PuppetX::Rustup::Provider::Toolchains <
-    PuppetX::Rustup::Provider::Subresources
+class PuppetX::Rustup::Provider::Collection::Toolchains <
+    PuppetX::Rustup::Provider::Collection::Subresources
   plural_name 'Toolchains'
 
   def initialize(provider)

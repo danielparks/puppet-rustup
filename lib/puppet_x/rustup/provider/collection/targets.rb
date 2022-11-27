@@ -3,8 +3,8 @@
 require_relative 'subresources'
 
 # A target subresource collection
-class PuppetX::Rustup::Provider::Targets <
-    PuppetX::Rustup::Provider::Subresources
+class PuppetX::Rustup::Provider::Collection::Targets <
+    PuppetX::Rustup::Provider::Collection::Subresources
   plural_name 'Targets'
 
   # Get targets installed on the system.

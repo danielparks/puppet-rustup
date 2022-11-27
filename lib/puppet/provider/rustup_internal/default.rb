@@ -2,8 +2,8 @@
 
 require_relative '../rustup_exec'
 require_relative '../../../puppet_x/rustup/util'
-require_relative '../../../puppet_x/rustup/provider/targets'
-require_relative '../../../puppet_x/rustup/provider/toolchains'
+require_relative '../../../puppet_x/rustup/provider/collection/targets'
+require_relative '../../../puppet_x/rustup/provider/collection/toolchains'
 
 Puppet::Type.type(:rustup_internal).provide(
   :default, parent: Puppet::Provider::RustupExec
@@ -12,8 +12,10 @@ Puppet::Type.type(:rustup_internal).provide(
 
   mk_resource_methods
 
-  subresource_collection :toolchains, PuppetX::Rustup::Provider::Toolchains
-  subresource_collection :targets, PuppetX::Rustup::Provider::Targets
+  subresource_collection :toolchains,
+    PuppetX::Rustup::Provider::Collection::Toolchains
+  subresource_collection :targets,
+    PuppetX::Rustup::Provider::Collection::Targets
 
   # Get the default toolchain, possibly as requested by the resource.
   #
