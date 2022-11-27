@@ -110,7 +110,7 @@ module PuppetX::Rustup::Property
     # @return [String] a pretty printing string
     # rubocop:disable Naming/PredicateName
     def is_to_s(value)
-      if value.is_a? PuppetX::Rustup::Provider::Subresources
+      if value.is_a? PuppetX::Rustup::Provider::Collection
         value = value.values
       end
       super(value)

@@ -1,59 +1,10 @@
 # frozen_string_literal: true
 
-require_relative '../provider'
+require_relative '../collection'
 
 # A subresource collection
-class PuppetX::Rustup::Provider::Subresources
-  include Enumerable
-
-  attr_writer :values
-
-  # Get subresources installed on the system.
-  def load
-    raise 'Unimplemented.'
-  end
-
-  # Use this to set the plural name for the class
-  def self.plural_name(name = nil)
-    @plural_name ||= name
-  end
-
-  def initialize(provider)
-    @provider = provider
-    @system = :unset
-    @values = nil
-  end
-
-  # Get the plural_name from the class
-  def plural_name
-    self.class.plural_name
-  end
-
-  # Implement Enumerable
-  def each
-    if block_given?
-      values.each { |value| yield value }
-      self
-    else
-      enum_for(__callee__)
-    end
-  end
-
-  # Either the toolchains set, or the toolchains on the system
-  def values
-    @values || system
-  end
-
-  # Get subresources installed on the system (memoized).
-  #
-  # Just memoizes load.
-  def system
-    if @system == :unset
-      load
-    end
-    @system
-  end
-
+class PuppetX::Rustup::Provider::Collection::Subresources <
+    PuppetX::Rustup::Provider::Collection
   # Split subresource up by toolchain for management
   #
   # This also verifies that none of the subresources were requested for
