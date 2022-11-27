@@ -10,7 +10,7 @@ class PuppetX::Rustup::Provider::Collection
 
   # Use this to set the plural name for the class
   def self.plural_name(plural_name = nil)
-    @plural_name ||= plural_name
+    @plural_name ||= plural_name || name.split('::').last
   end
 
   def initialize(provider)

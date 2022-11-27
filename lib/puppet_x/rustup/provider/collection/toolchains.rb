@@ -5,8 +5,6 @@ require_relative 'subresources'
 # A toolchain subresource collection
 class PuppetX::Rustup::Provider::Collection::Toolchains <
     PuppetX::Rustup::Provider::Collection::Subresources
-  plural_name 'Toolchains'
-
   def initialize(provider)
     super
     @system_default = :unset
