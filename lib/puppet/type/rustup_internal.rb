@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'puppet/parameter/boolean'
-require_relative '../../puppet_x/rustup/util'
 require_relative '../../puppet_x/rustup/property/subresources'
+require_relative '../../puppet_x/rustup/util'
 
 Puppet::Type.newtype(:rustup_internal) do
   @doc = <<~'END'

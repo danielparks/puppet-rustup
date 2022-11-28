@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative '../rustup_exec'
-require_relative '../../../puppet_x/rustup/util'
 require_relative '../../../puppet_x/rustup/provider/collection/targets'
 require_relative '../../../puppet_x/rustup/provider/collection/toolchains'
+require_relative '../../../puppet_x/rustup/util'
+require_relative '../rustup_exec'
 
 Puppet::Type.type(:rustup_internal).provide(
   :default, parent: Puppet::Provider::RustupExec
