@@ -82,9 +82,7 @@ class Puppet::Provider::RustupExec < Puppet::Provider
 
   # Determine if `rustup` has been installed on the system for this user
   def rustup_installed?
-    # FIXME? this actually checks that root can execute the file. Also, it
-    # doesn’t check that it’s not a directory.
-    File.executable? rustup_path
+    File.file? rustup_path
   end
 
   # Run rustup as the user
