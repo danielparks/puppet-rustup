@@ -63,9 +63,9 @@ define rustup (
   } else {
     $_toolchains = $toolchains.map |$toolchain| {
       {
-        ensure    => present,
-        toolchain => $toolchain,
-        profile   => 'default',
+        ensure  => present,
+        name    => $toolchain,
+        profile => 'default',
       }
     }
 
