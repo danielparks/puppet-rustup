@@ -39,7 +39,8 @@ class PuppetX::Rustup::Provider::Collection
     end
   end
 
-  # Either the toolchains set, or the toolchains on the system
+  # Either the subresources set from the resource, or if nothing is set, the
+  # subresources on the system.
   def values
     @values || system
   end
