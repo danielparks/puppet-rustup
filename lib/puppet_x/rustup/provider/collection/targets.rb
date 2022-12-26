@@ -8,12 +8,12 @@ class PuppetX::Rustup::Provider::Collection::Targets <
   # Get targets installed on the system.
   def load
     @system = @provider.toolchains.system.reduce([]) do |combined, info|
-      toolchain = info['name']
-      combined + list_installed(toolchain).map do |target|
+      toolchain_name = info['name']
+      combined + list_installed(toolchain_name).map do |target_name|
         {
           'ensure' => 'present',
-          'target' => target,
-          'toolchain' => toolchain,
+          'name' => target_name,
+          'toolchain' => toolchain_name,
         }
       end
     end
@@ -27,12 +27,10 @@ class PuppetX::Rustup::Provider::Collection::Targets <
   def manage(requested, purge)
     system_grouped = system.group_by { |info| info['toolchain'] }
     group_subresources_by_toolchain(requested) do |toolchain, infos|
-      unmanaged = (system_grouped[toolchain] || []).map do |info|
-        info['target']
-      end
+      unmanaged = (system_grouped[toolchain] || []).map { |info| info['name'] }
 
       infos.each do |info|
-        target = normalize(info['target'])
+        target = normalize(info['name'])
 
         found = unmanaged.delete(target)
         if info['ensure'] == 'absent'

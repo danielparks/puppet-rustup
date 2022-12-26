@@ -33,7 +33,7 @@ define rustup::target (
   Rustup_internal <| title == $rustup |> {
     targets +> [{
         ensure    => $ensure,
-        target    => $target,
+        name      => $target,
         toolchain => $toolchain,
     }],
   }
