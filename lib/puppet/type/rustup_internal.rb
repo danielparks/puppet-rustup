@@ -112,7 +112,7 @@ Puppet::Type.newtype(:rustup_internal) do
 
       Each target must be a Hash with three entries:
         * `ensure`: one of `present` or `absent`
-        * `target`: the name of the target
+        * `name`: the name of the target
         * `toolchain`: the name of the toolchain or `undef` to indicate the
           default toolchain
     END
@@ -125,7 +125,7 @@ Puppet::Type.newtype(:rustup_internal) do
       end
 
       validate_in(entry, 'ensure', ['present', 'absent'])
-      validate_non_empty_string(entry, 'target')
+      validate_non_empty_string(entry, 'name')
       validate_nil_or_non_empty_string(entry, 'toolchain')
     end
 
@@ -139,7 +139,7 @@ Puppet::Type.newtype(:rustup_internal) do
       entry['toolchain'] = provider.normalize_toolchain_or_default(
         entry['toolchain'],
       )
-      entry['target'] = provider.targets.normalize(entry['target'])
+      entry['name'] = provider.targets.normalize(entry['name'])
     end
   end
 

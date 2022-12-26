@@ -72,7 +72,7 @@ define rustup (
     $_targets = $targets.map |$target| {
       {
         ensure    => present,
-        target    => $target.split(' ')[0],
+        name      => $target.split(' ')[0],
         toolchain => $target.split(' ')[1],
       }
     }
