@@ -18,20 +18,12 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
     @system_default
   end
 
-  # Is the passed toolchain already installed?
-  #
-  # @param [String] normalized toolchain name
-  # @return [Boolean]
-  def installed?(toolchain)
-    system.any? { |info| info['toolchain'] == toolchain }
-  end
-
   # Get toolchains installed on the system.
   def load
     @system = list_installed.map do |full_name|
       {
         'ensure' => 'present',
-        'toolchain' => full_name,
+        'name' => full_name,
       }
     end
   end
@@ -47,14 +39,14 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
       validate_default(requested_default, requested, purge)
     end
 
-    unmanaged = system.map { |info| info['toolchain'] }
+    unmanaged = system.map { |info| info['name'] }
 
     # Use `resource[:toolchains]` instead of the `toolchains` method because the
     # result of the `toolchains` method can change if the resource requested
     # the same toolchains as existed on the system, and then the toolchains on
     # the system changed.
     requested.each do |info|
-      full_name = normalize(info['toolchain'])
+      full_name = normalize(info['name'])
 
       # Look for toolchain in list of installed, unmanaged toolchains. Note
       # that this could be a problem if we specify a toolchain twice (e.g.
@@ -63,10 +55,10 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
 
       if info['ensure'] == 'absent'
         if found
-          uninstall(info['toolchain'])
+          uninstall(info['name'])
         end
       elsif found.nil? || info['ensure'] == 'latest'
-        install(info['toolchain'], profile: info['profile'])
+        install(info['name'], profile: info['profile'])
       end
     end
 
@@ -81,7 +73,7 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
     end
   end
 
-  # Normalize a toolchain (not nil).
+  # Normalize a toolchain name (not nil).
   #
   # There are some flaws in this.
   #
@@ -89,12 +81,12 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
   #     edge cases that rustup deals with.
   #
   #   * It will break as soon as rust adds a new triple to run toolchains on.
-  def normalize(input)
-    if input.nil?
+  def normalize(name)
+    if name.nil?
       raise ArgumentError, 'normalize expects a string, not nil'
     end
 
-    parse_partial(input)
+    parse_partial(name)
       .map
       .with_index { |part, i| part || @provider.default_toolchain_triple[i] }
       .compact
@@ -163,7 +155,7 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
   # Validate that the default toolchain is or will be installed
   def validate_default(normalized_default, requested_toolchains, purge)
     found = requested_toolchains.find do |info|
-      normalize(info['toolchain']) == normalized_default
+      normalize(info['name']) == normalized_default
     end
 
     if found

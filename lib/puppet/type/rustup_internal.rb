@@ -70,7 +70,7 @@ Puppet::Type.newtype(:rustup_internal) do
 
       Each toolchain must be a Hash with two entries:
         * `ensure`: one of `present`, `latest`, or `absent`
-        * `toolchain`: the name of the toolchain
+        * `name`: the name of the toolchain
         * `profile`: one of `minimal`, `default`, or `complete`
     END
 
@@ -82,7 +82,7 @@ Puppet::Type.newtype(:rustup_internal) do
       end
 
       validate_in(entry, 'ensure', ['present', 'latest', 'absent'])
-      validate_non_empty_string(entry, 'toolchain')
+      validate_non_empty_string(entry, 'name')
       validate_in(entry, 'profile', ['minimal', 'default', 'complete'])
     end
 
@@ -93,7 +93,7 @@ Puppet::Type.newtype(:rustup_internal) do
 
     # Do any normalization required for an entry in `should`
     def normalize_should_entry!(entry)
-      entry['toolchain'] = provider.toolchains.normalize(entry['toolchain'])
+      entry['name'] = provider.toolchains.normalize(entry['name'])
       # `rustup` ignores the profile after the initial install. Thus, the
       # profile key is irrelevant for detecting a change.
       entry.delete('profile')

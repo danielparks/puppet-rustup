@@ -32,9 +32,9 @@ define rustup::toolchain (
 ) {
   Rustup_internal <| title == $rustup |> {
     toolchains +> [{
-        ensure    => $ensure,
-        toolchain => $toolchain,
-        profile   => $profile,
+        ensure  => $ensure,
+        name    => $toolchain,
+        profile => $profile,
     }],
   }
 }
