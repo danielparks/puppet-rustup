@@ -7,7 +7,8 @@ class PuppetX::Rustup::Provider::Collection::Subresources <
     PuppetX::Rustup::Provider::Collection
   # Is the passed subresource already installed?
   #
-  # @param [String] normalized subresource name
+  # @param [String] name
+  #   Normalized subresource name.
   # @return [Boolean]
   def installed?(name)
     system.any? { |info| info['name'] == name }
@@ -18,8 +19,10 @@ class PuppetX::Rustup::Provider::Collection::Subresources <
   # This also verifies that none of the subresources were requested for
   # toolchains with ensure => absent.
   #
-  # @params [Hash] resources[:name]
-  # @params [block] a block that takes |toolchain, subresources|
+  # @param [Hash] requested
+  #   `resources[:name]`
+  # @yield
+  #   A block that takes |toolchain, subresources|
   def group_subresources_by_toolchain(requested)
     by_toolchain = requested.group_by do |subresource|
       @provider.normalize_toolchain_or_default(subresource['toolchain'])
