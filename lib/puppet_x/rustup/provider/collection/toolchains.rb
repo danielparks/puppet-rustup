@@ -33,43 +33,25 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
   # Note that this does not update the internal state after changing the system.
   # You must call toolchains.load after this function if you need the toolchain
   # state to be correct.
+  #
+  # This takes `resource[:toolchains]` as a parameter instead of using the
+  # set value of this collection because the value isn’t set if it is initially
+  # unchanged. That means if the values on the system change after `load` was
+  # called but before this method was called, we won’t be able to tell.
   def manage(requested, purge, requested_default)
     if requested_default
       requested_default = normalize(requested_default)
       validate_default(requested_default, requested, purge)
     end
 
-    unmanaged = system.map { |info| info['name'] }
-
-    # Use `resource[:toolchains]` instead of the `toolchains` method because the
-    # result of the `toolchains` method can change if the resource requested
-    # the same toolchains as existed on the system, and then the toolchains on
-    # the system changed.
-    requested.each do |info|
-      full_name = normalize(info['name'])
-
-      # Look for toolchain in list of installed, unmanaged toolchains. Note
-      # that this could be a problem if we specify a toolchain twice (e.g.
-      # "stable" and "stable-x86_64-apple-darwin").
-      found = unmanaged.delete(full_name)
-
-      if info['ensure'] == 'absent'
-        if found
-          uninstall(info['name'])
-        end
-      elsif found.nil? || info['ensure'] == 'latest'
-        install(info['name'], profile: info['profile'])
-      end
-    end
+    unmanaged = manage_group(system, requested)
 
     if requested_default
       update_default(requested_default)
     end
 
     if purge
-      unmanaged.each do |name|
-        uninstall(name)
-      end
+      uninstall_all(unmanaged)
     end
   end
 
@@ -205,13 +187,14 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
   end
 
   # Install or update a toolchain
-  def install(toolchain, profile: 'default')
+  def install(subresource)
     @provider.rustup 'toolchain', 'install', '--no-self-update',
-      '--force-non-host', '--profile', profile, toolchain
+      '--force-non-host', '--profile', subresource['profile'] || 'default',
+      subresource['name']
   end
 
   # Uninstall a toolchain
-  def uninstall(toolchain)
-    @provider.rustup 'toolchain', 'uninstall', toolchain
+  def uninstall(subresource)
+    @provider.rustup 'toolchain', 'uninstall', subresource['name']
   end
 end
