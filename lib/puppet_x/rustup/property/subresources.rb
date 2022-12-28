@@ -111,7 +111,7 @@ module PuppetX::Rustup::Property
     # rubocop:disable Naming/PredicateName
     def is_to_s(value)
       if value.is_a? PuppetX::Rustup::Provider::Collection
-        value = value.values
+        value = value.system
       end
       super(value)
     end
