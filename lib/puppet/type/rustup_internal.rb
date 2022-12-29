@@ -91,7 +91,7 @@ Puppet::Type.newtype(:rustup_internal) do
       !resource[:purge_toolchains]
     end
 
-    # Do any normalization required for an entry in `should`
+    # Do any normalization required for an entry in `should`.
     def normalize_should_entry!(entry)
       entry['name'] = provider.toolchains.normalize(entry['name'])
       # `rustup` ignores the profile after the initial install. Thus, the
@@ -134,7 +134,7 @@ Puppet::Type.newtype(:rustup_internal) do
       !resource[:purge_targets]
     end
 
-    # Do any normalization required for an entry in `should`
+    # Do any normalization required for an entry in `should`.
     def normalize_should_entry!(entry)
       entry['toolchain'] = provider.normalize_toolchain_or_default(
         entry['toolchain'],
