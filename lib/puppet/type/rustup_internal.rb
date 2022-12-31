@@ -68,17 +68,17 @@ Puppet::Type.newtype(:rustup_internal) do
     desc <<~'END'
       The toolchains to install, update, or remove.
 
-      Each toolchain must be a Hash with two entries:
+      Each toolchain must be a Hash with three entries:
         * `ensure`: one of `present`, `latest`, or `absent`
         * `name`: the name of the toolchain
         * `profile`: one of `minimal`, `default`, or `complete`
     END
 
+    # NOTE: validates each entry in the array, not the array itself.
     validate do |entry|
-      # WTF: properties validate each element of a passed array.
       unless entry.is_a?(Hash) && entry.length == 3
         raise Puppet::Error,
-          'Expected toolchain Hash with 3 entries, got %s' % entry.inspect
+          'Expected toolchain Hash with three entries, got %s' % entry.inspect
       end
 
       validate_in(entry, 'ensure', ['present', 'latest', 'absent'])
@@ -117,8 +117,8 @@ Puppet::Type.newtype(:rustup_internal) do
           default toolchain
     END
 
+    # NOTE: validates each entry in the array, not the array itself.
     validate do |entry|
-      # WTF: properties validate each element of a passed array.
       unless entry.is_a?(Hash) && entry.length == 3
         raise Puppet::Error,
           'Expected target Hash with three entries, got %s' % entry.inspect
