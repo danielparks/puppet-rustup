@@ -49,7 +49,7 @@ Notice: Applied catalog in 0.22 seconds
 part of [PDK][]).
 
 ```
-pdk bundle exec puppet strings generate --format markdown && ./fix-reference.rb
+pdk bundle exec puppet strings generate --format markdown
 ```
 
 [Puppet Litmus]: https://github.com/puppetlabs/puppet_litmus
