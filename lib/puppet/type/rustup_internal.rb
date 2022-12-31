@@ -87,6 +87,10 @@ Puppet::Type.newtype(:rustup_internal) do
       validate_in(entry, 'profile', ['minimal', 'default', 'complete'])
     end
 
+    munge do |entry|
+      PuppetX::Rustup::Provider::Toolchain.new(**entry)
+    end
+
     # Whether or not to ignore toolchains on the system but not in the resource.
     def ignore_removed_entries
       !resource[:purge_toolchains]
@@ -94,12 +98,8 @@ Puppet::Type.newtype(:rustup_internal) do
 
     # Do any normalization required for an entry in `should`.
     def normalize_should_entry(entry)
-      # `rustup` ignores the profile after the initial install. Thus, the
-      # profile key is irrelevant for detecting a change.
-      PuppetX::Rustup::Provider::Toolchain.new(
-        name: provider.toolchains.normalize(entry['name']),
-        ensure: entry['ensure'],
-      )
+      entry.normalized_name = provider.toolchains.normalize(entry.name)
+      entry
     end
   end
 
