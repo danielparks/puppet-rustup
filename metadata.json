@@ -80,7 +80,7 @@
     "rustlang",
     "rustup"
   ],
-  "pdk-version": "2.5.0",
+  "pdk-version": "2.6.1",
   "template-url": "https://github.com/danielparks/pdk-templates#main",
-  "template-ref": "heads/main-0-g2629d2f"
+  "template-ref": "heads/main-0-gb75995f"
 }
