@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Added a section about development status (in slow progress) to [README.md][].
+
+[README.md]: README.md
+
 ## Release 0.2.0
 
 ### Features

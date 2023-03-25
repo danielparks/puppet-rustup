@@ -107,6 +107,10 @@ You can find more information in the reference documentation for
   * This does not allow management of components.
   * This does not support Windows.
 
+## Development status
+
+This is presently being developed, if in a somewhat intermittent fashion.
+
 ## Reference
 
 See [REFERENCE.md][].
