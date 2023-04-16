@@ -17,7 +17,12 @@ module PuppetX::Rustup::Property
     # entry within in the set. If two entries have the same identity, then it
     # is an error.
     def entry_identity(entry)
-      entry.reject { |k| k == 'ensure' }.hash
+      h = entry.to_h.reject { |k| k == 'ensure' }
+      if entry['normalized_name']
+        h[:name] = entry['normalized_name']
+      end
+      Puppet.notice("entry_identity(#{entry.inspect}) == #{h.inspect}.hash == #{h.hash.inspect}")
+      h.hash
     end
 
     # Does this entry in `should` have the equivalent of `ensure => absent`?
@@ -113,8 +118,25 @@ module PuppetX::Rustup::Property
       if values.is_a? PuppetX::Rustup::Provider::Collection
         values = values.system
       end
-      super(values)
+      super(values.map { |subresource| subresource.to_h })
     end
     # rubocop:enable Naming/PredicateName
+
+    # Format new values for display.
+    #
+    # Often we use a subresource class to handle subresource collections in the
+    # provider, which interferes with the display of changed values.
+    #
+    # @param values [Array] the values to format as a string
+    # @return [String] a pretty printing string
+    def should_to_s(values)
+      super(values.map { |subresource| subresource.to_h })
+    end
+
+    # Check if entries with the same identity are different.
+    def entry_changed?(is_entry, should_entry)
+      Puppet.notice("is(#{is_entry.inspect}) != shoud(#{should_entry.inspect}): #{is_entry != should_entry}")
+      is_entry != should_entry
+    end
   end
 end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'subresources'
+require_relative '../toolchain'
 
 # A toolchain subresource collection
 class PuppetX::Rustup::Provider::Collection::Toolchains <
@@ -20,11 +21,8 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
 
   # Get toolchains installed on the system.
   def load
-    @system = list_installed.map do |full_name|
-      {
-        'ensure' => 'present',
-        'name' => full_name,
-      }
+    @system = list_installed.map do |name|
+      PuppetX::Rustup::Provider::Toolchain.from_system(name)
     end
   end
 

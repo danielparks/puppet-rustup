@@ -49,7 +49,7 @@ class PuppetX::Rustup::Provider::Collection::Subresources <
     end
 
     @provider.toolchains.system.each do |toolchain|
-      yield toolchain['name'], by_toolchain.delete(toolchain['name']) || []
+      yield toolchain.name, by_toolchain.delete(toolchain.name) || []
     end
 
     # Find subresources that were requested for uninstalled toolchains.

@@ -2,6 +2,7 @@
 
 require 'puppet/parameter/boolean'
 require_relative '../../puppet_x/rustup/property/subresources'
+require_relative '../../puppet_x/rustup/provider/toolchain'
 require_relative '../../puppet_x/rustup/util'
 
 Puppet::Type.newtype(:rustup_internal) do
@@ -86,17 +87,19 @@ Puppet::Type.newtype(:rustup_internal) do
       validate_in(entry, 'profile', ['minimal', 'default', 'complete'])
     end
 
+    munge do |entry|
+      PuppetX::Rustup::Provider::Toolchain.new(**entry)
+    end
+
     # Whether or not to ignore toolchains on the system but not in the resource.
     def ignore_removed_entries
       !resource[:purge_toolchains]
     end
 
     # Do any normalization required for an entry in `should`.
-    def normalize_should_entry!(entry)
-      entry['name'] = provider.toolchains.normalize(entry['name'])
-      # `rustup` ignores the profile after the initial install. Thus, the
-      # profile key is irrelevant for detecting a change.
-      entry.delete('profile')
+    def normalize_should_entry(entry)
+      entry.normalized_name = provider.toolchains.normalize(entry.name)
+      entry
     end
   end
 
