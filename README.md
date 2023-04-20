@@ -3,14 +3,14 @@
 This manages [Rust][] installations with the [`rustup` tool][]. There are two
 ways to use it:
 
-  * **Per-user installations.** Each user has their own installation in their
-    home directory that is entirely separate from every other installation. This
-    is how the `rustup` tool expects to be used.
-  * **Global installation.** Users are able to access shared toolchains and
-    targets, but will not be able to change any of them. Users can still use
-    `cargo install`, but the installed tools will only be accessible to
-    themselves. The `rustup` tool is not designed to be used this way, but it
-    seems to work fine.
+  * [**Per-user installations.**](#per-user-installation) Each user has their
+    own installation in their home directory that is entirely separate from
+    every other installation. This is how the `rustup` tool expects to be used.
+  * [**Global installation.**](#global-installation) Users are able to access
+    shared toolchains and targets, but will not be able to change any of them.
+    Users can still use `cargo install`, but the installed tools will only be
+    accessible to themselves. The `rustup` tool is not designed to be used this
+    way, but it seems to work fine.
 
 ## Usage
 
