@@ -27,14 +27,14 @@ module PuppetX::Rustup::Util
   #     download('https://example.com/test.sh', ['test', '.sh']) do |file|
   #       puts "#{file.path} will be deleted after the block ends."
   #     end
-  def self.download(url, basename = '', &block)
+  def self.download(url, basename = '')
     file = Tempfile.new(basename)
     begin
       Puppet.debug { "Downloading #{url.inspect} into #{file.path.inspect}" }
       PuppetX::Rustup::Util.download_into(url, file)
       file.flush
 
-      block.call(file)
+      yield(file)
     ensure
       Puppet.debug { "Deleting #{file.path.inspect}" }
       file.close
