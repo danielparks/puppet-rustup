@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## main branch
 
 * Added a section about development status (in slow progress) to [README.md][].
+* Updated metadata to support Puppet 8.
 * Synced with [PDK][].
 
 [README.md]: README.md
