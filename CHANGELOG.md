@@ -5,8 +5,10 @@ All notable changes to this project will be documented in this file.
 ## main branch
 
 * Added a section about development status (in slow progress) to [README.md][].
+* Synced with [PDK][].
 
 [README.md]: README.md
+[PDK]: https://www.puppet.com/docs/pdk/2.x/pdk.html
 
 ## Release 0.2.0
 
