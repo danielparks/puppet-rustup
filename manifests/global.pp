@@ -105,7 +105,7 @@ class rustup::global (
   }
 
   # Modify shell init scripts that don’t follow the profile.d pattern.
-  $escaped_env_path = shell_escape("${home}/env.sh")
+  $escaped_env_path = stdlib::shell_escape("${home}/env.sh")
   $comment = 'cargo env: managed by Puppet'
   $env_scripts_append.each |$path| {
     file_line { "${path} +source ${home}/env.sh":

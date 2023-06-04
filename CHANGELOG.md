@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Fixed Puppet 8 support (`shell_escape()` must now be called
+  `stdlib::shell_escape()`).
 * Updated automatic PR checks to run acceptance tests with both Puppet 7 and
   Puppet 8 (Puppet 6 is still supported by this module, but unfortunately the
   [acceptance test framework][litmus] does not support it).
