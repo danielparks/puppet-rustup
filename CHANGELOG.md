@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Updated automatic PR checks to run acceptance tests with both Puppet 7 and
+  Puppet 8 (Puppet 6 is still supported by this module, but unfortunately the
+  [acceptance test framework][litmus] does not support it).
+
+[litmus]: https://puppetlabs.github.io/litmus/
+
 ## Release 0.2.1
 
 * Added a section about development status (in slow progress) to [README.md][].
