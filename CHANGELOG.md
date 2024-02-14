@@ -8,10 +8,12 @@ All notable changes to this project will be documented in this file.
   This avoids performance issues when Puppet is run in x86_64 emulation mode
   (Rosetta) on ARM (e.g. when run from Bolt). Thanks to [Zac Bentley][@zbentley]
   for [finding][#80] and [fixing][#81] the issue.
+* Synced with [PDK][].
 
 [@zbentley]: https://github.com/zbentley
 [#80]: https://github.com/danielparks/puppet-rustup/issues/80
 [#81]: https://github.com/danielparks/puppet-rustup/pull/81
+[PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
 
 ## Release 0.2.3
 
