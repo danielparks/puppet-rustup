@@ -39,6 +39,14 @@ Puppet::Type.type(:rustup_internal).provide(
     # wish to run it as will have access, even with chmod.)
     PuppetX::Rustup::Util.download(url, ['puppet-rustup-init', '.sh']) do |sh|
       command = ['/bin/sh', '-s', '--', '-y', '--default-toolchain', 'none']
+      if Facter.value('os')['family'] == 'darwin'
+        # On MacOS, ensure the rustup bootstrap is run as the native
+        # architecture. If this is not done, the architecture of the Ruby
+        # running this process may be used to compile the default Rust
+        # toolchain/cargo/etc, which can cause those tools to run under Rosetta,
+        # harming performance and causing issues:
+        command = ['/usr/bin/arch', '-64'] + command
+      end
       unless resource[:modify_path]
         command << '--no-modify-path'
       end
