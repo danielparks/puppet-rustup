@@ -9,3 +9,16 @@ end
 def command_as_user(cmd)
   command("sudo -iu user #{cmd}")
 end
+
+def rm_user(name)
+  apply_manifest(<<~"END", catch_failures: true)
+    user { #{name}:
+      ensure => absent,
+    }
+
+    file { '/home/#{name}':
+      ensure => absent,
+      force  => true,
+    }
+  END
+end

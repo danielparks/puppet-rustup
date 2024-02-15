@@ -367,9 +367,9 @@ describe 'Per-user rustup management' do
   end
 
   it 'can remove itself after the user was deleted' do
-    expect(user('rustup_test')).not_to exist
+    rm_user('rustup_test')
 
-    apply_manifest(<<~'END')
+    apply_manifest(<<~'END', catch_failures: true)
       user { 'rustup_test':
         ensure     => present,
         managehome => true,
@@ -394,7 +394,7 @@ describe 'Per-user rustup management' do
     expect(file('/home/rustup_test/.bashrc').content)
       .to eq %(# .bashrc\n. "$HOME/.cargo/env"\n)
 
-    apply_manifest(<<~'END')
+    apply_manifest(<<~'END', catch_failures: true)
       user { 'rustup_test':
         ensure => absent,
       }
@@ -419,24 +419,12 @@ describe 'Per-user rustup management' do
     expect(file('/home/rustup_test')).to exist
     expect(file('/home/rustup_test/.cargo')).not_to exist
     expect(file('/home/rustup_test/.bashrc').content).to eq %(# .bashrc\n)
-
-    # Clean up
-    apply_manifest(<<~'END')
-      user { 'rustup_test':
-        ensure => absent,
-      }
-
-      file { '/home/rustup_test':
-        ensure => absent,
-        force  => true,
-      }
-    END
   end
 
   it 'can remove itself after the user was deleted (with custom cargo_home)' do
-    expect(user('rustup_test')).not_to exist
+    rm_user('rustup_test')
 
-    apply_manifest(<<~'END')
+    apply_manifest(<<~'END', catch_failures: true)
       user { 'rustup_test':
         ensure     => present,
         managehome => true,
@@ -471,7 +459,7 @@ describe 'Per-user rustup management' do
     expect(file('/home/rustup_test/.bashrc').content)
       .to eq %(# .bashrc\n. "/home/rustup_test/a/b/.cargo/env"\n)
 
-    apply_manifest(<<~'END')
+    apply_manifest(<<~'END', catch_failures: true)
       user { 'rustup_test':
         ensure => absent,
       }
@@ -497,17 +485,5 @@ describe 'Per-user rustup management' do
     expect(file('/home/rustup_test')).to exist
     expect(file('/home/rustup_test/a/b/.cargo')).not_to exist
     expect(file('/home/rustup_test/.bashrc').content).to eq %(# .bashrc\n)
-
-    # Clean up
-    apply_manifest(<<~'END')
-      user { 'rustup_test':
-        ensure => absent,
-      }
-
-      file { '/home/rustup_test':
-        ensure => absent,
-        force  => true,
-      }
-    END
   end
 end
