@@ -3,16 +3,41 @@
 require 'spec_helper_acceptance'
 
 describe 'Per-user rustup management' do
+  it 'creates test user' do
+    apply_manifest(<<~'PUPPET', catch_failures: true)
+      # Don’t use managehome in case /etc/skel has rustup installed, as is the
+      # case on GitHub CI runners.
+      user { 'user':
+        ensure     => present,
+        managehome => false,
+        shell      => '/bin/bash',
+      }
+
+      file {
+        default:
+          ensure => file,
+          owner  => 'user',
+          group  => 'user',
+          mode   => '0644',
+        ;
+        '/home/user':
+          ensure => directory,
+        ;
+        '/home/user/.bashrc':
+          content => "# .bashrc\n",
+        ;
+        '/home/user/.profile':
+          content => "# .profile\n",
+        ;
+      }
+    PUPPET
+  end
+
   context 'supports installing without toolchain' do
-    it do
-      idempotent_apply(<<~'END')
-        user { 'user':
-          ensure     => present,
-          managehome => true,
-          shell      => '/bin/bash',
-        }
+    it "applies rustup { 'user': }" do
+      idempotent_apply(<<~'PUPPET')
         rustup { 'user': }
-      END
+      PUPPET
     end
 
     describe file('/home/user/.rustup') do
@@ -370,19 +395,27 @@ describe 'Per-user rustup management' do
     rm_user('rustup_test')
 
     apply_manifest(<<~'END', catch_failures: true)
+      # Don’t use managehome in case /etc/skel has rustup installed, as is the
+      # case on GitHub CI runners.
       user { 'rustup_test':
         ensure     => present,
-        managehome => true,
+        managehome => false,
       }
 
-      file { '/home/rustup_test/.bashrc':
-        ensure  => file,
-        owner   => 'rustup_test',
-        group   => 'rustup_test',
-        mode    => '0644',
-        content => "# .bashrc\n",
-        require => User['rustup_test'],
-        before  => Rustup['rustup_test'],
+      file {
+        default:
+          owner  => 'rustup_test',
+          group  => 'rustup_test',
+          mode   => '0644',
+          before => Rustup['rustup_test'],
+        ;
+        '/home/rustup_test':
+          ensure => directory,
+        ;
+        '/home/rustup_test/.bashrc':
+          ensure  => file,
+          content => "# .bashrc\n",
+        ;
       }
 
       rustup { 'rustup_test': }
@@ -425,24 +458,25 @@ describe 'Per-user rustup management' do
     rm_user('rustup_test')
 
     apply_manifest(<<~'END', catch_failures: true)
+      # Don’t use managehome in case /etc/skel has rustup installed, as is the
+      # case on GitHub CI runners.
       user { 'rustup_test':
         ensure     => present,
-        managehome => true,
+        managehome => false,
       }
 
       file {
         default:
-          owner   => 'rustup_test',
-          group   => 'rustup_test',
-          mode    => '0644',
-          require => User['rustup_test'],
-          before  => Rustup['rustup_test'],
+          owner  => 'rustup_test',
+          group  => 'rustup_test',
+          mode   => '0644',
+          before => Rustup['rustup_test'],
         ;
         '/home/rustup_test/.bashrc':
           ensure  => file,
           content => "# .bashrc\n",
         ;
-        ['/home/rustup_test/a', '/home/rustup_test/a/b']:
+        ['/home/rustup_test', '/home/rustup_test/a', '/home/rustup_test/a/b']:
           ensure => directory,
         ;
       }
