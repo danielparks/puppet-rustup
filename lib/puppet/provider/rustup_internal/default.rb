@@ -39,7 +39,7 @@ Puppet::Type.type(:rustup_internal).provide(
     # wish to run it as will have access, even with chmod.)
     PuppetX::Rustup::Util.download(url, ['puppet-rustup-init', '.sh']) do |sh|
       command = ['/bin/sh', '-s', '--', '-y', '--default-toolchain', 'none']
-      if Facter.value('os')['family'] == 'darwin'
+      if Facter.value('os')['family'] == 'Darwin'
         # On MacOS, ensure the rustup bootstrap is run as the native
         # architecture. If this is not done, the architecture of the Ruby
         # running this process may be used to compile the default Rust
