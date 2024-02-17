@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Fixed initial installation on macOS to always use the native architecture… for
+  real this time (the previous attempt ended up being a no-op). Thanks again to
+  [Zac Bentley][@zbentley] for [fixing][#85] the issue.
+
+[@zbentley]: https://github.com/zbentley
+[#85]: https://github.com/danielparks/puppet-rustup/pull/85
+
 ## Release 0.2.4
 
 * Changed initial installation on macOS to always use the native architecture.
