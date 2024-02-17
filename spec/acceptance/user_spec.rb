@@ -489,7 +489,7 @@ describe 'Per-user rustup management' do
       }
 
       rustup::toolchain { 'rustup_test: stable': }
-    "PUPPET"
+    PUPPET
 
     expect(user('rustup_test')).to exist
     expect(file("#{home}/rustup_test/a/b/.cargo/bin/rustup")).to exist
