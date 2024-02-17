@@ -7,7 +7,7 @@ describe 'Global rustup management' do
     it do
       idempotent_apply(<<~'END')
         class { 'rustup::global':
-          shell            => '/usr/sbin/nologin',
+          shell            => '/bin/false',
           purge_toolchains => true,
           purge_targets    => true,
         }
@@ -19,7 +19,7 @@ describe 'Global rustup management' do
       END
 
       expect(user('rustup')).to belong_to_group 'rustup'
-      expect(user('rustup')).to have_login_shell '/usr/sbin/nologin'
+      expect(user('rustup')).to have_login_shell '/bin/false'
     end
 
     describe file('/opt/rust') do
@@ -56,7 +56,7 @@ describe 'Global rustup management' do
     it do
       idempotent_apply(<<~'END')
         class { 'rustup::global':
-          shell            => '/usr/sbin/nologin',
+          shell            => '/bin/false',
           purge_toolchains => true,
           purge_targets    => true,
         }
@@ -93,7 +93,7 @@ describe 'Global rustup management' do
     it do
       idempotent_apply(<<~'END')
         class { 'rustup::global':
-          shell            => '/usr/sbin/nologin',
+          shell            => '/bin/false',
           purge_toolchains => true,
           purge_targets    => true,
         }
