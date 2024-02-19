@@ -92,10 +92,6 @@ jobs:
             exit 1
           ;;
         esac
-    - name: Build module
-      run: /opt/puppetlabs/pdk/bin/pdk build
-    - name: Install module
-      run: sudo -E /opt/puppetlabs/bin/puppet module install pkg/*.tar.gz
     - name: Install PDK dependencies
       run: sudo -E /opt/puppetlabs/pdk/bin/pdk bundle install
     - name: Run acceptance tests
