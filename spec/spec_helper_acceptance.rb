@@ -18,7 +18,7 @@ end
 
 def home
   if RUBY_PLATFORM.include?('darwin')
-    '/User'
+    '/Users'
   else
     '/home'
   end

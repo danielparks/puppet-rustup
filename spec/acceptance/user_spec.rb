@@ -63,7 +63,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.to match %r{(\A|:)/(home|User)/user/\.cargo/bin:}
+        is_expected.to match %r{(\A|:)/(home|Users)/user/\.cargo/bin:}
         is_expected.not_to match %r{/opt/rust/cargo/bin}
       end
       its(:stderr) { is_expected.to eq '' }
@@ -122,7 +122,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.not_to match %r{(\A|:)/(home|User)/user/\.cargo/bin(:|\Z)}
+        is_expected.not_to match %r{(\A|:)/(home|Users)/user/\.cargo/bin(:|\Z)}
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -164,7 +164,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.to match %r{(\A|:)/(home|User)/user/\.cargo/bin:}
+        is_expected.to match %r{(\A|:)/(home|Users)/user/\.cargo/bin:}
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -368,7 +368,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.not_to match %r{(\A|:)/(home|User)/user/\.cargo/bin(:|\Z)}
+        is_expected.not_to match %r{(\A|:)/(home|Users)/user/\.cargo/bin(:|\Z)}
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
