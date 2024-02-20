@@ -16,7 +16,7 @@ def rm_user(name)
       ensure => absent,
     }
 
-    file { '/home/#{name}':
+    file { '#{home}/#{name}':
       ensure => absent,
       force  => true,
     }
