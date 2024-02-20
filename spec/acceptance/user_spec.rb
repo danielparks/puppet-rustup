@@ -4,7 +4,7 @@ require 'spec_helper_acceptance'
 
 describe 'Per-user rustup management' do
   it 'creates test user' do
-    apply_manifest(<<~'PUPPET', catch_failures: true)
+    apply_manifest(<<~"PUPPET", catch_failures: true)
       # Don’t use managehome in case /etc/skel has rustup installed, as is the
       # case on GitHub CI runners.
       user { 'user':
@@ -20,13 +20,13 @@ describe 'Per-user rustup management' do
           group  => 'user',
           mode   => '0644',
         ;
-        '/home/user':
+        '#{home}/user':
           ensure => directory,
         ;
-        '/home/user/.bashrc':
+        '#{home}/user/.bashrc':
           content => "# .bashrc\n",
         ;
-        '/home/user/.profile':
+        '#{home}/user/.profile':
           content => "# .profile\n",
         ;
       }
@@ -40,30 +40,30 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    describe file('/home/user/.rustup') do
+    describe file("#{home}/user/.rustup") do
       it { is_expected.to be_directory }
       it { is_expected.to be_owned_by 'user' }
     end
 
-    describe file('/home/user/.cargo/bin/rustup') do
+    describe file("#{home}/user/.cargo/bin/rustup") do
       it { is_expected.to be_file }
       it { is_expected.to be_executable }
       it { is_expected.to be_owned_by 'user' }
     end
 
-    describe file('/home/user/.bashrc') do
+    describe file("#{home}/user/.bashrc") do
       it { is_expected.to be_file }
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe file('/home/user/.profile') do
+    describe file("#{home}/user/.profile") do
       it { is_expected.to be_file }
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
     describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.to match %r{(\A|:)/home/user/\.cargo/bin:}
+        is_expected.to match %r{(\A|:)#{home}/user/\.cargo/bin:}
         is_expected.not_to match %r{/opt/rust/cargo/bin}
       end
       its(:stderr) { is_expected.to eq '' }
@@ -102,27 +102,27 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    describe file('/home/user/.rustup') do
+    describe file("#{home}/user/.rustup") do
       it { is_expected.not_to exist }
     end
 
-    describe file('/home/user/.cargo') do
+    describe file("#{home}/user/.cargo") do
       it { is_expected.not_to exist }
     end
 
-    describe file('/home/user/.bashrc') do
+    describe file("#{home}/user/.bashrc") do
       it { is_expected.to be_file }
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe file('/home/user/.profile') do
+    describe file("#{home}/user/.profile") do
       it { is_expected.to be_file }
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
     describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.not_to match %r{(\A|:)/home/user/\.cargo/bin(:|\Z)}
+        is_expected.not_to match %r{(\A|:)#{home}/user/\.cargo/bin(:|\Z)}
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -141,29 +141,29 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    describe file('/home/user/.rustup') do
+    describe file("#{home}/user/.rustup") do
       it { is_expected.to be_directory }
       it { is_expected.to be_owned_by 'user' }
     end
 
-    describe file('/home/user/.cargo/bin/rustup') do
+    describe file("#{home}/user/.cargo/bin/rustup") do
       it { is_expected.to be_file }
       it { is_expected.to be_executable }
       it { is_expected.to be_owned_by 'user' }
     end
 
-    describe file('/home/user/.bashrc') do
+    describe file("#{home}/user/.bashrc") do
       it { is_expected.to be_file }
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe file('/home/user/.profile') do
+    describe file("#{home}/user/.profile") do
       it { is_expected.to be_file }
       its(:content) { is_expected.to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
     describe command_as_user("echo '$PATH'") do
-      its(:stdout) { is_expected.to match %r{(\A|:)/home/user/\.cargo/bin:} }
+      its(:stdout) { is_expected.to match %r{(\A|:)#{home}/user/\.cargo/bin:} }
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
     end
@@ -184,7 +184,7 @@ describe 'Per-user rustup management' do
       its(:exit_status) { is_expected.to eq 0 }
     end
 
-    describe file('/home/user/.cargo/bin/hello-world') do
+    describe file("#{home}/user/.cargo/bin/hello-world") do
       it { is_expected.to be_executable }
     end
 
@@ -210,7 +210,7 @@ describe 'Per-user rustup management' do
     end
 
     toolchain_name = "beta-#{os[:arch]}-unknown-linux-gnu"
-    toolchain_path = "/home/user/.rustup/toolchains/#{toolchain_name}"
+    toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
 
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
@@ -243,7 +243,7 @@ describe 'Per-user rustup management' do
     end
 
     toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
-    toolchain_path = "/home/user/.rustup/toolchains/#{toolchain_name}"
+    toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
 
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
@@ -272,7 +272,7 @@ describe 'Per-user rustup management' do
     end
 
     toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
-    toolchain_path = "/home/user/.rustup/toolchains/#{toolchain_name}"
+    toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
       it { is_expected.to be_executable }
@@ -280,7 +280,7 @@ describe 'Per-user rustup management' do
     end
 
     toolchain_name = "nightly-#{os[:arch]}-unknown-linux-gnu"
-    toolchain_path = "/home/user/.rustup/toolchains/#{toolchain_name}"
+    toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
       it { is_expected.to be_executable }
@@ -346,27 +346,27 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    describe file('/home/user/.rustup') do
+    describe file("#{home}/user/.rustup") do
       it { is_expected.not_to exist }
     end
 
-    describe file('/home/user/.cargo') do
+    describe file("#{home}/user/.cargo") do
       it { is_expected.not_to exist }
     end
 
-    describe file('/home/user/.bashrc') do
+    describe file("#{home}/user/.bashrc") do
       it { is_expected.to be_file }
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
-    describe file('/home/user/.profile') do
+    describe file("#{home}/user/.profile") do
       it { is_expected.to be_file }
       its(:content) { is_expected.not_to match %r{^\. "\$HOME/\.cargo/env"$} }
     end
 
     describe command_as_user("echo '$PATH'") do
       its(:stdout) do
-        is_expected.not_to match %r{(\A|:)/home/user/\.cargo/bin(:|\Z)}
+        is_expected.not_to match %r{(\A|:)#{home}/user/\.cargo/bin(:|\Z)}
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -409,10 +409,10 @@ describe 'Per-user rustup management' do
           mode   => '0644',
           before => Rustup['rustup_test'],
         ;
-        '/home/rustup_test':
+        '#{home}/rustup_test':
           ensure => directory,
         ;
-        '/home/rustup_test/.bashrc':
+        '#{home}/rustup_test/.bashrc':
           ensure  => file,
           content => "# .bashrc\n",
         ;
@@ -423,8 +423,8 @@ describe 'Per-user rustup management' do
     PUPPET
 
     expect(user('rustup_test')).to exist
-    expect(file('/home/rustup_test/.cargo/bin/rustup')).to exist
-    expect(file('/home/rustup_test/.bashrc').content)
+    expect(file("#{home}/rustup_test/.cargo/bin/rustup")).to exist
+    expect(file("#{home}/rustup_test/.bashrc").content)
       .to eq %(# .bashrc\n. "$HOME/.cargo/env"\n)
 
     apply_manifest(<<~'PUPPET', catch_failures: true)
@@ -434,8 +434,8 @@ describe 'Per-user rustup management' do
     PUPPET
 
     expect(user('rustup_test')).not_to exist
-    expect(file('/home/rustup_test/.cargo/bin/rustup')).to exist
-    expect(file('/home/rustup_test/.bashrc').content)
+    expect(file("#{home}/rustup_test/.cargo/bin/rustup")).to exist
+    expect(file("#{home}/rustup_test/.bashrc").content)
       .to eq %(# .bashrc\n. "$HOME/.cargo/env"\n)
 
     idempotent_apply(<<~'PUPPET')
@@ -449,9 +449,9 @@ describe 'Per-user rustup management' do
     PUPPET
 
     expect(user('rustup_test')).not_to exist
-    expect(file('/home/rustup_test')).to exist
-    expect(file('/home/rustup_test/.cargo')).not_to exist
-    expect(file('/home/rustup_test/.bashrc').content).to eq %(# .bashrc\n)
+    expect(file("#{home}/rustup_test")).to exist
+    expect(file("#{home}/rustup_test/.cargo")).not_to exist
+    expect(file("#{home}/rustup_test/.bashrc").content).to eq %(# .bashrc\n)
   end
 
   it 'can remove itself after the user was deleted (with custom cargo_home)' do
@@ -467,31 +467,32 @@ describe 'Per-user rustup management' do
 
       file {
         default:
+          ensure => directory,
           owner  => 'rustup_test',
           group  => 'rustup_test',
           mode   => '0644',
           before => Rustup['rustup_test'],
         ;
-        '/home/rustup_test/.bashrc':
+        '#{home}/rustup_test/.bashrc':
           ensure  => file,
           content => "# .bashrc\n",
         ;
-        ['/home/rustup_test', '/home/rustup_test/a', '/home/rustup_test/a/b']:
-          ensure => directory,
-        ;
+        '#{home}/rustup_test':;
+        '#{home}/rustup_test/a':;
+        '#{home}/rustup_test/a/b':;
       }
 
       rustup { 'rustup_test':
-        cargo_home => '/home/rustup_test/a/b/.cargo',
+        cargo_home => "#{home}/rustup_test/a/b/.cargo",
       }
 
       rustup::toolchain { 'rustup_test: stable': }
     PUPPET
 
     expect(user('rustup_test')).to exist
-    expect(file('/home/rustup_test/a/b/.cargo/bin/rustup')).to exist
-    expect(file('/home/rustup_test/.bashrc').content)
-      .to eq %(# .bashrc\n. "/home/rustup_test/a/b/.cargo/env"\n)
+    expect(file("#{home}/rustup_test/a/b/.cargo/bin/rustup")).to exist
+    expect(file("#{home}/rustup_test/.bashrc").content)
+      .to eq %(# .bashrc\n. "#{home}/rustup_test/a/b/.cargo/env"\n)
 
     apply_manifest(<<~'PUPPET', catch_failures: true)
       user { 'rustup_test':
@@ -500,14 +501,14 @@ describe 'Per-user rustup management' do
     PUPPET
 
     expect(user('rustup_test')).not_to exist
-    expect(file('/home/rustup_test/a/b/.cargo/bin/rustup')).to exist
-    expect(file('/home/rustup_test/.bashrc').content)
-      .to eq %(# .bashrc\n. "/home/rustup_test/a/b/.cargo/env"\n)
+    expect(file("#{home}/rustup_test/a/b/.cargo/bin/rustup")).to exist
+    expect(file("#{home}/rustup_test/.bashrc").content)
+      .to eq %(# .bashrc\n. "#{home}/rustup_test/a/b/.cargo/env"\n)
 
     idempotent_apply(<<~"PUPPET")
       rustup { 'rustup_test':
         ensure     => absent,
-        cargo_home => '/home/rustup_test/a/b/.cargo',
+        cargo_home => "#{home}/rustup_test/a/b/.cargo",
       }
 
       rustup::toolchain { 'rustup_test: stable':
@@ -516,8 +517,8 @@ describe 'Per-user rustup management' do
     PUPPET
 
     expect(user('rustup_test')).not_to exist
-    expect(file('/home/rustup_test')).to exist
-    expect(file('/home/rustup_test/a/b/.cargo')).not_to exist
-    expect(file('/home/rustup_test/.bashrc').content).to eq %(# .bashrc\n)
+    expect(file("#{home}/rustup_test")).to exist
+    expect(file("#{home}/rustup_test/a/b/.cargo")).not_to exist
+    expect(file("#{home}/rustup_test/.bashrc").content).to eq %(# .bashrc\n)
   end
 end
