@@ -198,7 +198,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user('rustup +stable target list') do
       its(:stdout) do
-        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -217,7 +217,7 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    toolchain_name = "beta-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_name = "beta-#{host_target}"
     toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
 
     describe file("#{toolchain_path}/bin/rustc") do
@@ -232,7 +232,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user('rustup +beta target list') do
       its(:stdout) do
-        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -250,7 +250,7 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_name = "stable-#{host_target}"
     toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
 
     describe file("#{toolchain_path}/bin/rustc") do
@@ -261,7 +261,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user('rustup +stable target list') do
       its(:stdout) do
-        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -279,7 +279,7 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_name = "stable-#{host_target}"
     toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
@@ -287,7 +287,7 @@ describe 'Per-user rustup management' do
       it { is_expected.to be_owned_by 'user' }
     end
 
-    toolchain_name = "nightly-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_name = "nightly-#{host_target}"
     toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
@@ -297,7 +297,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user('rustup toolchain list') do
       its(:stdout) do
-        is_expected.to match(%r{^nightly.*-unknown-linux-gnu \(default\)$})
+        is_expected.to match(%r{^#{toolchain_name} \(default\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
