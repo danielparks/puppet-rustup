@@ -5,12 +5,18 @@ require 'spec_helper_acceptance'
 describe 'Per-user rustup management' do
   it 'creates test user' do
     apply_manifest(<<~"PUPPET", catch_failures: true)
+      group { 'user':
+        ensure => present,
+      }
+
       # Don’t use managehome in case /etc/skel has rustup installed, as is the
       # case on GitHub CI runners.
       user { 'user':
         ensure     => present,
+        gid        => 'user',
         managehome => false,
         shell      => '/bin/bash',
+        require    => Group['user'],
       }
 
       file {
@@ -397,11 +403,17 @@ describe 'Per-user rustup management' do
     rm_user('rustup_test')
 
     apply_manifest(<<~"PUPPET", catch_failures: true)
+      group { 'rustup_test':
+        ensure => present,
+      }
+
       # Don’t use managehome in case /etc/skel has rustup installed, as is the
       # case on GitHub CI runners.
       user { 'rustup_test':
         ensure     => present,
+        gid        => 'rustup_test',
         managehome => false,
+        require    => Group['rustup_test'],
       }
 
       file {
@@ -460,11 +472,17 @@ describe 'Per-user rustup management' do
     rm_user('rustup_test')
 
     apply_manifest(<<~"PUPPET", catch_failures: true)
+      group { 'rustup_test':
+        ensure => present,
+      }
+
       # Don’t use managehome in case /etc/skel has rustup installed, as is the
       # case on GitHub CI runners.
       user { 'rustup_test':
         ensure     => present,
+        gid        => 'rustup_test',
         managehome => false,
+        require    => Group['rustup_test'],
       }
 
       file {
