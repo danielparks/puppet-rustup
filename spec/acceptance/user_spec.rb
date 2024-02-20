@@ -95,11 +95,11 @@ describe 'Per-user rustup management' do
 
   context 'supports trivial uninstall for a real user' do
     it do
-      idempotent_apply(<<~'END')
+      idempotent_apply(<<~'PUPPET')
         rustup { 'user':
           ensure => absent,
         }
-      END
+      PUPPET
     end
 
     describe file('/home/user/.rustup') do
@@ -132,13 +132,13 @@ describe 'Per-user rustup management' do
   context 'supports multi-resource install without explicit target' do
     # Also tests that dist_server works with an explicit undef.
     it do
-      idempotent_apply(<<~'END')
+      idempotent_apply(<<~'PUPPET')
         package { 'gcc': } # Needed for cargo install
         rustup { 'user':
           dist_server => undef,
         }
         rustup::toolchain { 'user: stable': }
-      END
+      PUPPET
     end
 
     describe file('/home/user/.rustup') do
@@ -200,13 +200,13 @@ describe 'Per-user rustup management' do
   # Profiles only work on initial install, so the toolchain must be new.
   context 'supports multi-resource install with profile and explicit target' do
     it do
-      idempotent_apply(<<~'END')
+      idempotent_apply(<<~'PUPPET')
         rustup { 'user': }
         rustup::toolchain { 'user: beta':
           profile => minimal,
         }
         rustup::target { 'user: default beta': }
-      END
+      PUPPET
     end
 
     toolchain_name = "beta-#{os[:arch]}-unknown-linux-gnu"
@@ -233,13 +233,13 @@ describe 'Per-user rustup management' do
 
   context 'supports single-resource pre-release install' do
     it do
-      idempotent_apply(<<~'END')
+      idempotent_apply(<<~'PUPPET')
         rustup { 'user':
           toolchains  => ['stable'],
           targets     => ['default'],
           dist_server => 'https://dev-static.rust-lang.org'
         }
-      END
+      PUPPET
     end
 
     toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
@@ -262,13 +262,13 @@ describe 'Per-user rustup management' do
 
   context 'supports single-resource with multiple toolchains' do
     it do
-      idempotent_apply(<<~'END')
+      idempotent_apply(<<~'PUPPET')
         rustup { 'user':
           toolchains        => ['nightly', 'stable'],
           targets           => ['default nightly', 'default stable'],
           default_toolchain => 'nightly',
         }
-      END
+      PUPPET
     end
 
     toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
@@ -333,7 +333,7 @@ describe 'Per-user rustup management' do
 
   context 'supports multi-resource uninstall for a real user' do
     it do
-      idempotent_apply(<<~'END')
+      idempotent_apply(<<~'PUPPET')
         rustup { 'user':
           ensure => absent,
         }
@@ -343,7 +343,7 @@ describe 'Per-user rustup management' do
         rustup::target { 'user: wasm32-unknown-unknown stable':
           ensure => absent,
         }
-      END
+      PUPPET
     end
 
     describe file('/home/user/.rustup') do
@@ -376,7 +376,7 @@ describe 'Per-user rustup management' do
   it 'supports ensure=>absent with non-existant user' do
     expect(user('non_existant_user')).not_to exist
 
-    idempotent_apply(<<~'END')
+    idempotent_apply(<<~'PUPPET')
       rustup { 'non_existant_user':
         ensure => absent,
       }
@@ -386,7 +386,7 @@ describe 'Per-user rustup management' do
       rustup::target { 'non_existant_user: wasm32-unknown-unknown stable':
         ensure => absent,
       }
-    END
+    PUPPET
 
     expect(user('non_existant_user')).not_to exist
   end
@@ -394,7 +394,7 @@ describe 'Per-user rustup management' do
   it 'can remove itself after the user was deleted' do
     rm_user('rustup_test')
 
-    apply_manifest(<<~'END', catch_failures: true)
+    apply_manifest(<<~"PUPPET", catch_failures: true)
       # Don’t use managehome in case /etc/skel has rustup installed, as is the
       # case on GitHub CI runners.
       user { 'rustup_test':
@@ -420,25 +420,25 @@ describe 'Per-user rustup management' do
 
       rustup { 'rustup_test': }
       rustup::toolchain { 'rustup_test: stable': }
-    END
+    PUPPET
 
     expect(user('rustup_test')).to exist
     expect(file('/home/rustup_test/.cargo/bin/rustup')).to exist
     expect(file('/home/rustup_test/.bashrc').content)
       .to eq %(# .bashrc\n. "$HOME/.cargo/env"\n)
 
-    apply_manifest(<<~'END', catch_failures: true)
+    apply_manifest(<<~'PUPPET', catch_failures: true)
       user { 'rustup_test':
         ensure => absent,
       }
-    END
+    PUPPET
 
     expect(user('rustup_test')).not_to exist
     expect(file('/home/rustup_test/.cargo/bin/rustup')).to exist
     expect(file('/home/rustup_test/.bashrc').content)
       .to eq %(# .bashrc\n. "$HOME/.cargo/env"\n)
 
-    idempotent_apply(<<~'END')
+    idempotent_apply(<<~'PUPPET')
       rustup { 'rustup_test':
         ensure => absent,
       }
@@ -446,7 +446,7 @@ describe 'Per-user rustup management' do
       rustup::toolchain { 'rustup_test: stable':
         ensure => absent,
       }
-    END
+    PUPPET
 
     expect(user('rustup_test')).not_to exist
     expect(file('/home/rustup_test')).to exist
@@ -457,7 +457,7 @@ describe 'Per-user rustup management' do
   it 'can remove itself after the user was deleted (with custom cargo_home)' do
     rm_user('rustup_test')
 
-    apply_manifest(<<~'END', catch_failures: true)
+    apply_manifest(<<~"PUPPET", catch_failures: true)
       # Don’t use managehome in case /etc/skel has rustup installed, as is the
       # case on GitHub CI runners.
       user { 'rustup_test':
@@ -486,25 +486,25 @@ describe 'Per-user rustup management' do
       }
 
       rustup::toolchain { 'rustup_test: stable': }
-    END
+    PUPPET
 
     expect(user('rustup_test')).to exist
     expect(file('/home/rustup_test/a/b/.cargo/bin/rustup')).to exist
     expect(file('/home/rustup_test/.bashrc').content)
       .to eq %(# .bashrc\n. "/home/rustup_test/a/b/.cargo/env"\n)
 
-    apply_manifest(<<~'END', catch_failures: true)
+    apply_manifest(<<~'PUPPET', catch_failures: true)
       user { 'rustup_test':
         ensure => absent,
       }
-    END
+    PUPPET
 
     expect(user('rustup_test')).not_to exist
     expect(file('/home/rustup_test/a/b/.cargo/bin/rustup')).to exist
     expect(file('/home/rustup_test/.bashrc').content)
       .to eq %(# .bashrc\n. "/home/rustup_test/a/b/.cargo/env"\n)
 
-    idempotent_apply(<<~'END')
+    idempotent_apply(<<~"PUPPET")
       rustup { 'rustup_test':
         ensure     => absent,
         cargo_home => '/home/rustup_test/a/b/.cargo',
@@ -513,7 +513,7 @@ describe 'Per-user rustup management' do
       rustup::toolchain { 'rustup_test: stable':
         ensure => absent,
       }
-    END
+    PUPPET
 
     expect(user('rustup_test')).not_to exist
     expect(file('/home/rustup_test')).to exist
