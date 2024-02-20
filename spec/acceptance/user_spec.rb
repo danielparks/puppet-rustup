@@ -139,7 +139,9 @@ describe 'Per-user rustup management' do
     # Also tests that dist_server works with an explicit undef.
     it do
       idempotent_apply(<<~'PUPPET')
-        package { 'gcc': } # Needed for cargo install
+        if $facts['os']['family'] != 'Darwin' {
+          package { 'gcc': } # Needed for cargo install
+        }
         rustup { 'user':
           dist_server => undef,
         }
