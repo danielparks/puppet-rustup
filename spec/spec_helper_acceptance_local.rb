@@ -10,6 +10,16 @@ def command_as_user(cmd)
   command("sudo -iu user #{cmd}")
 end
 
+def host_target
+  if RUBY_PLATFORM.include?('linux')
+    "#{os[:arch]}-unknown-linux-gnu"
+  elsif RUBY_PLATFORM.include?('darwin')
+    "#{os[:arch]}-apple-darwin"
+  else
+    raise "Unsupported RUBY_PLATFORM: #{RUBY_PLATFORM.inspect}"
+  end
+end
+
 def rm_user(name)
   apply_manifest(<<~"END", catch_failures: true)
     user { #{name}:

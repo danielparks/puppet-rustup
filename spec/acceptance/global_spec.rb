@@ -3,11 +3,11 @@
 require 'spec_helper_acceptance'
 
 describe 'Global rustup management' do
-  context 'supports out-of-order targets and toolchains with a nologin shell' do
+  context 'supports out-of-order targets and toolchains with a false shell' do
     it do
       idempotent_apply(<<~'END')
         class { 'rustup::global':
-          shell            => '/usr/sbin/nologin',
+          shell            => '/bin/false',
           purge_toolchains => true,
           purge_targets    => true,
         }
@@ -19,7 +19,7 @@ describe 'Global rustup management' do
       END
 
       expect(user('rustup')).to belong_to_group 'rustup'
-      expect(user('rustup')).to have_login_shell '/usr/sbin/nologin'
+      expect(user('rustup')).to have_login_shell '/bin/false'
     end
 
     describe file('/opt/rust') do
@@ -52,11 +52,11 @@ describe 'Global rustup management' do
     end
   end
 
-  context 'supports uninstalling a target with a nologin shell' do
+  context 'supports uninstalling a target with a false shell' do
     it do
       idempotent_apply(<<~'END')
         class { 'rustup::global':
-          shell            => '/usr/sbin/nologin',
+          shell            => '/bin/false',
           purge_toolchains => true,
           purge_targets    => true,
         }
@@ -89,11 +89,11 @@ describe 'Global rustup management' do
     end
   end
 
-  context 'supports uninstalling a toolchain with a nologin shell' do
+  context 'supports uninstalling a toolchain with a false shell' do
     it do
       idempotent_apply(<<~'END')
         class { 'rustup::global':
-          shell            => '/usr/sbin/nologin',
+          shell            => '/bin/false',
           purge_toolchains => true,
           purge_targets    => true,
         }

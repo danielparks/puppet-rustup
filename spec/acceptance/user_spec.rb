@@ -5,12 +5,18 @@ require 'spec_helper_acceptance'
 describe 'Per-user rustup management' do
   it 'creates test user' do
     apply_manifest(<<~"PUPPET", catch_failures: true)
+      group { 'user':
+        ensure => present,
+      }
+
       # Don’t use managehome in case /etc/skel has rustup installed, as is the
       # case on GitHub CI runners.
       user { 'user':
         ensure     => present,
+        gid        => 'user',
         managehome => false,
         shell      => '/bin/bash',
+        require    => Group['user'],
       }
 
       file {
@@ -133,7 +139,9 @@ describe 'Per-user rustup management' do
     # Also tests that dist_server works with an explicit undef.
     it do
       idempotent_apply(<<~'PUPPET')
-        package { 'gcc': } # Needed for cargo install
+        if $facts['os']['family'] != 'Darwin' {
+          package { 'gcc': } # Needed for cargo install
+        }
         rustup { 'user':
           dist_server => undef,
         }
@@ -190,7 +198,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user('rustup +stable target list') do
       its(:stdout) do
-        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -209,7 +217,7 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    toolchain_name = "beta-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_name = "beta-#{host_target}"
     toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
 
     describe file("#{toolchain_path}/bin/rustc") do
@@ -224,7 +232,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user('rustup +beta target list') do
       its(:stdout) do
-        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -242,7 +250,7 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_name = "stable-#{host_target}"
     toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
 
     describe file("#{toolchain_path}/bin/rustc") do
@@ -253,7 +261,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user('rustup +stable target list') do
       its(:stdout) do
-        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -271,7 +279,7 @@ describe 'Per-user rustup management' do
       PUPPET
     end
 
-    toolchain_name = "stable-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_name = "stable-#{host_target}"
     toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
@@ -279,7 +287,7 @@ describe 'Per-user rustup management' do
       it { is_expected.to be_owned_by 'user' }
     end
 
-    toolchain_name = "nightly-#{os[:arch]}-unknown-linux-gnu"
+    toolchain_name = "nightly-#{host_target}"
     toolchain_path = "#{home}/user/.rustup/toolchains/#{toolchain_name}"
     describe file("#{toolchain_path}/bin/rustc") do
       it { is_expected.to be_file }
@@ -289,7 +297,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user('rustup toolchain list') do
       its(:stdout) do
-        is_expected.to match(%r{^nightly.*-unknown-linux-gnu \(default\)$})
+        is_expected.to match(%r{^#{toolchain_name} \(default\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -395,11 +403,17 @@ describe 'Per-user rustup management' do
     rm_user('rustup_test')
 
     apply_manifest(<<~"PUPPET", catch_failures: true)
+      group { 'rustup_test':
+        ensure => present,
+      }
+
       # Don’t use managehome in case /etc/skel has rustup installed, as is the
       # case on GitHub CI runners.
       user { 'rustup_test':
         ensure     => present,
+        gid        => 'rustup_test',
         managehome => false,
+        require    => Group['rustup_test'],
       }
 
       file {
@@ -458,11 +472,17 @@ describe 'Per-user rustup management' do
     rm_user('rustup_test')
 
     apply_manifest(<<~"PUPPET", catch_failures: true)
+      group { 'rustup_test':
+        ensure => present,
+      }
+
       # Don’t use managehome in case /etc/skel has rustup installed, as is the
       # case on GitHub CI runners.
       user { 'rustup_test':
         ensure     => present,
+        gid        => 'rustup_test',
         managehome => false,
+        require    => Group['rustup_test'],
       }
 
       file {
