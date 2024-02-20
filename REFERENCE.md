@@ -147,7 +147,13 @@ Data type: `Array[Stdlib::Absolutepath]`
 
 Paths that will get links to the cargo environment script.
 
-Default value: `['/etc/profile.d/99-cargo.sh']`
+Default value:
+
+```puppet
+$facts['os']['family'] ? {
+    'Darwin' => [],
+    default  => ['/etc/profile.d/99-cargo.sh']
+```
 
 ##### <a name="-rustup--global--installer_source"></a>`installer_source`
 

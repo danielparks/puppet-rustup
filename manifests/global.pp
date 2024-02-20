@@ -41,7 +41,10 @@ class rustup::global (
   Stdlib::Absolutepath          $home               = '/opt/rust',
   Stdlib::Absolutepath          $shell              = '/bin/bash',
   Array[Stdlib::Absolutepath]   $env_scripts_append = ['/etc/bashrc'],
-  Array[Stdlib::Absolutepath]   $env_scripts_create = ['/etc/profile.d/99-cargo.sh'],
+  Array[Stdlib::Absolutepath]   $env_scripts_create = $facts['os']['family'] ? {
+    'Darwin' => [],
+    default  => ['/etc/profile.d/99-cargo.sh'],
+  },
   Stdlib::HTTPUrl               $installer_source   = 'https://sh.rustup.rs',
 ) {
   $rustup_home = "${home}/rustup"
