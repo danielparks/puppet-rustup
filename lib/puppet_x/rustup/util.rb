@@ -28,7 +28,7 @@ module PuppetX::Rustup::Util
   #       puts "#{file.path} will be deleted after the block ends."
   #     end
   def self.download(url, basename = '')
-    file = Tempfile.new(basename)
+    file = Tempfile.new(basename, Dir.home)
     begin
       Puppet.debug { "Downloading #{url.inspect} into #{file.path.inspect}" }
       PuppetX::Rustup::Util.download_into(url, file)

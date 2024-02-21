@@ -56,6 +56,8 @@ describe 'Global rustup management' do
 
   context 'supports out-of-order targets and toolchains with a false shell' do
     it do
+      puts "WORKING DIR: #{Dir.pwd}"
+
       idempotent_apply(<<~'PUPPET')
         class { 'rustup::global':
           shell            => '/bin/false',
