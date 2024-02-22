@@ -1,6 +1,6 @@
 {
   "name": "dp-rustup",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "author": "Daniel Parks",
   "summary": "Manage Rust with rustup",
   "license": "Apache-2.0",
