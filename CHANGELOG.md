@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 * Fixed initial installation on macOS to always use the native architecture… for
   real this time (the previous attempt ended up being a no-op). Thanks again to
   [Zac Bentley][@zbentley] for [fixing][#85] the issue.
+* Fixed defaults for `rustup::global` on macOS so that it doesn’t try to add a
+  link to the non-existent `/etc/profile.d`.
 
 [@zbentley]: https://github.com/zbentley
 [#85]: https://github.com/danielparks/puppet-rustup/pull/85
