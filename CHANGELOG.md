@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## main branch
+
 ## Release 0.2.5
 
 * Fixed initial installation on macOS to always use the native architecture… for
