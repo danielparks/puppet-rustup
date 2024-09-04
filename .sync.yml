@@ -8,4 +8,4 @@
 ---
 .github/workflows/pr-checks.yaml:
   additional-platforms:
-    - macos-latest
+    - macos-13

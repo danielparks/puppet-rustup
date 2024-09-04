@@ -61,7 +61,7 @@ jobs:
             puppet: 7
           - os: ubuntu-latest
             puppet: 8
-          - os: macos-latest
+          - os: macos-13
             puppet: 8
     runs-on: ${{ matrix.os }}
 
