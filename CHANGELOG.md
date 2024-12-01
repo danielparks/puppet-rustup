@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Synced with [PDK][].
+
+[PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
+
 ## Release 0.2.6
 
 * Synced with [PDK][].
