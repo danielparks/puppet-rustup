@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 * Synced with [PDK][] and disabled Puppet 6 testing, since the package signing
   key is no longer valid.
+* Update list of possible targets to match Rust.
 
 [PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
 
