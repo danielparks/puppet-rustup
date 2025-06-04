@@ -297,7 +297,7 @@ describe 'Per-user rustup management' do
 
     describe command_as_user('rustup toolchain list') do
       its(:stdout) do
-        is_expected.to match(%r{^#{toolchain_name} \(default\)$})
+        is_expected.to match(%r{^#{toolchain_name} \(.*\bdefault\b.*\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }

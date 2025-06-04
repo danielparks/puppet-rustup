@@ -319,11 +319,19 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
     @provider.rustup('toolchain', 'list')
       .lines(chomp: true)
       .reject { |line| line == 'no installed toolchains' }
-      .each do |line|
-        # delete_suffix! returns nil if there was no suffix.
-        if line.delete_suffix!(' (default)')
-          @system_default = line
+      .map do |line|
+        toolchain, state = line.split(' ', 2)
+        if state
+          if %r{\A\(.*\)\z}.match? state
+            if state[1..-2].split(%r{,\s*}).include?('default')
+              @system_default = toolchain
+            end
+          else
+            raise Puppet::Error,
+              "Could not parse line in toolchain list: #{line.inspect}"
+          end
         end
+        toolchain
       end
   end
 
