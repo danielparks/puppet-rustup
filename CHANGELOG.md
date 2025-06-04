@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
-* Synced with [PDK][].
+* Synced with [PDK][] and disabled Puppet 6 testing, since the package signing
+  key is no longer valid.
+* Update list of possible targets to match Rust.
+* Fixed handling of new `rustup toolchain list` format.
 
 [PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
 

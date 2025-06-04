@@ -120,7 +120,7 @@ describe 'Global rustup management' do
 
     describe command_global_rustup('toolchain list') do
       its(:stdout) do
-        is_expected.to match(%r{^stable-.* \(default\)$})
+        is_expected.to match(%r{^stable-.* \(.*\bdefault\b.*\)$})
         is_expected.not_to match(%r{^nightly-})
       end
       its(:stderr) { is_expected.to eq '' }
