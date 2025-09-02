@@ -16,7 +16,7 @@ RSpec.describe PuppetX::Rustup::Property::Subresources do
   end
 
   let :property do
-    described_class.new(resource: resource)
+    described_class.new(resource:)
   end
 
   def example(title, ensure_: 'present')
