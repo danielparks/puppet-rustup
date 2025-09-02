@@ -61,7 +61,11 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # The resource thinks we need to update `rustup`.
   def update
-    rustup 'self', 'update'
+    if exists?
+      rustup 'self', 'update'
+    else
+      create
+    end
   end
 
   # The resource thinks we need to uninstall `rustup`.
