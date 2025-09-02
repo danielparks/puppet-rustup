@@ -67,7 +67,7 @@ class PuppetX::Rustup::Property::Subresources < PuppetX::Rustup::Property::Set
     unless valid_set.any? entry[attr]
       raise Puppet::Error, 'Expected %{name} Hash entry %{attr} to be one of ' \
         '%{valid}, got %{value}' % {
-          name: name,
+          name:,
           attr: attr.inspect,
           valid: valid_set.inspect,
           value: entry[attr].inspect,
@@ -80,7 +80,7 @@ class PuppetX::Rustup::Property::Subresources < PuppetX::Rustup::Property::Set
     unless PuppetX::Rustup::Util.non_empty_string? entry[attr]
       raise Puppet::Error, 'Expected %{name} Hash entry %{attr} to be a ' \
         'non-empty string, got %{value}' % {
-          name: name,
+          name:,
           attr: attr.inspect,
           value: entry[attr].inspect,
         }
@@ -92,7 +92,7 @@ class PuppetX::Rustup::Property::Subresources < PuppetX::Rustup::Property::Set
     unless PuppetX::Rustup::Util.nil_or_non_empty_string? entry[attr]
       raise Puppet::Error, 'Expected %{name} Hash entry %{attr} to be nil ' \
         'or a non-empty string, got %{value}' % {
-          name: name,
+          name:,
           attr: attr.inspect,
           value: entry[attr].inspect,
         }

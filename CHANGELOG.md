@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 * Synced with [PDK][] and disabled Puppet 6 testing, since the package signing
   key is no longer valid.
+* Switched to Ruby 3.1 for automated testing since PDK no longer supports 2.7.
 * Update list of possible targets to match Rust.
 * Fixed handling of new `rustup toolchain list` format.
 

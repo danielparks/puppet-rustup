@@ -172,7 +172,7 @@ Puppet::Type.type(:rustup_internal).provide(
         if info['ensure'] != 'absent'
           raise Puppet::Error, 'Cannot install %{noun} %{name} for absent ' \
             'rustup installation %{rustup}' % {
-              noun: noun,
+              noun:,
               name: info[noun].inspect,
               rustup: resource[:title].inspect,
             }
