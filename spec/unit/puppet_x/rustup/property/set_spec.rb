@@ -16,7 +16,7 @@ RSpec.describe PuppetX::Rustup::Property::Set do
   end
 
   let :property do
-    described_class.new(resource:)
+    described_class.new(resource: resource)
   end
 
   [true, false].each do |value|
