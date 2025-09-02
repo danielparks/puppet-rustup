@@ -55,7 +55,10 @@ The following parameters are available in the `rustup::global` class:
 * [`ensure`](#-rustup--global--ensure)
 * [`user`](#-rustup--global--user)
 * [`manage_user`](#-rustup--global--manage_user)
+* [`default_toolchain`](#-rustup--global--default_toolchain)
+* [`toolchains`](#-rustup--global--toolchains)
 * [`purge_toolchains`](#-rustup--global--purge_toolchains)
+* [`targets`](#-rustup--global--targets)
 * [`purge_targets`](#-rustup--global--purge_targets)
 * [`dist_server`](#-rustup--global--dist_server)
 * [`home`](#-rustup--global--home)
@@ -91,6 +94,22 @@ Whether or not to manage `$user` user.
 
 Default value: `true`
 
+##### <a name="-rustup--global--default_toolchain"></a>`default_toolchain`
+
+Data type: `Optional[String[1]]`
+
+Which toolchain should be the default.
+
+Default value: `undef`
+
+##### <a name="-rustup--global--toolchains"></a>`toolchains`
+
+Data type: `Array[String[1]]`
+
+The toolchains to install.
+
+Default value: `[]`
+
 ##### <a name="-rustup--global--purge_toolchains"></a>`purge_toolchains`
 
 Data type: `Boolean`
@@ -98,6 +117,19 @@ Data type: `Boolean`
 Whether or not to uninstall toolchains that aren’t managed by Puppet.
 
 Default value: `false`
+
+##### <a name="-rustup--global--targets"></a>`targets`
+
+Data type: `Array[String[1]]`
+
+The targets to install. These can take two forms:
+
+  * `"$target $toolchain"`: Install `$target` for `$toolchain`.
+  * `"$target"`: Install `$target` for the default toolchain.
+
+You can use `'default'` to indicate the target for the current host.
+
+Default value: `[]`
 
 ##### <a name="-rustup--global--purge_targets"></a>`purge_targets`
 

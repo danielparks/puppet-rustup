@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 * Synced with [PDK][] and switched to Ruby 3.1 for automated testing since PDK
   no longer supports 2.7.
 * Fix initial installation when `rustup::global` has `ensure => latest`.
+* Added `toolchain` and `target` parameters to `rustup::global` to match what’s
+  in the README.
 
 [PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
 

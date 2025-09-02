@@ -3,6 +3,40 @@
 require 'spec_helper_acceptance'
 
 describe 'Global rustup management' do
+  context 'supports basic install with ensure => latest' do
+    it do
+      # Not idempotent because of ensure => latest.
+      apply_manifest(<<~'END')
+        class { 'rustup::global':
+          ensure     => latest,
+          toolchains => ['stable'],
+          targets    => ['default']
+        }
+      END
+
+      expect(user('rustup')).to belong_to_group 'rustup'
+    end
+
+    describe file('/opt/rust') do
+      it { is_expected.to be_directory }
+      it { is_expected.to be_owned_by 'rustup' }
+    end
+
+    describe file('/opt/rust/cargo/bin/rustup') do
+      it { is_expected.to be_file }
+      it { is_expected.to be_executable }
+      it { is_expected.to be_owned_by 'rustup' }
+    end
+
+    describe command_global_rustup('+stable target list') do
+      its(:stdout) do
+        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+      end
+      its(:stderr) { is_expected.to eq '' }
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+  end
+
   context 'supports out-of-order targets and toolchains with a false shell' do
     it do
       idempotent_apply(<<~'END')
