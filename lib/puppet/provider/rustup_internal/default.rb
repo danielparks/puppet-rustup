@@ -61,7 +61,11 @@ Puppet::Type.type(:rustup_internal).provide(
 
   # The resource thinks we need to update `rustup`.
   def update
-    rustup 'self', 'update'
+    if exists?
+      rustup 'self', 'update'
+    else
+      create
+    end
   end
 
   # The resource thinks we need to uninstall `rustup`.
@@ -172,7 +176,7 @@ Puppet::Type.type(:rustup_internal).provide(
         if info['ensure'] != 'absent'
           raise Puppet::Error, 'Cannot install %{noun} %{name} for absent ' \
             'rustup installation %{rustup}' % {
-              noun:,
+              noun: noun,
               name: info[noun].inspect,
               rustup: resource[:title].inspect,
             }

@@ -322,11 +322,11 @@ describe 'Per-user rustup management' do
     toolchain = "stable-#{target}"
 
     it do
-      # Note that the quotes here are within the END block.
-      idempotent_apply(<<~END)
+      # Note that the quotes here are within the PUPPET block.
+      idempotent_apply(<<~PUPPET)
         rustup { 'user': }
         rustup::toolchain { 'user: #{toolchain}': }
-      END
+      PUPPET
     end
 
     command = "rustup target list --toolchain #{toolchain}"
