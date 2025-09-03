@@ -30,7 +30,7 @@ describe 'Global rustup management' do
 
     describe command_global_rustup('+stable target list') do
       its(:stdout) do
-        is_expected.to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -87,7 +87,7 @@ describe 'Global rustup management' do
     describe command_global_rustup('+stable target list') do
       its(:stdout) do
         is_expected.to match(%r{^wasm32-unknown-unknown \(installed\)$})
-        is_expected.not_to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.not_to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -96,7 +96,7 @@ describe 'Global rustup management' do
     describe command_global_rustup('+nightly target list') do
       its(:stdout) do
         is_expected.to match(%r{^wasm32-unknown-unknown \(installed\)$})
-        is_expected.not_to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.not_to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -124,7 +124,7 @@ describe 'Global rustup management' do
     describe command_global_rustup('+stable target list') do
       its(:stdout) do
         is_expected.to match(%r{^wasm32-unknown-unknown \(installed\)$})
-        is_expected.not_to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.not_to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -133,7 +133,7 @@ describe 'Global rustup management' do
     describe command_global_rustup('+nightly target list') do
       its(:stdout) do
         is_expected.to match(%r{^wasm32-unknown-unknown$})
-        is_expected.not_to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.not_to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
@@ -163,7 +163,7 @@ describe 'Global rustup management' do
     describe command_global_rustup('+stable target list') do
       its(:stdout) do
         is_expected.to match(%r{^wasm32-unknown-unknown \(installed\)$})
-        is_expected.not_to match(%r{-unknown-linux-.* \(installed\)$})
+        is_expected.not_to match(%r{^#{host_target} \(installed\)$})
       end
       its(:stderr) { is_expected.to eq '' }
       its(:exit_status) { is_expected.to eq 0 }
