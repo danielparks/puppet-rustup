@@ -37,6 +37,23 @@ describe 'Global rustup management' do
     end
   end
 
+  # FIXME/BUG this is necessary for the next context block to work
+  context 'removes basic install with ensure => absent' do
+    it do
+      idempotent_apply(<<~'END')
+        class { 'rustup::global':
+          ensure => absent,
+        }
+      END
+
+      expect(user('rustup')).not_to exist
+    end
+
+    describe file('/opt/rust') do
+      it { is_expected.not_to exist }
+    end
+  end
+
   context 'supports out-of-order targets and toolchains with a false shell' do
     it do
       idempotent_apply(<<~'END')
