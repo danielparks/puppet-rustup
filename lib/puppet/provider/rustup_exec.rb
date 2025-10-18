@@ -132,11 +132,12 @@ class Puppet::Provider::RustupExec < Puppet::Provider
       'RUSTUP_DIST_SERVER' => resource[:dist_server],
     }.compact
 
-    debug do
+    #debug do
       stdin_message = stdin_file ? " and stdin_file #{stdin_file.inspect}" : ''
-      "Running #{command.inspect} for user #{resource[:user].inspect} with " \
-      "environment #{environment.inspect}#{stdin_message}"
-    end
+      warn "!!! Running #{command.inspect} for user " \
+      "#{resource[:user].inspect} in #{Dir.pwd} with environment " \
+      "#{environment.inspect}#{stdin_message}"
+    #end
 
     if ENV['RUSTUP_TRACE']
       info("as #{resource[:user]}: #{command.join(' ')}")
