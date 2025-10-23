@@ -82,6 +82,7 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
   def parse_partial(input)
     # From https://github.com/rust-lang/rustup/blob/b3d0bd6be286a6df6de159eede3f38cfd306fd3a/src/dist/triple/known.rs
     # rubocop:disable Style/StringLiterals
+    # typos:ignore-start
     archs = [
       "aarch64",
       "aarch64_be",
@@ -265,6 +266,7 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
       "uclibceabi",
       "uclibceabihf",
     ].join('|')
+    # typos:ignore-end
     # rubocop:enable Style/StringLiterals
     re = %r{\A(.*?)(?:-(#{archs}))?(?:-(#{oses}))?(?:-(#{envs}))?\Z}
     match = re.match(input)

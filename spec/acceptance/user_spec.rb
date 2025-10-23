@@ -381,22 +381,22 @@ describe 'Per-user rustup management' do
     end
   end
 
-  it 'supports ensure=>absent with non-existant user' do
-    expect(user('non_existant_user')).not_to exist
+  it 'supports ensure=>absent with non-existent user' do
+    expect(user('non_existent_user')).not_to exist
 
     idempotent_apply(<<~'PUPPET')
-      rustup { 'non_existant_user':
+      rustup { 'non_existent_user':
         ensure => absent,
       }
-      rustup::toolchain { 'non_existant_user: stable':
+      rustup::toolchain { 'non_existent_user: stable':
         ensure => absent,
       }
-      rustup::target { 'non_existant_user: wasm32-unknown-unknown stable':
+      rustup::target { 'non_existent_user: wasm32-unknown-unknown stable':
         ensure => absent,
       }
     PUPPET
 
-    expect(user('non_existant_user')).not_to exist
+    expect(user('non_existent_user')).not_to exist
   end
 
   it 'can remove itself after the user was deleted' do

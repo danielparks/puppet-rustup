@@ -19,7 +19,7 @@ class PuppetX::Rustup::Provider::Collection
     @values = nil
   end
 
-  # Get values actaully present on the system.
+  # Get values actually present on the system.
   def load
     raise 'Unimplemented.'
   end

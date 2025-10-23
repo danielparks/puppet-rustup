@@ -145,8 +145,8 @@ Puppet::Type.type(:rustup_internal).provide(
   #
   # This is called if `ensure` is `absent` even if `exists? == false`.
   def ensure_absent
-    # FIXME: use `secure: true`? I’m confused about what the vulnerablity is. It
-    # seems to require a world-writable parent directory, but it looks like
+    # FIXME: use `secure: true`? I’m confused about what the vulnerability is.
+    # It seems to require a world-writable parent directory, but it looks like
     # `secure: true` fails in that case... or maybe that’s all it does?
     FileUtils.rm_rf(resource[:rustup_home])
     FileUtils.rm_rf(resource[:cargo_home])

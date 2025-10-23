@@ -12,14 +12,14 @@ RSpec.describe Puppet::Type.type(:rustup_internal).provider(:default) do
     Puppet::Type.type(:rustup_internal)
   end
 
-  it 'succeeds for non-existant user when ensure=>absent' do
-    # Assumes that /home/non_existant_user/.cargo/... doesn’t exist.
+  it 'succeeds for non-existent user when ensure=>absent' do
+    # Assumes that /home/non_existent_user/.cargo/... doesn’t exist.
     resource = type.new(
-      title: 'non_existant_user',
+      title: 'non_existent_user',
       ensure: 'absent',
       provider: :default,
     )
-    expect(resource[:cargo_home]).to eq '/home/non_existant_user/.cargo'
+    expect(resource[:cargo_home]).to eq '/home/non_existent_user/.cargo'
     expect(described_class.new(resource).exists?).to be(false)
   end
 
