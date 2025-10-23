@@ -155,7 +155,7 @@ def fix_links(root, path)
   IO.write(path, lines.join(''))
 end
 
-# Huge kludge. Only works on unorderd lists at the moment.
+# Huge kludge. Only works on unordered lists at the moment.
 def unwrap_markdown!(md)
   while md.gsub!(%r{^( *)([*+-])( +\S.+?)\n\1  +([^ *+-])}, '\1\2\3 \4')
   end
