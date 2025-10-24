@@ -111,7 +111,7 @@ class PuppetX::Rustup::Property::Subresources < PuppetX::Rustup::Property::Set
     if values.is_a? PuppetX::Rustup::Provider::Collection
       values = values.system
     end
-    super(values)
+    super
   end
   # rubocop:enable Naming/PredicateName
 end
