@@ -80,7 +80,7 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
   # FIXME: this will break as soon as Rust adds a new platform for the toolchain
   # to run on.
   def parse_partial(input)
-    # From https://github.com/rust-lang/rustup/blob/b3d0bd6be286a6df6de159eede3f38cfd306fd3a/src/dist/triple/known.rs
+    # From https://github.com/rust-lang/rustup/blob/f4f46e03e009fbaf3d1ae77e1e45f3334c9f9be8/src/dist/triple/known.rs
     # rubocop:disable Style/StringLiterals
     # typos:ignore-start
     archs = [
@@ -111,6 +111,7 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
       "i386",
       "i586",
       "i686",
+      "loongarch32",
       "loongarch64",
       "m68k",
       "mips",
@@ -138,6 +139,7 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
       "riscv32imafc",
       "riscv32imc",
       "riscv64",
+      "riscv64a23",
       "riscv64gc",
       "riscv64imac",
       "s390x",
@@ -208,6 +210,8 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
       "unknown-illumos",
       "unknown-l4re",
       "unknown-linux",
+      "unknown-managarm",
+      "unknown-motor",
       "unknown-netbsd",
       "unknown-none",
       "unknown-nto",
@@ -220,10 +224,12 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
       "unknown-unknown",
       "unknown-xous",
       "uwp-windows",
+      "vex-v5",
       "wali-linux",
       "wasip1",
       "wasip1-threads",
       "wasip2",
+      "wasip3",
       "win7-windows",
       "wrs-vxworks",
     ].join('|')
@@ -245,6 +251,7 @@ class PuppetX::Rustup::Provider::Collection::Toolchains <
       "gnuspe",
       "gnux32",
       "macabi",
+      "mlibc",
       "msvc",
       "musl",
       "muslabi64",

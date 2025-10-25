@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 * Fix initial installation when `rustup::global` has `ensure => latest`.
 * Added `toolchain` and `target` parameters to `rustup::global` to match what’s
   in the README.
+* Update list of possible targets to match Rust.
 * Fixed a few spelling mistakes.
 
 [PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
