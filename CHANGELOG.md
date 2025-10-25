@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 [PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
 
-## Release 0.2.7
+## Release 0.2.7 (2025-06-04)
 
 * Synced with [PDK][] and disabled Puppet 6 testing, since the package signing
   key is no longer valid.
@@ -23,13 +23,13 @@ All notable changes to this project will be documented in this file.
 
 [PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
 
-## Release 0.2.6
+## Release 0.2.6 (2024-09-03)
 
 * Synced with [PDK][].
 
 [PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
 
-## Release 0.2.5
+## Release 0.2.5 (2024-02-21)
 
 * Fixed initial installation on macOS to always use the native architecture… for
   real this time (the previous attempt ended up being a no-op). Thanks again to
@@ -40,7 +40,7 @@ All notable changes to this project will be documented in this file.
 [@zbentley]: https://github.com/zbentley
 [#85]: https://github.com/danielparks/puppet-rustup/pull/85
 
-## Release 0.2.4
+## Release 0.2.4 (2024-02-15)
 
 * Changed initial installation on macOS to always use the native architecture.
   This avoids performance issues when Puppet is run in x86_64 emulation mode
