@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Synced with [PDK][].
+
+[PDK]: https://www.puppet.com/docs/pdk/latest/pdk.html
+
 ## Release 0.2.8 (2025-10-25)
 
 * Synced with [PDK][] and switched to Ruby 3.1 for automated testing since PDK
