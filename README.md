@@ -109,7 +109,11 @@ You can find more information in the reference documentation for
 
 ## Development status
 
-This is presently being developed, if in a somewhat intermittent fashion.
+This is stable but incomplete. I’m unlikely to update this unless there are
+bugs; I no longer use it myself since switching to [Nix][].
+
+Please file an [issue][] if you find a bug or are interested in taking ownership
+of this module.
 
 ## Reference
 
@@ -127,5 +131,7 @@ See [DEVELOPMENT.md][].
 [`rustup::global`]: REFERENCE.md#rustup--global
 [`rustup::global::toolchain`]: REFERENCE.md#rustup--global--toolchain
 [`rustup::global::target`]: REFERENCE.md#rustup--global--target
+[Nix]: https://nix.dev
+[issue]: https://github.com/danielparks/puppet-rustup/issues
 [REFERENCE.md]: REFERENCE.md
 [DEVELOPMENT.md]: DEVELOPMENT.md
